@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import Link from "next/link";
+import { ModeToggle } from "./mode-toggle";
 
 export function SiteHeader({ isLoggedIn }: { isLoggedIn: boolean }) {
   return (
@@ -15,15 +16,17 @@ export function SiteHeader({ isLoggedIn }: { isLoggedIn: boolean }) {
 
         <h1 className="text-base font-medium">Reports</h1>
 
-        {isLoggedIn ? null : (
-          <div className="ml-auto flex items-center gap-2">
+        <div className="ml-auto flex items-center gap-2">
+          {isLoggedIn ? null : (
             <Button variant="ghost" asChild size="sm" className="flex">
               <Link href="/login" className="dark:text-foreground">
                 Login
               </Link>
             </Button>
-          </div>
-        )}
+          )}
+
+          <ModeToggle />
+        </div>
       </div>
     </header>
   );
