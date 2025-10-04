@@ -3,9 +3,9 @@
 import {
   IconDotsVertical,
   IconLogout,
-  // IconCreditCard,
-  // IconNotification,
-  // IconUserCircle,
+  IconCreditCard,
+  IconNotification,
+  IconUserCircle,
 } from "@tabler/icons-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -14,9 +14,9 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  // DropdownMenuGroup,
-  // DropdownMenuLabel,
-  // DropdownMenuSeparator,
+  DropdownMenuGroup,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import {
   SidebarMenu,
@@ -24,17 +24,31 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { User } from "@prisma/client";
+import { getUsernameInitials } from "@/lib/utils";
+import { toast } from "sonner";
 
-export function NavUser({
-  user,
-}: {
-  user: {
-    name: string;
-    email: string;
-    avatar: string;
-  };
-}) {
+export function NavUser({ user }: { user: User }) {
   const { isMobile } = useSidebar();
+
+  const logout = async () => {
+    try {
+      const res = await fetch("/api/auth/logout", {
+        method: "POST",
+      });
+
+      console.log("res:", res);
+
+      const data = await res.json();
+
+      console.log("data:", data);
+
+      toast.success("Logged out successfully");
+      window.location.href = "/login";
+    } catch (error: any) {
+      toast.error(error?.message || "Logout failed");
+    }
+  };
 
   return (
     <SidebarMenu>
@@ -46,13 +60,14 @@ export function NavUser({
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <Avatar className="h-8 w-8 rounded-lg grayscale">
-                <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                <AvatarFallback className="rounded-lg">
+                  {getUsernameInitials(user.username)}
+                </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{user.name}</span>
+                <span className="truncate font-medium">{user.username}</span>
                 <span className="text-muted-foreground truncate text-xs">
-                  {user.email}
+                  {user.fullname}
                 </span>
               </div>
               <IconDotsVertical className="ml-auto size-4" />
@@ -96,7 +111,11 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup> */}
             {/* <DropdownMenuSeparator /> */}
-            <DropdownMenuItem>
+            <DropdownMenuItem
+              role="button"
+              className="cursor-pointer"
+              onClick={logout}
+            >
               <IconLogout />
               Log out
             </DropdownMenuItem>

@@ -14,13 +14,22 @@ enum Role {
   STAFF
 }
 
-
 model User {
-  id String @id @default(cuid())
-  username String @unique
-  fullname String
-  password String
-  role Role @default(STAFF)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
+  id          String    @id @unique @default(cuid())
+  username    String    @unique
+  password    String
+  role        Role?     @default(STAFF)
+  fullname    String?
+  designation String?
+  phone       String?
+  email       String?
+  createdAt   DateTime? @default(now())
+  updatedAt   DateTime? @updatedAt
+}
+
+model Buyer {
+  id        String    @id @unique @default(cuid())
+  title     String    @unique
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
 }

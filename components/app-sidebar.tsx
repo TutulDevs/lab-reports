@@ -33,6 +33,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
+import { User } from "@prisma/client";
 
 const data = {
   user: {
@@ -146,7 +147,13 @@ const data = {
   ],
 };
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+type AppSidebarType = {
+  userData: User | null;
+} & React.ComponentProps<typeof Sidebar>;
+
+export function AppSidebar({ ...props }: AppSidebarType) {
+  const userData = props.userData;
+
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -171,9 +178,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
 
-      <SidebarFooter>
-        <NavUser user={data.user} />
-      </SidebarFooter>
+      {!userData ? null : (
+        <SidebarFooter>
+          <NavUser user={userData} />
+        </SidebarFooter>
+      )}
     </Sidebar>
   );
 }

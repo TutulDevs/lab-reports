@@ -1,17 +1,25 @@
-import jwt from "jsonwebtoken";
+import { JWTPayload, SignJWT, jwtVerify } from "jose";
+import { MAX_AGE_IN_SECONDS, SESSION_COOKIE_NAME } from "./coreconstants";
 
-const JWT_SECRET = process.env.JWT_SECRET as string;
-const COOKIE_NAME = process.env.COOKIE_NAME || "sb_session";
-const MAX_AGE = Number(process.env.COOKIE_MAX_AGE || 60 * 60 * 24 * 7); // seconds
+const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
+const COOKIE_NAME = process.env.COOKIE_NAME || SESSION_COOKIE_NAME;
+const MAX_AGE = Number(process.env.COOKIE_MAX_AGE || MAX_AGE_IN_SECONDS); // seconds
 
-export function signJwt(payload: object) {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: `${MAX_AGE}s` });
+// sign
+export async function signJwt(payload: JWTPayload, expiresIn = "1h") {
+  return await new SignJWT(payload)
+    .setProtectedHeader({ alg: "HS256" })
+    .setExpirationTime(expiresIn)
+    .sign(JWT_SECRET);
 }
 
-export function verifyJwt<T = any>(token: string): T | null {
+// verify
+export async function verifyJwt<T = any>(token: string): Promise<T | null> {
   try {
-    return jwt.verify(token, JWT_SECRET) as T;
+    const { payload } = await jwtVerify(token, JWT_SECRET);
+    return payload as T;
   } catch (e) {
+    console.error("JWT verification failed:", e);
     return null;
   }
 }
