@@ -27,8 +27,9 @@ import {
 import { User } from "@prisma/client";
 import { getUsernameInitials } from "@/lib/utils";
 import { toast } from "sonner";
+import { PartialUser } from "@/lib/coreconstants";
 
-export function NavUser({ user }: { user: User }) {
+export function NavUser({ user }: { user: PartialUser }) {
   const { isMobile } = useSidebar();
 
   const logout = async () => {

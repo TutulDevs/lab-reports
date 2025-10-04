@@ -34,6 +34,7 @@ import {
 } from "@/components/ui/sidebar";
 import Link from "next/link";
 import { User } from "@prisma/client";
+import { PartialUser } from "@/lib/coreconstants";
 
 const data = {
   user: {
@@ -147,13 +148,11 @@ const data = {
   ],
 };
 
-type AppSidebarType = {
-  userData: User | null;
-} & React.ComponentProps<typeof Sidebar>;
+type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
+  userData: PartialUser | null;
+};
 
-export function AppSidebar({ ...props }: AppSidebarType) {
-  const userData = props.userData;
-
+export function AppSidebar({ userData, ...props }: AppSidebarProps) {
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
