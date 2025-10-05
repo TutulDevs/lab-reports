@@ -50,11 +50,10 @@ export function LoginForm({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-
-      console.log("res:", res);
-
       const data = await res.json();
-      console.log("data:", data);
+
+      // console.log("res:", res);
+      // console.log("data:", data);
 
       if (res.ok) {
         toast.success(data?.message || "Logged in successfully");

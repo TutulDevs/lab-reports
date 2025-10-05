@@ -1,9 +1,11 @@
-import { StaffItemActions } from "@/components/staff-item-actions";
+import {
+  CreateOrUpdateStaffButton,
+  StaffItemActions,
+} from "@/components/staffs/staff-item-actions";
 import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -15,13 +17,18 @@ import { Role } from "@prisma/client";
 
 export default async function StaffsPage() {
   const me = await getServerUser();
-  const amIanAdmin = me?.role == Role.ADMIN;
   const users = await getServerUsersAll();
 
   return (
     <div className="p-6 md:p-10">
-      <h1 className="text-lg md:text-3xl mb-2">List of staffs</h1>
-      <p>Total: {users?.length ?? 0}</p>
+      <div className="flex flex-wrap gap-4 justify-between">
+        <div>
+          <h1 className="text-lg md:text-3xl mb-2">List of staffs</h1>
+          <p>Total: {users?.length ?? 0}</p>
+        </div>
+
+        <CreateOrUpdateStaffButton />
+      </div>
 
       <hr className="my-4" />
 
@@ -39,10 +46,19 @@ export default async function StaffsPage() {
         <TableBody>
           {users && users.length > 0
             ? users?.map((user) => {
+                const canEdit = me?.id == user.id || me?.role == Role.ADMIN;
+                const canDelete =
+                  me?.role == Role.ADMIN && user.role == Role.STAFF;
+
                 return (
                   <TableRow key={user.id}>
                     <TableCell className="font-medium">{user.id}</TableCell>
-                    <TableCell>{user.username}</TableCell>
+                    <TableCell>
+                      {user.username}
+
+                      {/* <br />
+                      {JSON.stringify({ canEdit, canDelete })} */}
+                    </TableCell>
                     <TableCell>
                       <Badge
                         variant={
@@ -56,7 +72,11 @@ export default async function StaffsPage() {
                       {dateFormatter(user.createdAt, "dd MMM yyyy")}
                     </TableCell>
                     <TableCell className="text-right">
-                      <StaffItemActions user={user} isAdmin={amIanAdmin} />
+                      <StaffItemActions
+                        user={user}
+                        canEdit={canEdit}
+                        canDelete={canDelete}
+                      />
                     </TableCell>
                   </TableRow>
                 );
@@ -65,14 +85,14 @@ export default async function StaffsPage() {
         </TableBody>
       </Table>
 
-      <hr />
+      {/* <hr />
       <div className="border m-4">
         <pre>{JSON.stringify(me, null, 2)}</pre>
       </div>
 
       <div className="border m-4">
         <pre>{JSON.stringify(users, null, 2)}</pre>
-      </div>
+      </div> */}
     </div>
   );
 }

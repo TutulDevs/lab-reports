@@ -18,3 +18,7 @@ export const dateFormatter = (
   if (date == null) return "N/A";
   return format(date, formatStr, options);
 };
+
+export const sleep = async (time_in_ms = 50) => {
+  return new Promise((resolve) => setTimeout(resolve, time_in_ms));
+};

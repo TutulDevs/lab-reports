@@ -33,15 +33,10 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
-import { User } from "@prisma/client";
 import { PartialUser } from "@/lib/coreconstants";
+import { Users, UserStar } from "lucide-react";
 
 const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
   navMain: [
     {
       title: "Dashboard",
@@ -56,12 +51,12 @@ const data = {
     {
       title: "Buyers",
       url: "/buyers",
-      icon: IconChartBar,
+      icon: UserStar,
     },
     {
       title: "Staffs",
       url: "/staffs",
-      icon: IconFolder,
+      icon: Users,
     },
   ],
   navClouds: [
