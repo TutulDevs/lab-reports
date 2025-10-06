@@ -27,7 +27,7 @@ export default async function StaffsPage() {
           <p>Total: {users?.length ?? 0}</p>
         </div>
 
-        <CreateOrUpdateStaffButton />
+        <CreateOrUpdateStaffButton canEdit={me?.role == Role.ADMIN} />
       </div>
 
       <hr className="my-4" />
@@ -56,8 +56,7 @@ export default async function StaffsPage() {
                     <TableCell>
                       {user.username}
 
-                      {/* <br />
-                      {JSON.stringify({ canEdit, canDelete })} */}
+                      {/* <br />{JSON.stringify({ canEdit, canDelete })} */}
                     </TableCell>
                     <TableCell>
                       <Badge

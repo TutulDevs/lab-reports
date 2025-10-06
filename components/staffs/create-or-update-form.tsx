@@ -72,7 +72,10 @@ export const CreateOrUpdateUserForm: React.FC<{
       const res = await fetch("/api/staff", {
         method: user ? "PUT" : "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({
+          ...payload,
+          username: payload.username.trim().toLowerCase(),
+        }),
       });
       const status = res.status;
       const data = await res.json();

@@ -22,6 +22,13 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Access denied" }, { status: 401 });
     }
 
+    if (session.role == Role.STAFF) {
+      return NextResponse.json(
+        { error: "You are not permitted" },
+        { status: 400 }
+      );
+    }
+
     const body = await req.json();
     const data = registerStaffSchema.parse(body);
 

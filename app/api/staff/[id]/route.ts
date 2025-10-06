@@ -23,6 +23,13 @@ export async function DELETE(
       return NextResponse.json({ error: "Access denied" }, { status: 401 });
     }
 
+    if (session.role == Role.STAFF) {
+      return NextResponse.json(
+        { error: "Staff is not permitted" },
+        { status: 400 }
+      );
+    }
+
     const { id } = await context.params;
 
     const user = await prisma.user.findUnique({

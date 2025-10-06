@@ -224,26 +224,14 @@ export const CreateOrUpdateStaffButton: React.FC<{
   return (
     <>
       <Dialog open={open} onOpenChange={() => setOpen((v) => !v)}>
-        <DialogTrigger disabled={!canEdit}>
-          {!user ? (
-            <Button variant="default">Create Staff</Button>
-          ) : (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="default"
-                  size={"icon-sm"}
-                  className="mx-2"
-                  disabled={!canEdit}
-                >
-                  <SquarePen />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Edit Staff</p>
-              </TooltipContent>
-            </Tooltip>
-          )}
+        <DialogTrigger
+          className={cn({
+            [buttonVariants()]: !user,
+            [buttonVariants({ size: "icon-sm" }) + " mx-2 "]: !!user,
+          })}
+          disabled={!canEdit}
+        >
+          {!user ? "Create Staff" : <SquarePen />}
         </DialogTrigger>
 
         <DialogContent>
