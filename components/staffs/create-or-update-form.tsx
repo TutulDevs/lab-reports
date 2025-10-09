@@ -15,7 +15,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { cn, sleep } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "../ui/input";
 import {
@@ -45,7 +44,7 @@ export const CreateOrUpdateUserForm: React.FC<{
 
   const btnText = {
     default: user ? "Update" : "Create",
-    loading: user ? "Updating" : "Creating",
+    loading: user ? "Updating..." : "Creating...",
   };
 
   const schema = user ? updateStaffSchema : registerStaffSchema;

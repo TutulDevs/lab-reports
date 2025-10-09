@@ -25,11 +25,39 @@ model User {
   email       String?
   createdAt   DateTime? @default(now())
   updatedAt   DateTime? @updatedAt
+  Buyer       Buyer[]
 }
 
 model Buyer {
-  id        String    @id @unique @default(cuid())
-  title     String    @unique
-  createdAt DateTime? @default(now())
-  updatedAt DateTime? @updatedAt
+  id                    String    @id @unique @default(cuid())
+  title                 String    @unique
+  last_updated_by       User      @relation(fields: [userId], references: [id])
+  createdAt             DateTime? @default(now())
+  updatedAt             DateTime? @updatedAt
+  ds_wash_length_min    Float
+  ds_wash_length_max    Float
+  ds_wash_width_min     Float
+  ds_wash_width_max     Float
+  spirality_max         Float?
+  cf_wash_cs            Float?
+  cf_wash_cc            Float?
+  cf_rub_dry            Float?
+  cf_rub_wet            Float?
+  cf_water_cs           Float?
+  cf_water_cc           Float?
+  cf_persp_cs_acd       Float?
+  cf_persp_cc_acd       Float?
+  cf_persp_cs_alk       Float?
+  cf_persp_cc_alk       Float?
+  piling_min            Float?
+  piling_max            Float?
+  bursting_strength_kpa Int?
+  ph_min                Decimal?
+  ph_max                Decimal?
+  cf_dye_transfer       Float?
+  fabric_r_dia          Int?
+  fabric_f_dia          Int?
+  fabric_r_gsm          Int?
+  fabric_f_gsm          Int?
+  userId                String
 }
