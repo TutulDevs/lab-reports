@@ -2,7 +2,7 @@
 
 import { Buyer } from "@prisma/client";
 import React from "react";
-import { commonValuesList, PartialUser } from "@/lib/coreconstants";
+import { commonValuesList } from "@/lib/coreconstants";
 import { createBuyerSchema, updateBuyerSchema } from "@/lib/schemas";
 import { useState } from "react";
 import { z } from "zod";
@@ -54,6 +54,42 @@ export const CreateOrEditBuyerForm: React.FC<{ buyer?: Buyer }> = ({
     defaultValues: {
       id: buyer?.id ?? "",
       title: buyer?.title ?? "",
+
+      ds_wash_length_min: buyer?.ds_wash_length_min,
+      ds_wash_length_max: buyer?.ds_wash_length_max,
+      ds_wash_width_min: buyer?.ds_wash_length_min,
+      ds_wash_width_max: buyer?.ds_wash_length_max,
+
+      spirality_max: buyer?.spirality_max ?? undefined,
+
+      cf_wash_cs: buyer?.cf_wash_cs ?? undefined,
+      cf_wash_cc: buyer?.cf_wash_cc ?? undefined,
+
+      cf_rub_dry: buyer?.cf_rub_dry ?? undefined,
+      cf_rub_wet: buyer?.cf_rub_wet ?? undefined,
+
+      cf_water_cs: buyer?.cf_water_cs ?? undefined,
+      cf_water_cc: buyer?.cf_water_cc ?? undefined,
+
+      cf_persp_cs_acd: buyer?.cf_persp_cs_acd ?? undefined,
+      cf_persp_cc_acd: buyer?.cf_persp_cc_acd ?? undefined,
+      cf_persp_cs_alk: buyer?.cf_persp_cs_alk ?? undefined,
+      cf_persp_cc_alk: buyer?.cf_persp_cc_alk ?? undefined,
+
+      piling_min: buyer?.piling_min ?? undefined,
+      piling_max: buyer?.piling_max ?? undefined,
+
+      bursting_strength_kpa: buyer?.bursting_strength_kpa ?? undefined,
+
+      ph_min: buyer?.ph_min ?? undefined,
+      ph_max: buyer?.ph_max ?? undefined,
+
+      cf_dye_transfer: buyer?.cf_dye_transfer ?? undefined,
+
+      fabric_r_dia: buyer?.fabric_r_dia ?? undefined,
+      fabric_f_dia: buyer?.fabric_f_dia ?? undefined,
+      fabric_r_gsm: buyer?.fabric_r_gsm ?? undefined,
+      fabric_f_gsm: buyer?.fabric_f_gsm ?? undefined,
     },
   });
 
@@ -96,6 +132,8 @@ export const CreateOrEditBuyerForm: React.FC<{ buyer?: Buyer }> = ({
 
   const commonValuesSelect = (
     <SelectContent>
+      <SelectItem value={"null"}>None</SelectItem>
+
       {commonValuesList.map((x) => (
         <SelectItem key={x} value={String(x)}>
           {x}
@@ -138,6 +176,7 @@ export const CreateOrEditBuyerForm: React.FC<{ buyer?: Buyer }> = ({
                     <Input
                       placeholder="Enter min length"
                       type="number"
+                      step="any"
                       {...field}
                     />
                   </FormControl>
@@ -156,6 +195,7 @@ export const CreateOrEditBuyerForm: React.FC<{ buyer?: Buyer }> = ({
                     <Input
                       placeholder="Enter max length"
                       type="number"
+                      step="any"
                       {...field}
                     />
                   </FormControl>
@@ -174,6 +214,7 @@ export const CreateOrEditBuyerForm: React.FC<{ buyer?: Buyer }> = ({
                     <Input
                       placeholder="Enter min width"
                       type="number"
+                      step="any"
                       {...field}
                     />
                   </FormControl>
@@ -192,6 +233,7 @@ export const CreateOrEditBuyerForm: React.FC<{ buyer?: Buyer }> = ({
                     <Input
                       placeholder="Enter max width"
                       type="number"
+                      step="any"
                       {...field}
                     />
                   </FormControl>
@@ -209,7 +251,12 @@ export const CreateOrEditBuyerForm: React.FC<{ buyer?: Buyer }> = ({
               <FormItem>
                 <FormLabel>Spirality Maximum</FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter value" type="number" {...field} />
+                  <Input
+                    placeholder="Enter value"
+                    type="number"
+                    step="any"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -226,7 +273,7 @@ export const CreateOrEditBuyerForm: React.FC<{ buyer?: Buyer }> = ({
                   <FormLabel>CS</FormLabel>
 
                   <Select
-                    onValueChange={(e) => field.onChange(parseInt(e))}
+                    onValueChange={(e) => field.onChange(parseFloat(e))}
                     defaultValue={String(field.value)}
                   >
                     <FormControl>
@@ -251,7 +298,7 @@ export const CreateOrEditBuyerForm: React.FC<{ buyer?: Buyer }> = ({
                   <FormLabel>CC</FormLabel>
 
                   <Select
-                    onValueChange={(e) => field.onChange(parseInt(e))}
+                    onValueChange={(e) => field.onChange(parseFloat(e))}
                     defaultValue={String(field.value)}
                   >
                     <FormControl>
@@ -279,7 +326,7 @@ export const CreateOrEditBuyerForm: React.FC<{ buyer?: Buyer }> = ({
                   <FormLabel>Dry</FormLabel>
 
                   <Select
-                    onValueChange={(e) => field.onChange(parseInt(e))}
+                    onValueChange={(e) => field.onChange(parseFloat(e))}
                     defaultValue={String(field.value)}
                   >
                     <FormControl>
@@ -304,7 +351,7 @@ export const CreateOrEditBuyerForm: React.FC<{ buyer?: Buyer }> = ({
                   <FormLabel>Wet</FormLabel>
 
                   <Select
-                    onValueChange={(e) => field.onChange(parseInt(e))}
+                    onValueChange={(e) => field.onChange(parseFloat(e))}
                     defaultValue={String(field.value)}
                   >
                     <FormControl>
@@ -332,7 +379,7 @@ export const CreateOrEditBuyerForm: React.FC<{ buyer?: Buyer }> = ({
                   <FormLabel>CS</FormLabel>
 
                   <Select
-                    onValueChange={(e) => field.onChange(parseInt(e))}
+                    onValueChange={(e) => field.onChange(parseFloat(e))}
                     defaultValue={String(field.value)}
                   >
                     <FormControl>
@@ -357,7 +404,7 @@ export const CreateOrEditBuyerForm: React.FC<{ buyer?: Buyer }> = ({
                   <FormLabel>CC</FormLabel>
 
                   <Select
-                    onValueChange={(e) => field.onChange(parseInt(e))}
+                    onValueChange={(e) => field.onChange(parseFloat(e))}
                     defaultValue={String(field.value)}
                   >
                     <FormControl>
@@ -385,7 +432,7 @@ export const CreateOrEditBuyerForm: React.FC<{ buyer?: Buyer }> = ({
                   <FormLabel>CS ACD</FormLabel>
 
                   <Select
-                    onValueChange={(e) => field.onChange(parseInt(e))}
+                    onValueChange={(e) => field.onChange(parseFloat(e))}
                     defaultValue={String(field.value)}
                   >
                     <FormControl>
@@ -410,7 +457,7 @@ export const CreateOrEditBuyerForm: React.FC<{ buyer?: Buyer }> = ({
                   <FormLabel>CC ACD</FormLabel>
 
                   <Select
-                    onValueChange={(e) => field.onChange(parseInt(e))}
+                    onValueChange={(e) => field.onChange(parseFloat(e))}
                     defaultValue={String(field.value)}
                   >
                     <FormControl>
@@ -435,7 +482,7 @@ export const CreateOrEditBuyerForm: React.FC<{ buyer?: Buyer }> = ({
                   <FormLabel>CS ALK</FormLabel>
 
                   <Select
-                    onValueChange={(e) => field.onChange(parseInt(e))}
+                    onValueChange={(e) => field.onChange(parseFloat(e))}
                     defaultValue={String(field.value)}
                   >
                     <FormControl>
@@ -460,7 +507,7 @@ export const CreateOrEditBuyerForm: React.FC<{ buyer?: Buyer }> = ({
                   <FormLabel>CC ALK</FormLabel>
 
                   <Select
-                    onValueChange={(e) => field.onChange(parseInt(e))}
+                    onValueChange={(e) => field.onChange(parseFloat(e))}
                     defaultValue={String(field.value)}
                   >
                     <FormControl>
@@ -479,27 +526,21 @@ export const CreateOrEditBuyerForm: React.FC<{ buyer?: Buyer }> = ({
           </GroupWrapper>
 
           {/* piling */}
-          <GroupWrapper text="CF to Water">
+          <GroupWrapper text="Piling">
             <FormField
               control={form.control}
               name="piling_min"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Minimum</FormLabel>
-
-                  <Select
-                    onValueChange={(e) => field.onChange(parseInt(e))}
-                    defaultValue={String(field.value)}
-                  >
-                    <FormControl>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select a value" />
-                      </SelectTrigger>
-                    </FormControl>
-
-                    {commonValuesSelect}
-                  </Select>
-
+                  <FormControl>
+                    <Input
+                      placeholder="Enter value"
+                      type="number"
+                      step="any"
+                      {...field}
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
@@ -511,20 +552,14 @@ export const CreateOrEditBuyerForm: React.FC<{ buyer?: Buyer }> = ({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Maximum</FormLabel>
-
-                  <Select
-                    onValueChange={(e) => field.onChange(parseInt(e))}
-                    defaultValue={String(field.value)}
-                  >
-                    <FormControl>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select a value" />
-                      </SelectTrigger>
-                    </FormControl>
-
-                    {commonValuesSelect}
-                  </Select>
-
+                  <FormControl>
+                    <Input
+                      placeholder="Enter value"
+                      type="number"
+                      step="any"
+                      {...field}
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
@@ -539,7 +574,12 @@ export const CreateOrEditBuyerForm: React.FC<{ buyer?: Buyer }> = ({
               <FormItem>
                 <FormLabel>Bursting Strength (KPA)</FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter value" type="number" {...field} />
+                  <Input
+                    placeholder="Enter value"
+                    type="number"
+                    step="any"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -555,7 +595,12 @@ export const CreateOrEditBuyerForm: React.FC<{ buyer?: Buyer }> = ({
                 <FormItem>
                   <FormLabel>Minimum</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter value" type="number" {...field} />
+                    <Input
+                      placeholder="Enter value"
+                      type="number"
+                      step="any"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -569,7 +614,12 @@ export const CreateOrEditBuyerForm: React.FC<{ buyer?: Buyer }> = ({
                 <FormItem>
                   <FormLabel>Maximum</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter value" type="number" {...field} />
+                    <Input
+                      placeholder="Enter value"
+                      type="number"
+                      step="any"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -586,7 +636,7 @@ export const CreateOrEditBuyerForm: React.FC<{ buyer?: Buyer }> = ({
                 <FormLabel>CF to Dye Transfer</FormLabel>
 
                 <Select
-                  onValueChange={(e) => field.onChange(parseInt(e))}
+                  onValueChange={(e) => field.onChange(parseFloat(e))}
                   defaultValue={String(field.value)}
                 >
                   <FormControl>
@@ -612,7 +662,12 @@ export const CreateOrEditBuyerForm: React.FC<{ buyer?: Buyer }> = ({
                 <FormItem>
                   <FormLabel>R. Dia</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter value" type="number" {...field} />
+                    <Input
+                      placeholder="Enter value"
+                      type="number"
+                      step="any"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -626,7 +681,12 @@ export const CreateOrEditBuyerForm: React.FC<{ buyer?: Buyer }> = ({
                 <FormItem>
                   <FormLabel>F. Dia</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter value" type="number" {...field} />
+                    <Input
+                      placeholder="Enter value"
+                      type="number"
+                      step="any"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -643,7 +703,12 @@ export const CreateOrEditBuyerForm: React.FC<{ buyer?: Buyer }> = ({
                 <FormItem>
                   <FormLabel>R. GSM</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter value" type="number" {...field} />
+                    <Input
+                      placeholder="Enter value"
+                      type="number"
+                      step="any"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -657,7 +722,12 @@ export const CreateOrEditBuyerForm: React.FC<{ buyer?: Buyer }> = ({
                 <FormItem>
                   <FormLabel>F. GSM</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter value" type="number" {...field} />
+                    <Input
+                      placeholder="Enter value"
+                      type="number"
+                      step="any"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -666,9 +736,15 @@ export const CreateOrEditBuyerForm: React.FC<{ buyer?: Buyer }> = ({
           </GroupWrapper>
 
           {/* submit */}
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? btnText.loading : btnText.default}
-          </Button>
+          <div className="flex justify-center">
+            <Button
+              type="submit"
+              className="w-full max-w-md text-2xl py-6"
+              disabled={loading}
+            >
+              {loading ? btnText.loading : btnText.default}
+            </Button>
+          </div>
         </form>
       </Form>
     </>
@@ -680,10 +756,10 @@ const GroupWrapper: React.FC<{
   children: React.ReactNode;
 }> = ({ text, children }) => {
   return (
-    <>
+    <div className="bg-accent/40 rounded-md p-4 space-y-4 ">
       <h2 className="text-lg font-medium">{text}</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">{children}</div>
-    </>
+    </div>
   );
 };
