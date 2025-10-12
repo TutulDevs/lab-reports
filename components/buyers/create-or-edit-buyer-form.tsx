@@ -25,7 +25,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { Role } from "@prisma/client";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
@@ -49,6 +48,7 @@ export const CreateOrEditBuyerForm: React.FC<{ buyer?: Buyer }> = ({
   const schema = buyer ? updateBuyerSchema : createBuyerSchema;
 
   const form = useForm<FormType>({
+    // @ts-expect-error itzok
     resolver: zodResolver(schema),
     mode: "all",
     defaultValues: {
@@ -81,8 +81,8 @@ export const CreateOrEditBuyerForm: React.FC<{ buyer?: Buyer }> = ({
 
       bursting_strength_kpa: buyer?.bursting_strength_kpa ?? undefined,
 
-      ph_min: buyer?.ph_min ?? undefined,
-      ph_max: buyer?.ph_max ?? undefined,
+      ph_min: buyer?.ph_min ? Number(buyer.ph_min) : undefined,
+      ph_max: buyer?.ph_max ? Number(buyer.ph_max) : undefined,
 
       cf_dye_transfer: buyer?.cf_dye_transfer ?? undefined,
 
@@ -93,35 +93,36 @@ export const CreateOrEditBuyerForm: React.FC<{ buyer?: Buyer }> = ({
     },
   });
 
-  console.log(form.formState.errors);
+  // console.log(form.formState.errors);
 
   const onSubmit = async (payload: FormType) => {
     try {
       setLoading(true);
-      console.table(payload);
+      // console.table(payload);
 
-      // const res = await fetch("/api/staff", {
-      //   method: buyer ? "PUT" : "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify({
-      //     ...payload,
-      //   }),
-      // });
-      // const status = res.status;
-      // const data = await res.json();
+      const res = await fetch("/api/buyer", {
+        method: buyer ? "PUT" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const status = res.status;
+      const data = await res.json();
+      const buyerData: Buyer = data.buyer;
 
       // console.log("res:", status, res);
       // console.log("data:", data);
 
-      // if (data?.success) {
-      //   toast.success(
-      //     data?.message || `Successfully ${buyer ? "updated" : "created"}`
-      //   );
-      //   router.refresh();
-      // } else {
-      //   toast.error(data?.error || `Failed to ${buyer ? "update" : "create"}`);
-      //   if (status == 401) window.location.href = "/login";
-      // }
+      if (data?.success) {
+        toast.success(
+          data?.message || `Successfully ${buyer ? "updated" : "created"}`
+        );
+
+        router.push(`/buyers/${buyerData.id}`);
+        router.refresh();
+      } else {
+        toast.error(data?.error || `Failed to ${buyer ? "update" : "create"}`);
+        if (status == 401) window.location.href = "/login";
+      }
     } catch (error: any) {
       console.error(error);
       toast.error(error?.message || "Failed to update");
@@ -132,7 +133,7 @@ export const CreateOrEditBuyerForm: React.FC<{ buyer?: Buyer }> = ({
 
   const commonValuesSelect = (
     <SelectContent>
-      <SelectItem value={"null"}>None</SelectItem>
+      <SelectItem value={"undefined"}>None</SelectItem>
 
       {commonValuesList.map((x) => (
         <SelectItem key={x} value={String(x)}>
@@ -739,7 +740,8 @@ export const CreateOrEditBuyerForm: React.FC<{ buyer?: Buyer }> = ({
           <div className="flex justify-center">
             <Button
               type="submit"
-              className="w-full max-w-md text-2xl py-6"
+              className="w-full max-w-md"
+              // text-2xl py-6
               disabled={loading}
             >
               {loading ? btnText.loading : btnText.default}

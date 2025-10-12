@@ -22,3 +22,13 @@ export const dateFormatter = (
 export const sleep = async (time_in_ms = 50) => {
   return new Promise((resolve) => setTimeout(resolve, time_in_ms));
 };
+
+export function toPlainObject<T extends Record<string, any>>(obj: T) {
+  return JSON.parse(
+    JSON.stringify(obj, (key, value) =>
+      typeof value === "bigint" || value?.constructor?.name === "Decimal"
+        ? Number(value)
+        : value
+    )
+  );
+}

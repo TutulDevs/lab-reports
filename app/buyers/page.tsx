@@ -1,25 +1,74 @@
 import { buttonVariants } from "@/components/ui/button";
 import { getServerBuyersAll } from "@/lib/fetcher";
-import { cn } from "@/lib/utils";
+import { cn, dateFormatter } from "@/lib/utils";
 import Link from "next/link";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { PageHeaderSection } from "@/components/page-header";
 
 export default async function BuyersPage() {
   const buyers = await getServerBuyersAll();
 
   return (
     <div className="p-6 md:p-10">
-      <div className="flex flex-wrap gap-4 justify-between">
-        <div>
-          <h1 className="text-lg md:text-3xl mb-2">List of Buyers</h1>
-          <p>Total: {buyers?.length ?? 0}</p>
-        </div>
-
+      <PageHeaderSection
+        title={"List of Buyers"}
+        subtitle={`Total: ${buyers?.length ?? 0}`}
+      >
         <Link href={"/buyers/create"} className={cn(buttonVariants())}>
           Create Buyer
         </Link>
-      </div>
+      </PageHeaderSection>
 
-      <hr className="my-4" />
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Title</TableHead>
+            <TableHead>Created At</TableHead>
+            <TableHead>Modified by</TableHead>
+            <TableHead className="text-right">Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+
+        <TableBody>
+          {buyers?.map((buyer) => {
+            return (
+              <TableRow key={buyer.id}>
+                <TableCell className="font-medium">{buyer.title}</TableCell>
+                <TableCell>
+                  {dateFormatter(buyer.createdAt, "dd MMM yyyy")}
+                </TableCell>
+                <TableCell className="font-medium">
+                  {buyer.last_updated_by.username}
+                </TableCell>
+                <TableCell className="text-right space-x-2">
+                  <Link
+                    href={"/buyers/" + buyer.id}
+                    className={cn(
+                      buttonVariants({ variant: "outline", size: "sm" })
+                    )}
+                  >
+                    Details
+                  </Link>
+
+                  <Link
+                    href={"/buyers/edit/" + buyer.id}
+                    className={cn(buttonVariants({ size: "sm" }))}
+                  >
+                    Edit
+                  </Link>
+                </TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
     </div>
   );
 }

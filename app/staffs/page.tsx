@@ -1,3 +1,4 @@
+import { PageHeaderSection } from "@/components/page-header";
 import {
   CreateOrUpdateStaffButton,
   StaffItemActions,
@@ -21,16 +22,12 @@ export default async function StaffsPage() {
 
   return (
     <div className="p-6 md:p-10">
-      <div className="flex flex-wrap gap-4 justify-between">
-        <div>
-          <h1 className="text-lg md:text-3xl mb-2">List of staffs</h1>
-          <p>Total: {users?.length ?? 0}</p>
-        </div>
-
+      <PageHeaderSection
+        title={"List of staffs"}
+        subtitle={`Total: ${users?.length ?? 0}`}
+      >
         <CreateOrUpdateStaffButton canEdit={me?.role == Role.ADMIN} />
-      </div>
-
-      <hr className="my-4" />
+      </PageHeaderSection>
 
       <Table>
         <TableHeader>
@@ -83,15 +80,6 @@ export default async function StaffsPage() {
             : "no items"}
         </TableBody>
       </Table>
-
-      {/* <hr />
-      <div className="border m-4">
-        <pre>{JSON.stringify(me, null, 2)}</pre>
-      </div>
-
-      <div className="border m-4">
-        <pre>{JSON.stringify(users, null, 2)}</pre>
-      </div> */}
     </div>
   );
 }
