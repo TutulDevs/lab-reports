@@ -1,3 +1,4 @@
+import { BuyerDeleteBtn } from "@/components/buyers/buyer-delete-btn";
 import { PageHeaderSection } from "@/components/page-header";
 import { buttonVariants } from "@/components/ui/button";
 import { getServerBuyerDetails } from "@/lib/fetcher";
@@ -19,10 +20,7 @@ export default async function BuyerDetailsPage({
 
   return (
     <div className="p-6 md:p-10">
-      <PageHeaderSection
-        title={buyer.title}
-        // subtitle={"Fill the form to create a buyer with the requirements."}
-      >
+      <PageHeaderSection title={buyer.title}>
         <div className="space-x-2">
           <Link
             href={"/buyers/edit/" + buyer.id}
@@ -31,12 +29,7 @@ export default async function BuyerDetailsPage({
             Edit
           </Link>
 
-          <button
-            type="button"
-            className={cn(buttonVariants({ variant: "destructive" }))}
-          >
-            Delete
-          </button>
+          <BuyerDeleteBtn buyerId={buyer.id} />
         </div>
       </PageHeaderSection>
 
