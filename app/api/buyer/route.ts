@@ -33,12 +33,16 @@ export async function POST(req: Request) {
     if (hasBuyer) {
       return NextResponse.json(
         { error: `Buyer ${data.title} exists. Set a different title.` },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     const buyer = await prisma.buyer.create({
-      data: { ...data, userId: userId },
+      data: {
+        ...data,
+        // userId: userId
+        last_updated_by: { connect: { id: userId } },
+      },
       select: { title: true, id: true },
     });
 
@@ -48,7 +52,7 @@ export async function POST(req: Request) {
         message: `${buyer.title} created successfully`,
         buyer,
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (err) {
     console.error(err);
@@ -94,7 +98,7 @@ export async function PUT(req: Request) {
     if (data.title != buyerExists.title && existingBuyer) {
       return NextResponse.json(
         { error: "Buyer title already exists. Set a new title." },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -102,7 +106,11 @@ export async function PUT(req: Request) {
 
     const buyer = await prisma.buyer.update({
       where: { id: data.id },
-      data: { ...restData, userId: userId },
+      data: {
+        ...restData,
+        // userId: userId ,
+        last_updated_by: { connect: { id: userId } },
+      },
       select: { title: true, id: true },
     });
 
