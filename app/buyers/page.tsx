@@ -45,13 +45,13 @@ export default async function BuyersPage() {
                   {dateFormatter(buyer.createdAt, "dd MMM yyyy")}
                 </TableCell>
                 <TableCell className="font-medium">
-                  {buyer.last_updated_by.username}
+                  {buyer.lastUpdatedBy.username}
                 </TableCell>
                 <TableCell className="text-right space-x-2">
                   <Link
                     href={"/buyers/" + buyer.id}
                     className={cn(
-                      buttonVariants({ variant: "outline", size: "sm" })
+                      buttonVariants({ variant: "outline", size: "sm" }),
                     )}
                   >
                     Details

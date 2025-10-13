@@ -8,5 +8,5 @@ export type PartialUser = Omit<User, "password">;
 export const commonValuesList = [1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5];
 
 export type BuyerWithUser = Prisma.BuyerGetPayload<{
-  include: { last_updated_by: { select: { username: true } } };
+  include: { lastUpdatedBy: { select: { username: true } } };
 }>;

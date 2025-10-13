@@ -41,7 +41,7 @@ export async function POST(req: Request) {
       data: {
         ...data,
         // userId: userId
-        last_updated_by: { connect: { id: userId } },
+        lastUpdatedBy: { connect: { id: userId } },
       },
       select: { title: true, id: true },
     });
@@ -109,7 +109,7 @@ export async function PUT(req: Request) {
       data: {
         ...restData,
         // userId: userId ,
-        last_updated_by: { connect: { id: userId } },
+        lastUpdatedBy: { connect: { id: userId } },
       },
       select: { title: true, id: true },
     });
