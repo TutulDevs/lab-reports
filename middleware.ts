@@ -9,7 +9,13 @@ export async function middleware(req: NextRequest) {
 
   // console.log("MW:", { token, session });
 
-  const protectedRoutes = ["/dashboard", "/staffs", "/buyers", "/settings"];
+  const protectedRoutes = [
+    "/dashboard",
+    "/staffs",
+    "/buyers",
+    "/settings",
+    "/reports",
+  ];
 
   if (!session && protectedRoutes.some((r) => pathname.startsWith(r))) {
     return NextResponse.redirect(new URL("/login", req.url));
@@ -27,6 +33,7 @@ export const config = {
     "/dashboard/:path*",
     "/staffs/:path*",
     "/buyers/:path*",
+    "/reports/:path*",
     "/login",
     "/settings",
   ],

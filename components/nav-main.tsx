@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/sidebar";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 
 export function NavMain({
   items,
@@ -22,6 +23,8 @@ export function NavMain({
     icon?: any;
   }[];
 }) {
+  const router = useRouter();
+
   return (
     <SidebarGroup>
       <SidebarGroupContent className="flex flex-col gap-2">
@@ -30,6 +33,7 @@ export function NavMain({
             <SidebarMenuButton
               tooltip="Quick Create"
               className={cn(buttonVariants())}
+              onClick={() => router.push("/reports/create")}
             >
               <IconCirclePlusFilled />
               <span>Quick Create</span>

@@ -2,30 +2,65 @@ generator client {
   provider = "prisma-client-js"
 }
 
-
 datasource db {
   provider = "postgresql"
-  url = env("DATABASE_URL")
+  url      = env("DATABASE_URL")
 }
-
 
 enum Role {
   ADMIN
   STAFF
 }
 
+enum ReportStatus {
+  IN_PROGRESS
+  PENDING
+  COMPLETED
+}
+
+enum ReportSampleType {
+  FABRIC
+  GARMENT
+  YARN
+  MOCKUP
+}
+
+enum ReportSampleStage {
+  A_STENTER
+  A_COMPACTING
+  A_DRAYER
+  A_TUMBLE
+  SAMPLE
+  RND
+  KNITTING
+  WASHING
+}
+
+enum ReportDryProcess {
+  LINE
+  FLAT
+  TUBLE
+}
+
+enum ReportOverallResult {
+  PENDING
+  PASS
+  FAIL
+}
+
 model User {
-  id          String    @id @unique @default(cuid())
-  username    String    @unique
-  password    String
-  role        Role?     @default(STAFF)
-  fullname    String?
-  designation String?
-  phone       String?
-  email       String?
-  createdAt   DateTime? @default(now())
-  updatedAt   DateTime? @updatedAt
-  Buyer       Buyer[]   @relation("BuyerUpdatedBy")
+  id             String    @id @unique @default(cuid())
+  username       String    @unique
+  password       String
+  role           Role?     @default(STAFF)
+  fullname       String?
+  designation    String?
+  phone          String?
+  email          String?
+  createdAt      DateTime? @default(now())
+  updatedAt      DateTime? @updatedAt
+  Buyer          Buyer[]   @relation("BuyerUpdatedBy")
+  reportsUpdated Report[]  @relation("ReportUpdatedBy")
 }
 
 model Buyer {
@@ -59,5 +94,54 @@ model Buyer {
   fabric_r_gsm          Int?
   fabric_f_gsm          Int?
   userId                String
-  lastUpdatedBy         User     @relation("BuyerUpdatedBy", fields: [userId], references: [id])
+  lastUpdatedBy         User      @relation("BuyerUpdatedBy", fields: [userId], references: [id])
+  reports               Report[]
+}
+
+model Report {
+  id                    String               @id @default(cuid())
+  createdAt             DateTime?            @default(now())
+  updatedAt             DateTime?            @updatedAt
+  sample_receive_date   DateTime?
+  report_id             String
+  status                ReportStatus?        @default(IN_PROGRESS)
+  sample_type           ReportSampleType?
+  sample_stage          ReportSampleStage?
+  order_number          Int
+  batch_number          Int
+  color                 String?
+  fabric_type           String?
+  roll_number           Int
+  result                ReportOverallResult? @default(PENDING)
+  fail_portions         String?
+  remarks               String?
+  lastUpdatedBy         User                 @relation("ReportUpdatedBy", fields: [userId], references: [id])
+  userId                String
+  buyer                 Buyer                @relation(fields: [buyerId], references: [id])
+  buyerId               String
+  ds_wash_length_min    Float
+  ds_wash_length_max    Float
+  ds_wash_width_min     Float
+  ds_wash_width_max     Float
+  spirality_max         Float?
+  cf_wash_cs            Float?
+  cf_wash_cc            Float?
+  cf_rub_dry            Float?
+  cf_rub_wet            Float?
+  cf_water_cs           Float?
+  cf_water_cc           Float?
+  cf_persp_cs_acd       Float?
+  cf_persp_cc_acd       Float?
+  cf_persp_cs_alk       Float?
+  cf_persp_cc_alk       Float?
+  piling_min            Float?
+  piling_max            Float?
+  bursting_strength_kpa Int?
+  ph_min                Decimal?
+  ph_max                Decimal?
+  cf_dye_transfer       Float?
+  fabric_r_dia          Int?
+  fabric_f_dia          Int?
+  fabric_r_gsm          Int?
+  fabric_f_gsm          Int?
 }
