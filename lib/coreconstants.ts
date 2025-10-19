@@ -5,11 +5,14 @@ export const SESSION_COOKIE_NAME = "lab_session";
 
 export type PartialUser = Omit<User, "password">;
 
-export const commonValuesList = [1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5];
-
 export type BuyerWithUser = Prisma.BuyerGetPayload<{
   include: { lastUpdatedBy: { select: { username: true } } };
 }>;
+
+export type BuyersForReport = {
+  id: string;
+  title: string;
+};
 
 export enum Role {
   ADMIN = 1,

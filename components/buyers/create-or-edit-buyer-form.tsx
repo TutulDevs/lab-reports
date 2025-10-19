@@ -2,7 +2,6 @@
 
 import { Buyer } from "@prisma/client";
 import React from "react";
-import { commonValuesList } from "@/lib/coreconstants";
 import { createBuyerSchema, updateBuyerSchema } from "@/lib/schemas";
 import { useState } from "react";
 import { z } from "zod";
@@ -27,6 +26,8 @@ import {
 } from "../ui/select";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { commonValuesList } from "@/lib/corearrays";
+import { FromGroupWrapper } from "../form-group-wrapper";
 
 type CreateSchemaType = z.infer<typeof createBuyerSchema>;
 type UpdateSchemaType = z.infer<typeof updateBuyerSchema>;
@@ -114,7 +115,7 @@ export const CreateOrEditBuyerForm: React.FC<{ buyer?: Buyer }> = ({
 
       if (data?.success) {
         toast.success(
-          data?.message || `Successfully ${buyer ? "updated" : "created"}`
+          data?.message || `Successfully ${buyer ? "updated" : "created"}`,
         );
 
         router.push(`/buyers/${buyerData.id}`);
@@ -166,7 +167,7 @@ export const CreateOrEditBuyerForm: React.FC<{ buyer?: Buyer }> = ({
           />
 
           {/* Dimensional stability to Wash */}
-          <GroupWrapper text={"Dimensional stability to Wash"}>
+          <FromGroupWrapper text={"Dimensional stability to Wash"}>
             <FormField
               control={form.control}
               name="ds_wash_length_min"
@@ -242,7 +243,7 @@ export const CreateOrEditBuyerForm: React.FC<{ buyer?: Buyer }> = ({
                 </FormItem>
               )}
             />
-          </GroupWrapper>
+          </FromGroupWrapper>
 
           {/* spirality */}
           <FormField
@@ -265,7 +266,7 @@ export const CreateOrEditBuyerForm: React.FC<{ buyer?: Buyer }> = ({
           />
 
           {/* cf to wash */}
-          <GroupWrapper text="CF to Wash">
+          <FromGroupWrapper text="CF to Wash">
             <FormField
               control={form.control}
               name="cf_wash_cs"
@@ -315,10 +316,10 @@ export const CreateOrEditBuyerForm: React.FC<{ buyer?: Buyer }> = ({
                 </FormItem>
               )}
             />
-          </GroupWrapper>
+          </FromGroupWrapper>
 
           {/* cf to rub */}
-          <GroupWrapper text="CF to Rubbing">
+          <FromGroupWrapper text="CF to Rubbing">
             <FormField
               control={form.control}
               name="cf_rub_dry"
@@ -368,10 +369,10 @@ export const CreateOrEditBuyerForm: React.FC<{ buyer?: Buyer }> = ({
                 </FormItem>
               )}
             />
-          </GroupWrapper>
+          </FromGroupWrapper>
 
           {/* cf to water */}
-          <GroupWrapper text="CF to Water">
+          <FromGroupWrapper text="CF to Water">
             <FormField
               control={form.control}
               name="cf_water_cs"
@@ -421,10 +422,10 @@ export const CreateOrEditBuyerForm: React.FC<{ buyer?: Buyer }> = ({
                 </FormItem>
               )}
             />
-          </GroupWrapper>
+          </FromGroupWrapper>
 
           {/* cf to perspiration */}
-          <GroupWrapper text="CF to Perspiration">
+          <FromGroupWrapper text="CF to Perspiration">
             <FormField
               control={form.control}
               name="cf_persp_cs_acd"
@@ -524,10 +525,10 @@ export const CreateOrEditBuyerForm: React.FC<{ buyer?: Buyer }> = ({
                 </FormItem>
               )}
             />
-          </GroupWrapper>
+          </FromGroupWrapper>
 
           {/* piling */}
-          <GroupWrapper text="Piling">
+          <FromGroupWrapper text="Piling">
             <FormField
               control={form.control}
               name="piling_min"
@@ -565,7 +566,7 @@ export const CreateOrEditBuyerForm: React.FC<{ buyer?: Buyer }> = ({
                 </FormItem>
               )}
             />
-          </GroupWrapper>
+          </FromGroupWrapper>
 
           {/* bursting_strength_kpa */}
           <FormField
@@ -588,7 +589,7 @@ export const CreateOrEditBuyerForm: React.FC<{ buyer?: Buyer }> = ({
           />
 
           {/* ph level */}
-          <GroupWrapper text="PH Level">
+          <FromGroupWrapper text="PH Level">
             <FormField
               control={form.control}
               name="ph_min"
@@ -626,7 +627,7 @@ export const CreateOrEditBuyerForm: React.FC<{ buyer?: Buyer }> = ({
                 </FormItem>
               )}
             />
-          </GroupWrapper>
+          </FromGroupWrapper>
 
           {/* cf to dye transfer */}
           <FormField
@@ -655,7 +656,7 @@ export const CreateOrEditBuyerForm: React.FC<{ buyer?: Buyer }> = ({
           />
 
           {/* Fabric Dia */}
-          <GroupWrapper text="Fabric Dia">
+          <FromGroupWrapper text="Fabric Dia">
             <FormField
               control={form.control}
               name="fabric_r_dia"
@@ -693,10 +694,10 @@ export const CreateOrEditBuyerForm: React.FC<{ buyer?: Buyer }> = ({
                 </FormItem>
               )}
             />
-          </GroupWrapper>
+          </FromGroupWrapper>
 
           {/* Fabric Weight */}
-          <GroupWrapper text="Fabric Weight">
+          <FromGroupWrapper text="Fabric Weight">
             <FormField
               control={form.control}
               name="fabric_r_gsm"
@@ -734,14 +735,13 @@ export const CreateOrEditBuyerForm: React.FC<{ buyer?: Buyer }> = ({
                 </FormItem>
               )}
             />
-          </GroupWrapper>
+          </FromGroupWrapper>
 
           {/* submit */}
           <div className="flex justify-center">
             <Button
               type="submit"
               className="w-full max-w-md"
-              // text-2xl py-6
               disabled={loading}
             >
               {loading ? btnText.loading : btnText.default}
@@ -750,18 +750,5 @@ export const CreateOrEditBuyerForm: React.FC<{ buyer?: Buyer }> = ({
         </form>
       </Form>
     </>
-  );
-};
-
-const GroupWrapper: React.FC<{
-  text: React.ReactNode;
-  children: React.ReactNode;
-}> = ({ text, children }) => {
-  return (
-    <div className="bg-accent/40 rounded-md p-4 space-y-4 ">
-      <h2 className="text-lg font-medium">{text}</h2>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">{children}</div>
-    </div>
   );
 };

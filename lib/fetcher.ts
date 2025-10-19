@@ -1,8 +1,8 @@
 import { cookies } from "next/headers";
 import { COOKIE_NAME, verifyJwt } from "./auth";
 import { prisma } from "@/lib/prisma";
-import { BuyerWithUser, PartialUser } from "./coreconstants";
-import { Report } from "@prisma/client";
+import { BuyersForReport, BuyerWithUser, PartialUser } from "./coreconstants";
+import { Buyer, Report } from "@prisma/client";
 
 export async function getServerUser(): Promise<PartialUser | null> {
   const cookieStore = await cookies();
@@ -44,6 +44,23 @@ export async function getServerBuyersAll(): Promise<BuyerWithUser[] | null> {
 
   const buyers = await prisma.buyer.findMany({
     include: { lastUpdatedBy: { select: { username: true } } },
+  });
+  return buyers;
+}
+
+export async function getServerBuyersAllForReport(): Promise<
+  BuyersForReport[] | null
+> {
+  const cookieStore = await cookies();
+  const token = cookieStore.get(COOKIE_NAME)?.value;
+
+  if (!token) return null;
+
+  const session = await verifyJwt<{ id: string; role: string }>(token);
+  if (!session) return null;
+
+  const buyers = await prisma.buyer.findMany({
+    select: { id: true, title: true },
   });
   return buyers;
 }

@@ -109,25 +109,24 @@ const buyerSchema = z.object({
 });
 
 export const createBuyerSchema = buyerSchema.omit({ id: true });
-
 export const updateBuyerSchema = buyerSchema.partial();
 
 // reports
 const reportSchema = z.object({
   id: z.string().optional(),
-  buyerId: z.string(),
+  buyerId: z.string().min(1, "Buyer is required"),
 
   // report related
-  sample_receive_date: z.string(),
+  sample_receive_date: z.coerce.date(),
   report_id: z.string(),
-  status: z.string(),
-  sample_type: z.string(),
-  sample_stage: z.string(),
+  status: z.number(),
+  sample_type: numOptional,
+  sample_stage: numOptional,
   order_number: numOptional,
   batch_number: numOptional,
   color: z.string().optional(),
   fabric_type: z.string().optional(),
-  roll_number: z.number(),
+  roll_number: reqNumPos,
   // result: z.string(),
   // fail_portions: z.string().optional(),
   remarks: z.string().optional(),
@@ -159,3 +158,6 @@ const reportSchema = z.object({
   fabric_r_gsm: numOptional,
   fabric_f_gsm: numOptional,
 });
+
+export const createReportSchema = reportSchema.omit({ id: true });
+export const updateReportSchema = reportSchema.partial();
