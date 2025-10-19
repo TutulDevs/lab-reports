@@ -10,3 +10,44 @@ export const commonValuesList = [1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5];
 export type BuyerWithUser = Prisma.BuyerGetPayload<{
   include: { lastUpdatedBy: { select: { username: true } } };
 }>;
+
+export enum Role {
+  ADMIN = 1,
+  STAFF = 2,
+}
+
+export enum ReportStatus {
+  IN_PROGRESS = 1,
+  PENDING = 2,
+  COMPLETED = 3,
+}
+
+export enum ReportSampleType {
+  FABRIC = 1,
+  GARMENT = 2,
+  YARN = 3,
+  MOCKUP = 4,
+}
+
+export enum ReportSampleStage {
+  A_STENTER = 1,
+  A_COMPACTING = 2,
+  A_DRAYER = 3,
+  A_TUMBLE = 4,
+  SAMPLE = 5,
+  RND = 6,
+  KNITTING = 7,
+  WASHING = 8,
+}
+
+export enum ReportDryProcess {
+  LINE = 1,
+  FLAT = 2,
+  TUBLE = 3,
+}
+
+export enum ReportOverallResult {
+  PENDING = 1,
+  PASS = 2,
+  FAIL = 3,
+}

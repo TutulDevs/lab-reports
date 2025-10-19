@@ -1,6 +1,6 @@
 "use client";
 
-import { PartialUser } from "@/lib/coreconstants";
+import { PartialUser, Role } from "@/lib/coreconstants";
 import { registerStaffSchema, updateStaffSchema } from "@/lib/schemas";
 import { useState } from "react";
 import { z } from "zod";
@@ -24,9 +24,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { Role } from "@prisma/client";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { roleList } from "@/lib/corearrays";
 
 type RegisterSchemaType = z.infer<typeof registerStaffSchema>;
 type UpdateSchemaType = z.infer<typeof updateStaffSchema>;
@@ -84,7 +84,7 @@ export const CreateOrUpdateUserForm: React.FC<{
 
       if (data?.success) {
         toast.success(
-          data?.message || `Successfully ${user ? "updated" : "created"}`
+          data?.message || `Successfully ${user ? "updated" : "created"}`,
         );
         closeModal();
         // form.reset();
@@ -160,7 +160,7 @@ export const CreateOrUpdateUserForm: React.FC<{
 
                 <Select
                   onValueChange={field.onChange}
-                  defaultValue={field.value}
+                  defaultValue={String(field.value)}
                   disabled
                 >
                   <FormControl>
@@ -169,8 +169,11 @@ export const CreateOrUpdateUserForm: React.FC<{
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value={Role.ADMIN}>{Role.ADMIN}</SelectItem>
-                    <SelectItem value={Role.STAFF}>{Role.STAFF}</SelectItem>
+                    {roleList.map((r) => (
+                      <SelectItem key={r.value} value={String(r.value)}>
+                        {r.label}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { PartialUser } from "@/lib/coreconstants";
+import { PartialUser, Role } from "@/lib/coreconstants";
 import React, { useState } from "react";
 import { Button, buttonVariants } from "../ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
@@ -15,7 +15,6 @@ import {
 } from "../ui/dialog";
 import { cn, dateFormatter } from "@/lib/utils";
 import { Badge } from "../ui/badge";
-import { Role } from "@prisma/client";
 import { CreateOrUpdateUserForm } from "./create-or-update-form";
 import {
   AlertDialog,
@@ -30,6 +29,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { roleText, roleVariants } from "@/lib/corearrays";
 
 export const StaffItemActions: React.FC<{
   user: PartialUser;
@@ -43,9 +43,7 @@ export const StaffItemActions: React.FC<{
     {
       title: "Role",
       children: (
-        <Badge variant={user.role == Role.ADMIN ? "default" : "secondary"}>
-          {user.role}
-        </Badge>
+        <Badge variant={roleVariants[user.role]}>{roleText[user.role]}</Badge>
       ),
     },
     { title: "Designation", children: user.designation ?? "N/A" },
@@ -206,7 +204,7 @@ const Item: React.FC<{
     <div
       className={cn(
         "flex gap-2 items-center justify-between flex-wrap pt-2 border-dotted mb-2",
-        className
+        className,
       )}
     >
       <strong>{title}</strong>

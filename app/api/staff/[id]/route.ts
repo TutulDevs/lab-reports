@@ -2,12 +2,12 @@ import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { COOKIE_NAME, verifyJwt } from "@/lib/auth";
-import { Role } from "@prisma/client";
+import { Role } from "@/lib/coreconstants";
 
 // delete
 export async function DELETE(
   req: Request,
-  context: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> },
 ) {
   try {
     const cookieStore = await cookies();
@@ -17,7 +17,7 @@ export async function DELETE(
       return NextResponse.json({ error: "Access denied" }, { status: 401 });
     }
 
-    const session = await verifyJwt<{ id: string; role: string }>(token);
+    const session = await verifyJwt<{ id: string; role: number }>(token);
 
     if (!session) {
       return NextResponse.json({ error: "Access denied" }, { status: 401 });
@@ -26,7 +26,7 @@ export async function DELETE(
     if (session.role == Role.STAFF) {
       return NextResponse.json(
         { error: "Staff is not permitted" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -44,7 +44,7 @@ export async function DELETE(
     if (user.role == Role.ADMIN) {
       return NextResponse.json(
         { error: "Admin cannot be deleted" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 

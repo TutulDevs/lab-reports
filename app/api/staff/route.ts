@@ -2,9 +2,9 @@ import { registerStaffSchema, updateStaffSchema } from "@/lib/schemas";
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
-import { Role } from "@prisma/client";
 import { cookies } from "next/headers";
 import { COOKIE_NAME, verifyJwt } from "@/lib/auth";
+import { Role } from "@/lib/coreconstants";
 
 // register
 export async function POST(req: Request) {
@@ -16,7 +16,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Access denied" }, { status: 401 });
     }
 
-    const session = await verifyJwt<{ id: string; role: string }>(token);
+    const session = await verifyJwt<{ id: string; role: number }>(token);
 
     if (!session) {
       return NextResponse.json({ error: "Access denied" }, { status: 401 });
@@ -25,7 +25,7 @@ export async function POST(req: Request) {
     if (session.role == Role.STAFF) {
       return NextResponse.json(
         { error: "You are not permitted" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -39,7 +39,7 @@ export async function POST(req: Request) {
     if (existingUser) {
       return NextResponse.json(
         { error: "Username already exists" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -48,7 +48,7 @@ export async function POST(req: Request) {
     const user = await prisma.user.create({
       data: {
         ...data,
-        role: data.role as Role,
+        role: data.role,
         password: hashedPassword,
       },
       omit: { password: true },
@@ -56,7 +56,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json(
       { success: true, message: `${user.username} created successfully` },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (err) {
     console.error(err);
@@ -74,7 +74,7 @@ export async function PUT(req: Request) {
       return NextResponse.json({ error: "Access denied" }, { status: 401 });
     }
 
-    const session = await verifyJwt<{ id: string; role: string }>(token);
+    const session = await verifyJwt<{ id: string; role: number }>(token);
 
     if (!session) {
       return NextResponse.json({ error: "Access denied" }, { status: 401 });
@@ -101,7 +101,7 @@ export async function PUT(req: Request) {
     if (data.username != user.username && existingUser) {
       return NextResponse.json(
         { error: "Username already exists" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -117,11 +117,11 @@ export async function PUT(req: Request) {
       data: !password
         ? {
             ...restData,
-            role: restData.role as Role,
+            role: restData.role,
           }
         : {
             ...restData,
-            role: restData.role as Role,
+            role: restData.role,
             password: hashedPassword,
           },
       select: { username: true },

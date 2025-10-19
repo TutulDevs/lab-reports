@@ -7,52 +7,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role {
-  ADMIN
-  STAFF
-}
-
-enum ReportStatus {
-  IN_PROGRESS
-  PENDING
-  COMPLETED
-}
-
-enum ReportSampleType {
-  FABRIC
-  GARMENT
-  YARN
-  MOCKUP
-}
-
-enum ReportSampleStage {
-  A_STENTER
-  A_COMPACTING
-  A_DRAYER
-  A_TUMBLE
-  SAMPLE
-  RND
-  KNITTING
-  WASHING
-}
-
-enum ReportDryProcess {
-  LINE
-  FLAT
-  TUBLE
-}
-
-enum ReportOverallResult {
-  PENDING
-  PASS
-  FAIL
-}
-
 model User {
   id             String    @id @unique @default(cuid())
   username       String    @unique
   password       String
-  role           Role?     @default(STAFF)
+  role           Int       @default(2)
   fullname       String?
   designation    String?
   phone          String?
@@ -64,10 +23,14 @@ model User {
 }
 
 model Buyer {
-  id                    String    @id @unique @default(cuid())
-  title                 String    @unique
-  createdAt             DateTime? @default(now())
-  updatedAt             DateTime? @updatedAt
+  id            String    @id @unique @default(cuid())
+  title         String    @unique
+  createdAt     DateTime? @default(now())
+  updatedAt     DateTime? @updatedAt
+  userId        String
+  lastUpdatedBy User      @relation("BuyerUpdatedBy", fields: [userId], references: [id])
+  reports       Report[]
+
   ds_wash_length_min    Float
   ds_wash_length_max    Float
   ds_wash_width_min     Float
@@ -93,32 +56,31 @@ model Buyer {
   fabric_f_dia          Int?
   fabric_r_gsm          Int?
   fabric_f_gsm          Int?
-  userId                String
-  lastUpdatedBy         User      @relation("BuyerUpdatedBy", fields: [userId], references: [id])
-  reports               Report[]
 }
 
 model Report {
-  id                    String               @id @default(cuid())
-  createdAt             DateTime?            @default(now())
-  updatedAt             DateTime?            @updatedAt
-  sample_receive_date   DateTime?
-  report_id             String
-  status                ReportStatus?        @default(IN_PROGRESS)
-  sample_type           ReportSampleType?
-  sample_stage          ReportSampleStage?
-  order_number          Int
-  batch_number          Int
-  color                 String?
-  fabric_type           String?
-  roll_number           Int
-  result                ReportOverallResult? @default(PENDING)
-  fail_portions         String?
-  remarks               String?
-  lastUpdatedBy         User                 @relation("ReportUpdatedBy", fields: [userId], references: [id])
-  userId                String
-  buyer                 Buyer                @relation(fields: [buyerId], references: [id])
-  buyerId               String
+  id            String    @id @default(cuid())
+  createdAt     DateTime? @default(now())
+  updatedAt     DateTime? @updatedAt
+  lastUpdatedBy User      @relation("ReportUpdatedBy", fields: [userId], references: [id])
+  userId        String
+  buyer         Buyer     @relation(fields: [buyerId], references: [id])
+  buyerId       String
+
+  sample_receive_date DateTime?
+  report_id           String
+  status              Int?      @default(1)
+  sample_type         Int?
+  sample_stage        Int?
+  order_number        Int
+  batch_number        Int
+  color               String?
+  fabric_type         String?
+  roll_number         Int
+  result              Int       @default(1)
+  fail_portions       String?
+  remarks             String?
+
   ds_wash_length_min    Float
   ds_wash_length_max    Float
   ds_wash_width_min     Float

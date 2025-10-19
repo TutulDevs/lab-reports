@@ -123,4 +123,8 @@
   button {
     @apply cursor-pointer;
   }
+
+  .my-badge {
+    @apply uppercase;
+  }
 }

@@ -12,9 +12,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { roleText, roleVariants } from "@/lib/corearrays";
+import { Role } from "@/lib/coreconstants";
 import { getServerUser, getServerUsersAll } from "@/lib/fetcher";
 import { dateFormatter } from "@/lib/utils";
-import { Role } from "@prisma/client";
 
 export default async function StaffsPage() {
   const me = await getServerUser();
@@ -56,12 +57,8 @@ export default async function StaffsPage() {
                       {/* <br />{JSON.stringify({ canEdit, canDelete })} */}
                     </TableCell>
                     <TableCell>
-                      <Badge
-                        variant={
-                          user.role == Role.ADMIN ? "default" : "secondary"
-                        }
-                      >
-                        {user.role}
+                      <Badge variant={roleVariants[user.role]}>
+                        {roleText[user.role]}
                       </Badge>
                     </TableCell>
                     <TableCell>
