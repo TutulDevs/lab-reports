@@ -4,6 +4,45 @@ import { cookies } from "next/headers";
 import { COOKIE_NAME, verifyJwt } from "@/lib/auth";
 import { Role } from "@/lib/coreconstants";
 
+// get details
+export async function GET(
+  req: Request,
+  context: { params: Promise<{ id: string }> },
+) {
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get(COOKIE_NAME)?.value;
+
+    if (!token) {
+      return NextResponse.json({ error: "Access denied" }, { status: 401 });
+    }
+
+    const session = await verifyJwt<{ id: string; role: number }>(token);
+
+    if (!session) {
+      return NextResponse.json({ error: "Access denied" }, { status: 401 });
+    }
+
+    const { id } = await context.params;
+
+    const buyer = await prisma.buyer.findUnique({
+      where: { id },
+    });
+
+    if (!buyer) {
+      return NextResponse.json({ error: "Buyer not found" }, { status: 404 });
+    }
+
+    return NextResponse.json(buyer);
+  } catch (error) {
+    console.error("Error fetching buyer:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
+  }
+}
+
 // delete
 export async function DELETE(
   req: Request,

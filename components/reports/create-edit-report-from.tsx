@@ -1,9 +1,9 @@
 "use client";
 
-import { Report } from "@prisma/client";
-import { useState } from "react";
+import { Buyer, Report } from "@prisma/client";
+import { useEffect, useState } from "react";
 import { z } from "zod";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Form,
@@ -45,6 +45,7 @@ export const CreateOrEditReportForm: React.FC<{
 }> = ({ report, buyers }) => {
   const router = useRouter();
 
+  const [buyer, setBuyer] = useState<null | Buyer>(null);
   const [loading, setLoading] = useState(false);
 
   const btnText = {
@@ -63,7 +64,7 @@ export const CreateOrEditReportForm: React.FC<{
       buyerId: report?.buyerId ?? "",
 
       // report related
-      sample_receive_date: report?.sample_receive_date ?? undefined,
+      sample_receive_date: report?.sample_receive_date ?? new Date(),
       report_id: report?.report_id ?? "",
       status: report?.status ?? ReportStatus.IN_PROGRESS,
       sample_type: report?.sample_type ?? ReportSampleType.FABRIC,
@@ -113,6 +114,21 @@ export const CreateOrEditReportForm: React.FC<{
       fabric_f_gsm: report?.fabric_f_gsm ?? undefined,
     },
   });
+
+  const buyerId = useWatch({ control: form.control, name: "buyerId" });
+
+  useEffect(() => {
+    const getBuyer = async () => {
+      const res = await fetch(`/api/buyer/${buyerId ?? ""}`);
+
+      if (res.ok) {
+        const data = await res.json();
+        setBuyer(data ?? null);
+      }
+    };
+
+    getBuyer();
+  }, [buyerId]);
 
   const onSubmit = async (payload: FormType) => {
     try {
@@ -215,6 +231,12 @@ export const CreateOrEditReportForm: React.FC<{
                     type="datetime-local"
                     required
                     {...field}
+                    value={
+                      field.value
+                        ? new Date(field.value).toISOString().slice(0, 16)
+                        : ""
+                    }
+                    onChange={(e) => field.onChange(e.target.value)}
                   />
                 </FormControl>
                 <FormMessage />
@@ -222,57 +244,60 @@ export const CreateOrEditReportForm: React.FC<{
             )}
           />
 
-          {/* status */}
-          <FormField
-            control={form.control}
-            name="status"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Status</FormLabel>
+          {/* status & roll */}
+          <FromGroupWrapper text="" noBg>
+            {/* status */}
+            <FormField
+              control={form.control}
+              name="status"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Status</FormLabel>
 
-                <Select
-                  onValueChange={(e) => field.onChange(Number(e))}
-                  defaultValue={String(field.value)}
-                >
+                  <Select
+                    onValueChange={(e) => field.onChange(Number(e))}
+                    defaultValue={String(field.value)}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select a value" />
+                      </SelectTrigger>
+                    </FormControl>
+
+                    <SelectContent>
+                      {reportStatusList.map((x) => (
+                        <SelectItem key={x.value} value={String(x.value)}>
+                          {x.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* roll no */}
+            <FormField
+              control={form.control}
+              name="roll_number"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Roll Number</FormLabel>
                   <FormControl>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select a value" />
-                    </SelectTrigger>
+                    <Input
+                      placeholder="Enter value"
+                      type="number"
+                      step="any"
+                      {...field}
+                    />
                   </FormControl>
-
-                  <SelectContent>
-                    {reportStatusList.map((x) => (
-                      <SelectItem key={x.value} value={String(x.value)}>
-                        {x.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          {/* roll no */}
-          <FormField
-            control={form.control}
-            name="roll_number"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Roll Number</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="Enter value"
-                    type="number"
-                    step="any"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </FromGroupWrapper>
 
           {/* Dimensional stability to Wash */}
           <FromGroupWrapper text={"Dimensional stability to Wash"}>
@@ -281,7 +306,10 @@ export const CreateOrEditReportForm: React.FC<{
               name="ds_wash_length_min"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Length Minimum</FormLabel>
+                  <FormLabel>
+                    Length Minimum
+                    {buyer && ` (${buyer.ds_wash_length_min})`}
+                  </FormLabel>
                   <FormControl>
                     <Input
                       placeholder="Enter min length"
@@ -300,7 +328,10 @@ export const CreateOrEditReportForm: React.FC<{
               name="ds_wash_length_max"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Length Maximum</FormLabel>
+                  <FormLabel>
+                    Length Maximum
+                    {buyer && ` (${buyer.ds_wash_length_max})`}
+                  </FormLabel>
                   <FormControl>
                     <Input
                       placeholder="Enter max length"
@@ -319,7 +350,10 @@ export const CreateOrEditReportForm: React.FC<{
               name="ds_wash_width_min"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Width Minimum</FormLabel>
+                  <FormLabel>
+                    Width Minimum
+                    {buyer && ` (${buyer.ds_wash_width_min})`}
+                  </FormLabel>
                   <FormControl>
                     <Input
                       placeholder="Enter min width"
@@ -338,7 +372,10 @@ export const CreateOrEditReportForm: React.FC<{
               name="ds_wash_width_max"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Width Maximum</FormLabel>
+                  <FormLabel>
+                    Width Maximum
+                    {buyer && ` (${buyer.ds_wash_length_max})`}
+                  </FormLabel>
                   <FormControl>
                     <Input
                       placeholder="Enter max width"

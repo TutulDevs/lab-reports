@@ -117,7 +117,7 @@ const reportSchema = z.object({
   buyerId: z.string().min(1, "Buyer is required"),
 
   // report related
-  sample_receive_date: z.coerce.date(),
+  sample_receive_date: z.coerce.date(), // .max(new Date(), "Date cannot be in the future"),
   report_id: z.string(),
   status: z.number(),
   sample_type: numOptional,
