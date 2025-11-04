@@ -24,7 +24,12 @@ import {
 } from "../ui/select";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { commonValuesList, reportStatusList } from "@/lib/corearrays";
+import {
+  commonValuesList,
+  reportSampleList,
+  reportSampleStageList,
+  reportStatusList,
+} from "@/lib/corearrays";
 import { createReportSchema, updateReportSchema } from "@/lib/schemas";
 import {
   BuyersForReport,
@@ -33,6 +38,17 @@ import {
   ReportStatus,
 } from "@/lib/coreconstants";
 import { FromGroupWrapper } from "../form-group-wrapper";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../ui/dialog";
+import { dateFormatter } from "@/lib/utils";
+import { Textarea } from "../ui/textarea";
 
 type CreateSchemaType = z.infer<typeof createReportSchema>;
 type UpdateSchemaType = z.infer<typeof updateReportSchema>;
@@ -47,6 +63,7 @@ export const CreateOrEditReportForm: React.FC<{
 
   const [buyer, setBuyer] = useState<null | Buyer>(null);
   const [loading, setLoading] = useState(false);
+  const [reportData, setReportData] = useState<null | FormType>(null);
 
   const btnText = {
     default: report ? "Update" : "Create",
@@ -65,7 +82,8 @@ export const CreateOrEditReportForm: React.FC<{
 
       // report related
       sample_receive_date: report?.sample_receive_date ?? new Date(),
-      report_id: report?.report_id ?? "",
+      report_id:
+        report?.report_id ?? `TIL-${dateFormatter(new Date(), "yyyyMMdd")}-`,
       status: report?.status ?? ReportStatus.IN_PROGRESS,
       sample_type: report?.sample_type ?? ReportSampleType.FABRIC,
       sample_stage: report?.sample_stage ?? ReportSampleStage.A_STENTER,
@@ -130,6 +148,10 @@ export const CreateOrEditReportForm: React.FC<{
     getBuyer();
   }, [buyerId]);
 
+  const onPreviewSubmit = async (payload: FormType) => {
+    setReportData(payload);
+  };
+
   const onSubmit = async (payload: FormType) => {
     try {
       setLoading(true);
@@ -182,7 +204,7 @@ export const CreateOrEditReportForm: React.FC<{
     <>
       <Form {...form}>
         <form
-          onSubmit={form.handleSubmit(onSubmit)}
+          onSubmit={form.handleSubmit(onPreviewSubmit)}
           className="space-y-4 mt-6 mx-auto max-w-4xl "
         >
           {/* buyer */}
@@ -244,8 +266,8 @@ export const CreateOrEditReportForm: React.FC<{
             )}
           />
 
-          {/* status & roll */}
-          <FromGroupWrapper text="" noBg>
+          {/* report related */}
+          <FromGroupWrapper text="Report Related">
             {/* status */}
             <FormField
               control={form.control}
@@ -278,6 +300,74 @@ export const CreateOrEditReportForm: React.FC<{
               )}
             />
 
+            {/* sample type */}
+            <FormField
+              control={form.control}
+              name="sample_type"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Sample Type</FormLabel>
+
+                  <Select
+                    onValueChange={(e) => field.onChange(parseFloat(e))}
+                    defaultValue={String(field.value)}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select a value" />
+                      </SelectTrigger>
+                    </FormControl>
+
+                    <SelectContent>
+                      {/* <SelectItem value={"undefined"}>None</SelectItem> */}
+
+                      {reportSampleList.map((x) => (
+                        <SelectItem key={x.value} value={String(x.value)}>
+                          {x.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* sample stage */}
+            <FormField
+              control={form.control}
+              name="sample_stage"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Sample Stage</FormLabel>
+
+                  <Select
+                    onValueChange={(e) => field.onChange(parseFloat(e))}
+                    defaultValue={String(field.value)}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select a value" />
+                      </SelectTrigger>
+                    </FormControl>
+
+                    <SelectContent>
+                      {/* <SelectItem value={"undefined"}>None</SelectItem> */}
+
+                      {reportSampleStageList.map((x) => (
+                        <SelectItem key={x.value} value={String(x.value)}>
+                          {x.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             {/* roll no */}
             <FormField
               control={form.control}
@@ -292,6 +382,91 @@ export const CreateOrEditReportForm: React.FC<{
                       step="any"
                       {...field}
                     />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* order number */}
+            <FormField
+              control={form.control}
+              name="order_number"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Order Number</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Enter value"
+                      type="number"
+                      step="any"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* batch number */}
+            <FormField
+              control={form.control}
+              name="batch_number"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Batch Number</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Enter value"
+                      type="number"
+                      step="any"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* fabric type */}
+            <FormField
+              control={form.control}
+              name="fabric_type"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Fabric Type</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter value" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* color */}
+            <FormField
+              control={form.control}
+              name="color"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Color</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter value" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* remarks */}
+            <FormField
+              control={form.control}
+              name="remarks"
+              render={({ field }) => (
+                <FormItem className="md:col-span-2">
+                  <FormLabel>Remarks</FormLabel>
+                  <FormControl>
+                    <Textarea placeholder="Enter value" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -392,20 +567,51 @@ export const CreateOrEditReportForm: React.FC<{
 
           {/* submit */}
           <div className="flex justify-center">
-            <Button
-              type="submit"
-              className="w-full max-w-md"
-              disabled={loading}
-            >
-              {loading ? btnText.loading : btnText.default}
+            <Button type="submit" className="w-full max-w-md">
+              Preview
             </Button>
           </div>
         </form>
       </Form>
 
+      {/* show errors */}
       <div className="border p-2 mt-4">
         <pre>{JSON.stringify(form.formState.errors, null, 2)}</pre>
       </div>
+
+      {/* show details */}
+      <Dialog open={!!reportData} onOpenChange={() => setReportData(null)}>
+        <DialogContent
+          className="!max-w-6xl-"
+          onEscapeKeyDown={(e) => e.preventDefault()}
+        >
+          <DialogHeader>
+            <DialogTitle>Preview</DialogTitle>
+          </DialogHeader>
+
+          <DialogDescription className="mt-4">
+            {reportData &&
+              Object.keys(reportData).map((x) => (
+                <p key={x} className="pb- font-medium">
+                  {/* @ts-expect-error obj */}
+                  {x + ": " + (reportData[x] ?? "")}
+                </p>
+              ))}
+          </DialogDescription>
+
+          <DialogFooter>
+            <Button
+              className="w-full max-w-md mx-auto"
+              disabled={loading}
+              onClick={() => {
+                reportData && onSubmit(reportData);
+              }}
+            >
+              {loading ? btnText.loading : btnText.default}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 };
