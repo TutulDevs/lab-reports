@@ -200,6 +200,13 @@ export const CreateOrEditReportForm: React.FC<{
     </SelectContent>
   );
 
+  const getBuyerValue = (key: keyof Buyer) => {
+    if (!buyer) return null;
+    const value = buyer[key];
+    if (value == null || value == undefined) return null;
+    return ` (${buyer[key]})`;
+  };
+
   return (
     <>
       <Form {...form}>
@@ -483,7 +490,7 @@ export const CreateOrEditReportForm: React.FC<{
                 <FormItem>
                   <FormLabel>
                     Length Minimum
-                    {buyer && ` (${buyer.ds_wash_length_min})`}
+                    {getBuyerValue("ds_wash_length_min")}
                   </FormLabel>
                   <FormControl>
                     <Input
@@ -505,7 +512,7 @@ export const CreateOrEditReportForm: React.FC<{
                 <FormItem>
                   <FormLabel>
                     Length Maximum
-                    {buyer && ` (${buyer.ds_wash_length_max})`}
+                    {getBuyerValue("ds_wash_length_max")}
                   </FormLabel>
                   <FormControl>
                     <Input
@@ -527,7 +534,7 @@ export const CreateOrEditReportForm: React.FC<{
                 <FormItem>
                   <FormLabel>
                     Width Minimum
-                    {buyer && ` (${buyer.ds_wash_width_min})`}
+                    {getBuyerValue("ds_wash_width_min")}
                   </FormLabel>
                   <FormControl>
                     <Input
@@ -549,11 +556,503 @@ export const CreateOrEditReportForm: React.FC<{
                 <FormItem>
                   <FormLabel>
                     Width Maximum
-                    {buyer && ` (${buyer.ds_wash_length_max})`}
+                    {getBuyerValue("ds_wash_length_max")}
                   </FormLabel>
                   <FormControl>
                     <Input
                       placeholder="Enter max width"
+                      type="number"
+                      step="any"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </FromGroupWrapper>
+
+          {/* spirality, bursting strength, cf to dye transfer */}
+          <FromGroupWrapper noBg text="">
+            {/* spirality */}
+            <FormField
+              control={form.control}
+              name="spirality_max"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Spirality Maximum
+                    {getBuyerValue("spirality_max")}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Enter value"
+                      type="number"
+                      step="any"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* bursting_strength_kpa */}
+            <FormField
+              control={form.control}
+              name="bursting_strength_kpa"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Bursting Strength (KPA)
+                    {getBuyerValue("bursting_strength_kpa")}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Enter value"
+                      type="number"
+                      step="any"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* bursting_strength_kpa */}
+            <FormField
+              control={form.control}
+              name="cf_dye_transfer"
+              render={({ field }) => (
+                <FormItem className="md:col-span-2">
+                  <FormLabel>
+                    CF to Dye Transfer
+                    {getBuyerValue("cf_dye_transfer")}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Enter value"
+                      type="number"
+                      step="any"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </FromGroupWrapper>
+
+          {/* cf to wash */}
+          <FromGroupWrapper text="CF to Wash">
+            <FormField
+              control={form.control}
+              name="cf_wash_cs"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    CS
+                    {getBuyerValue("cf_wash_cs")}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Enter value"
+                      type="number"
+                      step="any"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="cf_wash_cc"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    CC
+                    {getBuyerValue("cf_wash_cc")}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Enter value"
+                      type="number"
+                      step="any"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </FromGroupWrapper>
+
+          {/* cf to rub */}
+          <FromGroupWrapper text="CF to Rub">
+            <FormField
+              control={form.control}
+              name="cf_rub_dry"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Dry
+                    {getBuyerValue("cf_rub_dry")}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Enter value"
+                      type="number"
+                      step="any"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="cf_rub_wet"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Wet
+                    {getBuyerValue("cf_rub_wet")}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Enter value"
+                      type="number"
+                      step="any"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </FromGroupWrapper>
+
+          {/* cf to water */}
+          <FromGroupWrapper text="CF to Water">
+            <FormField
+              control={form.control}
+              name="cf_water_cs"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    CS
+                    {getBuyerValue("cf_water_cs")}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Enter value"
+                      type="number"
+                      step="any"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="cf_water_cc"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    CC
+                    {getBuyerValue("cf_water_cc")}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Enter value"
+                      type="number"
+                      step="any"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </FromGroupWrapper>
+
+          {/* cf to perspiration */}
+          <FromGroupWrapper text="CF to Perspiration">
+            <FormField
+              control={form.control}
+              name="cf_persp_cs_acd"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    CS ACD
+                    {getBuyerValue("cf_persp_cs_acd")}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Enter value"
+                      type="number"
+                      step="any"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="cf_persp_cc_acd"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    CC ACD
+                    {getBuyerValue("cf_persp_cc_acd")}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Enter value"
+                      type="number"
+                      step="any"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="cf_persp_cs_alk"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    CS ALK
+                    {getBuyerValue("cf_persp_cs_alk")}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Enter value"
+                      type="number"
+                      step="any"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="cf_persp_cc_alk"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    CC ALK
+                    {getBuyerValue("cf_persp_cc_alk")}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Enter value"
+                      type="number"
+                      step="any"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </FromGroupWrapper>
+
+          {/* piling */}
+          <FromGroupWrapper text="Piling">
+            <FormField
+              control={form.control}
+              name="piling_min"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Minimum
+                    {getBuyerValue("piling_min")}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Enter value"
+                      type="number"
+                      step="any"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="piling_max"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Maximum
+                    {getBuyerValue("piling_max")}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Enter value"
+                      type="number"
+                      step="any"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </FromGroupWrapper>
+
+          {/* ph level */}
+          <FromGroupWrapper text="PH Level">
+            <FormField
+              control={form.control}
+              name="ph_min"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Minimum
+                    {getBuyerValue("ph_min")}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Enter value"
+                      type="number"
+                      step="any"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="ph_max"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Maximum
+                    {getBuyerValue("ph_max")}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Enter value"
+                      type="number"
+                      step="any"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </FromGroupWrapper>
+
+          {/* fabric dia */}
+          <FromGroupWrapper text="Fabric Dia">
+            <FormField
+              control={form.control}
+              name="fabric_r_dia"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    R. Dia
+                    {getBuyerValue("fabric_r_dia")}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Enter value"
+                      type="number"
+                      step="any"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="fabric_f_dia"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    F. Dia
+                    {getBuyerValue("fabric_f_dia")}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Enter value"
+                      type="number"
+                      step="any"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </FromGroupWrapper>
+
+          {/* fabric weight */}
+          <FromGroupWrapper text="Fabric Weight">
+            <FormField
+              control={form.control}
+              name="fabric_r_gsm"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    R. GSM
+                    {getBuyerValue("fabric_r_gsm")}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Enter value"
+                      type="number"
+                      step="any"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="fabric_f_gsm"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    F. GSM
+                    {getBuyerValue("fabric_f_gsm")}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Enter value"
                       type="number"
                       step="any"
                       {...field}
