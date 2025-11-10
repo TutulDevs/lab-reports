@@ -3,8 +3,9 @@ import { cn } from "@/lib/utils";
 export const FromGroupWrapper: React.FC<{
   text: React.ReactNode;
   noBg?: boolean;
+  classNameChildren?: string;
   children: React.ReactNode;
-}> = ({ text, noBg, children }) => {
+}> = ({ text, noBg, classNameChildren, children }) => {
   return (
     <div
       className={cn({
@@ -14,7 +15,14 @@ export const FromGroupWrapper: React.FC<{
     >
       {noBg ? null : <h2 className="text-lg font-medium">{text}</h2>}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">{children}</div>
+      <div
+        className={cn(
+          "grid grid-cols-1 md:grid-cols-2 gap-4",
+          classNameChildren,
+        )}
+      >
+        {children}
+      </div>
     </div>
   );
 };

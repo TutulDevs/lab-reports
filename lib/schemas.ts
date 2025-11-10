@@ -8,6 +8,10 @@ const reqNumPos = z.preprocess(
   (v) => (v === "" ? undefined : Number(v)),
   z.number({ error: "Required" }).nonnegative("Should be positive"),
 );
+const reqNum = z.preprocess(
+  (v) => (v === "" ? undefined : Number(v)),
+  z.number({ error: "Required" }),
+);
 
 const numOptional = z.preprocess((val) => {
   if (val === "" || val === null || val === undefined) return undefined;
@@ -96,8 +100,8 @@ const buyerSchema = z.object({
   cf_persp_cc_acd: numOptional,
   cf_persp_cs_alk: numOptional,
   cf_persp_cc_alk: numOptional,
-  piling_min: numOptional,
-  piling_max: numOptional,
+  pilling_min: numOptional,
+  pilling_max: numOptional,
   bursting_strength_kpa: numOptional,
   ph_min: numOptional,
   ph_max: numOptional,
@@ -132,10 +136,10 @@ const reportSchema = z.object({
   remarks: z.string().optional(),
 
   // for buyer req
-  ds_wash_length_min: reqNumNeg,
-  ds_wash_length_max: reqNumPos,
-  ds_wash_width_min: reqNumNeg,
-  ds_wash_width_max: reqNumPos,
+  ds_wash_length_min: reqNum, // reqNumNeg,
+  ds_wash_length_max: reqNum, // reqNumPos,
+  ds_wash_width_min: reqNum, // reqNumNeg,
+  ds_wash_width_max: reqNum, // reqNumPos,
   spirality_max: numOptional,
   cf_wash_cs: numOptional,
   cf_wash_cc: numOptional,
@@ -147,8 +151,8 @@ const reportSchema = z.object({
   cf_persp_cc_acd: numOptional,
   cf_persp_cs_alk: numOptional,
   cf_persp_cc_alk: numOptional,
-  piling_min: numOptional,
-  piling_max: numOptional,
+  pilling_min: numOptional,
+  pilling_max: numOptional,
   bursting_strength_kpa: numOptional,
   ph_min: numOptional,
   ph_max: numOptional,

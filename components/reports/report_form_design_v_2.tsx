@@ -22,6 +22,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 import {
   commonValuesList,
   reportSampleList,
@@ -36,26 +38,41 @@ import {
   ReportStatus,
 } from "@/lib/coreconstants";
 import { FromGroupWrapper } from "../form-group-wrapper";
-import { Dialog, DialogContent } from "../ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../ui/dialog";
 import { dateFormatter } from "@/lib/utils";
 import { Textarea } from "../ui/textarea";
-import { FormPreviewContent } from "./form-preview-content";
 
 type CreateSchemaType = z.infer<typeof createReportSchema>;
 type UpdateSchemaType = z.infer<typeof updateReportSchema>;
 
-export type ReportFormType = CreateSchemaType | UpdateSchemaType;
+type FormType = CreateSchemaType | UpdateSchemaType;
 
-export const CreateOrEditReportForm: React.FC<{
+export const ReportFormVersionTwo: React.FC<{
   report?: Report;
   buyers: BuyersForReport[];
 }> = ({ report, buyers }) => {
+  const router = useRouter();
+
   const [buyer, setBuyer] = useState<null | Buyer>(null);
-  const [reportData, setReportData] = useState<null | ReportFormType>(null);
+  const [loading, setLoading] = useState(false);
+  const [reportData, setReportData] = useState<null | FormType>(null);
+
+  const btnText = {
+    default: report ? "Update" : "Create",
+    loading: report ? "Updating..." : "Creating...",
+  };
 
   const schema = report ? updateReportSchema : createReportSchema;
 
-  const form = useForm<ReportFormType>({
+  const form = useForm<FormType>({
     // @ts-expect-error itzok
     resolver: zodResolver(schema),
     mode: "all",
@@ -74,14 +91,14 @@ export const CreateOrEditReportForm: React.FC<{
       batch_number: report?.batch_number,
       color: report?.color ?? "",
       fabric_type: report?.fabric_type ?? "",
-      roll_number: report?.roll_number ?? 999999,
+      roll_number: report?.roll_number,
       remarks: report?.remarks ?? "",
 
       // for buyer req
-      ds_wash_length_min: report?.ds_wash_length_min ?? 55,
-      ds_wash_length_max: report?.ds_wash_length_max ?? 55,
-      ds_wash_width_min: report?.ds_wash_length_min ?? 55,
-      ds_wash_width_max: report?.ds_wash_length_max ?? 55,
+      ds_wash_length_min: report?.ds_wash_length_min,
+      ds_wash_length_max: report?.ds_wash_length_max,
+      ds_wash_width_min: report?.ds_wash_length_min,
+      ds_wash_width_max: report?.ds_wash_length_max,
 
       spirality_max: report?.spirality_max ?? undefined,
 
@@ -116,11 +133,11 @@ export const CreateOrEditReportForm: React.FC<{
     },
   });
 
-  const buyerId = useWatch({ control: form.control, name: "buyerId" }) ?? "";
+  const buyerId = useWatch({ control: form.control, name: "buyerId" });
 
   useEffect(() => {
     const getBuyer = async () => {
-      const res = await fetch(`/api/buyer/${buyerId}`);
+      const res = await fetch(`/api/buyer/${buyerId ?? ""}`);
 
       if (res.ok) {
         const data = await res.json();
@@ -131,225 +148,43 @@ export const CreateOrEditReportForm: React.FC<{
     getBuyer();
   }, [buyerId]);
 
-  const [failPortions, setFailPortions] = useState<(keyof Buyer)[]>([]);
+  const onPreviewSubmit = async (payload: FormType) => {
+    setReportData(payload);
+  };
 
-  const onPreviewSubmit = async (payload: ReportFormType) => {
-    if (buyer) {
-      const fails: (keyof Buyer)[] = [];
+  const onSubmit = async (payload: FormType) => {
+    try {
+      setLoading(true);
+      console.table(payload);
 
-      // check ds_wash_length_min
-      if (Number(payload.ds_wash_length_min) < buyer?.ds_wash_length_min) {
-        fails.push("ds_wash_length_min");
-      }
+      // const res = await fetch("/api/buyer", {
+      //   method: buyer ? "PUT" : "POST",
+      //   headers: { "Content-Type": "application/json" },
+      //   body: JSON.stringify(payload),
+      // });
+      // const status = res.status;
+      // const data = await res.json();
+      // const buyerData: Buyer = data.buyer;
 
-      // check ds_wash_length_max
-      if (Number(payload.ds_wash_length_max) > buyer?.ds_wash_length_max) {
-        fails.push("ds_wash_length_max");
-      }
+      // // console.log("res:", status, res);
+      // // console.log("data:", data);
 
-      // check ds_wash_width_min
-      if (Number(payload.ds_wash_width_min) < buyer?.ds_wash_width_min) {
-        fails.push("ds_wash_width_min");
-      }
+      // if (data?.success) {
+      //   toast.success(
+      //     data?.message || `Successfully ${buyer ? "updated" : "created"}`,
+      //   );
 
-      // check ds_wash_width_max
-      if (Number(payload.ds_wash_width_max) > buyer?.ds_wash_width_max) {
-        fails.push("ds_wash_width_max");
-      }
-
-      // check spirality_max
-      if (
-        buyer?.spirality_max &&
-        payload.spirality_max &&
-        payload.spirality_max > buyer?.spirality_max
-      ) {
-        fails.push("spirality_max");
-      }
-
-      // check pilling_min
-      if (
-        buyer?.pilling_min &&
-        payload.pilling_min &&
-        payload.pilling_min < buyer?.pilling_min
-      ) {
-        fails.push("pilling_min");
-      }
-
-      // check pilling_max
-      if (
-        buyer?.pilling_max &&
-        payload.pilling_max &&
-        payload.pilling_max > buyer?.pilling_max
-      ) {
-        fails.push("pilling_max");
-      }
-
-      // check ph_min
-      if (
-        buyer?.ph_min &&
-        payload.ph_min &&
-        payload.ph_min < Number(buyer?.ph_min)
-      ) {
-        fails.push("ph_min");
-      }
-
-      // check ph_max
-      if (
-        buyer?.ph_max &&
-        payload.ph_max &&
-        payload.ph_max > Number(buyer?.ph_max)
-      ) {
-        fails.push("ph_max");
-      }
-
-      // check cf_wash_cs
-      if (
-        buyer?.cf_wash_cs &&
-        payload.cf_wash_cs &&
-        payload.cf_wash_cs > buyer?.cf_wash_cs
-      ) {
-        fails.push("cf_wash_cs");
-      }
-
-      // check cf_wash_cc
-      if (
-        buyer?.cf_wash_cc &&
-        payload.cf_wash_cc &&
-        payload.cf_wash_cc > buyer?.cf_wash_cc
-      ) {
-        fails.push("cf_wash_cc");
-      }
-
-      // check cf_rub_dry
-      if (
-        buyer?.cf_rub_dry &&
-        payload.cf_rub_dry &&
-        payload.cf_rub_dry > buyer?.cf_rub_dry
-      ) {
-        fails.push("cf_rub_dry");
-      }
-
-      // check cf_rub_wet
-      if (
-        buyer?.cf_rub_wet &&
-        payload.cf_rub_wet &&
-        payload.cf_rub_wet > buyer?.cf_rub_wet
-      ) {
-        fails.push("cf_rub_wet");
-      }
-
-      // check cf_water_cs
-      if (
-        buyer?.cf_water_cs &&
-        payload.cf_water_cs &&
-        payload.cf_water_cs > buyer?.cf_water_cs
-      ) {
-        fails.push("cf_water_cs");
-      }
-
-      // check cf_water_cc
-      if (
-        buyer?.cf_water_cc &&
-        payload.cf_water_cc &&
-        payload.cf_water_cc > buyer?.cf_water_cc
-      ) {
-        fails.push("cf_water_cc");
-      }
-
-      // check cf_persp_cs_acd
-      if (
-        buyer?.cf_persp_cs_acd &&
-        payload.cf_persp_cs_acd &&
-        payload.cf_persp_cs_acd > buyer?.cf_persp_cs_acd
-      ) {
-        fails.push("cf_persp_cs_acd");
-      }
-
-      // check cf_persp_cc_acd
-      if (
-        buyer?.cf_persp_cc_acd &&
-        payload.cf_persp_cc_acd &&
-        payload.cf_persp_cc_acd > buyer?.cf_persp_cc_acd
-      ) {
-        fails.push("cf_persp_cc_acd");
-      }
-
-      // check cf_persp_cs_alk
-      if (
-        buyer?.cf_persp_cs_alk &&
-        payload.cf_persp_cs_alk &&
-        payload.cf_persp_cs_alk > buyer?.cf_persp_cs_alk
-      ) {
-        fails.push("cf_persp_cs_alk");
-      }
-
-      // check cf_persp_cc_alk
-      if (
-        buyer?.cf_persp_cc_alk &&
-        payload.cf_persp_cc_alk &&
-        payload.cf_persp_cc_alk > buyer?.cf_persp_cc_alk
-      ) {
-        fails.push("cf_persp_cc_alk");
-      }
-
-      // check cf_dye_transfer
-      if (
-        buyer?.cf_dye_transfer &&
-        payload.cf_dye_transfer &&
-        payload.cf_dye_transfer > buyer?.cf_dye_transfer
-      ) {
-        fails.push("cf_dye_transfer");
-      }
-
-      // check bursting_strength_kpa
-      if (
-        buyer?.bursting_strength_kpa &&
-        payload.bursting_strength_kpa &&
-        payload.bursting_strength_kpa > buyer?.bursting_strength_kpa
-      ) {
-        fails.push("bursting_strength_kpa");
-      }
-
-      // check fabric_r_dia
-      if (
-        buyer?.fabric_r_dia &&
-        payload.fabric_r_dia &&
-        payload.fabric_r_dia > buyer?.fabric_r_dia
-      ) {
-        fails.push("fabric_r_dia");
-      }
-
-      // check fabric_f_dia
-      if (
-        buyer?.fabric_f_dia &&
-        payload.fabric_f_dia &&
-        payload.fabric_f_dia > buyer?.fabric_f_dia
-      ) {
-        fails.push("fabric_f_dia");
-      }
-
-      // check fabric_r_gsm
-      if (
-        buyer?.fabric_r_gsm &&
-        payload.fabric_r_gsm &&
-        payload.fabric_r_gsm > buyer?.fabric_r_gsm
-      ) {
-        fails.push("fabric_r_gsm");
-      }
-
-      // check fabric_f_gsm
-      if (
-        buyer?.fabric_f_gsm &&
-        payload.fabric_f_gsm &&
-        payload.fabric_f_gsm > buyer?.fabric_f_gsm
-      ) {
-        fails.push("fabric_f_gsm");
-      }
-
-      console.log(fails);
-
-      setFailPortions(fails);
-      setReportData(payload);
+      //   router.push(`/buyers/${buyerData.id}`);
+      //   router.refresh();
+      // } else {
+      //   toast.error(data?.error || `Failed to ${buyer ? "update" : "create"}`);
+      //   if (status == 401) window.location.href = "/login";
+      // }
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error?.message || "Failed to update");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -365,7 +200,7 @@ export const CreateOrEditReportForm: React.FC<{
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onPreviewSubmit)}
-          className="space-y-4 mt-6 mx-auto max-w-4xl "
+          className="space-y-4 mt-6 mx-auto max-w-7xl "
         >
           {/* buyer */}
           <FormField
@@ -400,34 +235,37 @@ export const CreateOrEditReportForm: React.FC<{
             )}
           />
 
-          {/* date */}
-          <FormField
-            control={form.control}
-            name="sample_receive_date"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Sample Receive Date</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="Enter title"
-                    type="datetime-local"
-                    required
-                    {...field}
-                    value={
-                      field.value
-                        ? new Date(field.value).toISOString().slice(0, 16)
-                        : ""
-                    }
-                    onChange={(e) => field.onChange(e.target.value)}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
           {/* report related */}
-          <FromGroupWrapper text="Report Related">
+          <FromGroupWrapper
+            text="Report Related"
+            classNameChildren="grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+          >
+            {/* date */}
+            <FormField
+              control={form.control}
+              name="sample_receive_date"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Sample Receive Date</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Enter title"
+                      type="datetime-local"
+                      required
+                      {...field}
+                      value={
+                        field.value
+                          ? new Date(field.value).toISOString().slice(0, 16)
+                          : ""
+                      }
+                      onChange={(e) => field.onChange(e.target.value)}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             {/* status */}
             <FormField
               control={form.control}
@@ -623,7 +461,7 @@ export const CreateOrEditReportForm: React.FC<{
               control={form.control}
               name="remarks"
               render={({ field }) => (
-                <FormItem className="md:col-span-2">
+                <FormItem className="lg:col-span-3">
                   <FormLabel>Remarks</FormLabel>
                   <FormControl>
                     <Textarea placeholder="Enter value" {...field} />
@@ -635,7 +473,10 @@ export const CreateOrEditReportForm: React.FC<{
           </FromGroupWrapper>
 
           {/* Dimensional stability to Wash */}
-          <FromGroupWrapper text={"Dimensional stability to Wash"}>
+          <FromGroupWrapper
+            text={"Dimensional stability to Wash"}
+            classNameChildren="grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
+          >
             <FormField
               control={form.control}
               name="ds_wash_length_min"
@@ -725,8 +566,168 @@ export const CreateOrEditReportForm: React.FC<{
             />
           </FromGroupWrapper>
 
-          {/* spirality, bursting strength, cf to dye transfer */}
-          <FromGroupWrapper noBg text="">
+          {/* cf to  */}
+          <FromGroupWrapper
+            text=""
+            classNameChildren="grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
+          >
+            <FormField
+              control={form.control}
+              name="cf_wash_cs"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    CF to Wash - CS
+                    {getBuyerValue("cf_wash_cs")}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Enter value"
+                      type="number"
+                      step="any"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="cf_wash_cc"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    CF to Wash - CC
+                    {getBuyerValue("cf_wash_cc")}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Enter value"
+                      type="number"
+                      step="any"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* cf to rub */}
+            <FormField
+              control={form.control}
+              name="cf_rub_dry"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    CF to Rub - Dry
+                    {getBuyerValue("cf_rub_dry")}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Enter value"
+                      type="number"
+                      step="any"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="cf_rub_wet"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    CF to Rub - Wet
+                    {getBuyerValue("cf_rub_wet")}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Enter value"
+                      type="number"
+                      step="any"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* cf to water */}
+            <FormField
+              control={form.control}
+              name="cf_water_cs"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    CF to Water - CS
+                    {getBuyerValue("cf_water_cs")}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Enter value"
+                      type="number"
+                      step="any"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="cf_water_cc"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    CF to Water - CC
+                    {getBuyerValue("cf_water_cc")}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Enter value"
+                      type="number"
+                      step="any"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* cf_dye_transfer */}
+            <FormField
+              control={form.control}
+              name="cf_dye_transfer"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    CF to Dye Transfer
+                    {getBuyerValue("cf_dye_transfer")}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Enter value"
+                      type="number"
+                      step="any"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             {/* spirality */}
             <FormField
               control={form.control}
@@ -755,7 +756,7 @@ export const CreateOrEditReportForm: React.FC<{
               control={form.control}
               name="bursting_strength_kpa"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="sm:col-span-2 lg:col-span-4">
                   <FormLabel>
                     Bursting Strength (KPA)
                     {getBuyerValue("bursting_strength_kpa")}
@@ -772,174 +773,13 @@ export const CreateOrEditReportForm: React.FC<{
                 </FormItem>
               )}
             />
-
-            {/* bursting_strength_kpa */}
-            <FormField
-              control={form.control}
-              name="cf_dye_transfer"
-              render={({ field }) => (
-                <FormItem className="md:col-span-2">
-                  <FormLabel>
-                    CF to Dye Transfer
-                    {getBuyerValue("cf_dye_transfer")}
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Enter value"
-                      type="number"
-                      step="any"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </FromGroupWrapper>
-
-          {/* cf to wash */}
-          <FromGroupWrapper text="CF to Wash">
-            <FormField
-              control={form.control}
-              name="cf_wash_cs"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    CS
-                    {getBuyerValue("cf_wash_cs")}
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Enter value"
-                      type="number"
-                      step="any"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="cf_wash_cc"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    CC
-                    {getBuyerValue("cf_wash_cc")}
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Enter value"
-                      type="number"
-                      step="any"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </FromGroupWrapper>
-
-          {/* cf to rub */}
-          <FromGroupWrapper text="CF to Rub">
-            <FormField
-              control={form.control}
-              name="cf_rub_dry"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    Dry
-                    {getBuyerValue("cf_rub_dry")}
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Enter value"
-                      type="number"
-                      step="any"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="cf_rub_wet"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    Wet
-                    {getBuyerValue("cf_rub_wet")}
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Enter value"
-                      type="number"
-                      step="any"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </FromGroupWrapper>
-
-          {/* cf to water */}
-          <FromGroupWrapper text="CF to Water">
-            <FormField
-              control={form.control}
-              name="cf_water_cs"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    CS
-                    {getBuyerValue("cf_water_cs")}
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Enter value"
-                      type="number"
-                      step="any"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="cf_water_cc"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    CC
-                    {getBuyerValue("cf_water_cc")}
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Enter value"
-                      type="number"
-                      step="any"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
           </FromGroupWrapper>
 
           {/* cf to perspiration */}
-          <FromGroupWrapper text="CF to Perspiration">
+          <FromGroupWrapper
+            text="CF to Perspiration"
+            classNameChildren="grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
+          >
             <FormField
               control={form.control}
               name="cf_persp_cs_acd"
@@ -1029,15 +869,19 @@ export const CreateOrEditReportForm: React.FC<{
             />
           </FromGroupWrapper>
 
-          {/* pilling */}
-          <FromGroupWrapper text="Pilling">
+          {/* pilling & ph level */}
+          <FromGroupWrapper
+            text=""
+            classNameChildren="grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
+          >
+            {/* pilling */}
             <FormField
               control={form.control}
               name="pilling_min"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    Minimum
+                    pilling - Minimum
                     {getBuyerValue("pilling_min")}
                   </FormLabel>
                   <FormControl>
@@ -1059,7 +903,7 @@ export const CreateOrEditReportForm: React.FC<{
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    Maximum
+                    pilling - Maximum
                     {getBuyerValue("pilling_max")}
                   </FormLabel>
                   <FormControl>
@@ -1074,17 +918,15 @@ export const CreateOrEditReportForm: React.FC<{
                 </FormItem>
               )}
             />
-          </FromGroupWrapper>
 
-          {/* ph level */}
-          <FromGroupWrapper text="PH Level">
+            {/* ph level */}
             <FormField
               control={form.control}
               name="ph_min"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    Minimum
+                    PH Level - Minimum
                     {getBuyerValue("ph_min")}
                   </FormLabel>
                   <FormControl>
@@ -1106,7 +948,7 @@ export const CreateOrEditReportForm: React.FC<{
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    Maximum
+                    PH Level - Maximum
                     {getBuyerValue("ph_max")}
                   </FormLabel>
                   <FormControl>
@@ -1123,15 +965,19 @@ export const CreateOrEditReportForm: React.FC<{
             />
           </FromGroupWrapper>
 
-          {/* fabric dia */}
-          <FromGroupWrapper text="Fabric Dia">
+          {/* fabrics */}
+          <FromGroupWrapper
+            text="Fabrics"
+            classNameChildren="grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
+          >
+            {/* dia */}
             <FormField
               control={form.control}
               name="fabric_r_dia"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    R. Dia
+                    Fabric R. Dia
                     {getBuyerValue("fabric_r_dia")}
                   </FormLabel>
                   <FormControl>
@@ -1153,7 +999,7 @@ export const CreateOrEditReportForm: React.FC<{
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    F. Dia
+                    Fabric F. Dia
                     {getBuyerValue("fabric_f_dia")}
                   </FormLabel>
                   <FormControl>
@@ -1168,17 +1014,15 @@ export const CreateOrEditReportForm: React.FC<{
                 </FormItem>
               )}
             />
-          </FromGroupWrapper>
 
-          {/* fabric weight */}
-          <FromGroupWrapper text="Fabric Weight">
+            {/* weight */}
             <FormField
               control={form.control}
               name="fabric_r_gsm"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    R. GSM
+                    Fabric Weight R. GSM
                     {getBuyerValue("fabric_r_gsm")}
                   </FormLabel>
                   <FormControl>
@@ -1200,7 +1044,7 @@ export const CreateOrEditReportForm: React.FC<{
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    F. GSM
+                    Fabric Weight F. GSM
                     {getBuyerValue("fabric_f_gsm")}
                   </FormLabel>
                   <FormControl>
@@ -1232,25 +1076,36 @@ export const CreateOrEditReportForm: React.FC<{
       </div>
 
       {/* show details */}
-      <Dialog
-        open={!!reportData}
-        onOpenChange={() => {
-          setReportData(null);
-          setFailPortions([]);
-        }}
-      >
+      <Dialog open={!!reportData} onOpenChange={() => setReportData(null)}>
         <DialogContent
-          className="!max-w-6xl"
+          className="!max-w-6xl-"
           onEscapeKeyDown={(e) => e.preventDefault()}
         >
-          {reportData && buyer && (
-            <FormPreviewContent
-              report={report}
-              formData={reportData}
-              buyer={buyer}
-              failPortions={failPortions}
-            />
-          )}
+          <DialogHeader>
+            <DialogTitle>Preview</DialogTitle>
+          </DialogHeader>
+
+          <DialogDescription className="mt-4">
+            {reportData &&
+              Object.keys(reportData).map((x) => (
+                <p key={x} className="pb- font-medium">
+                  {/* @ts-expect-error obj */}
+                  {x + ": " + (reportData[x] ?? "")}
+                </p>
+              ))}
+          </DialogDescription>
+
+          <DialogFooter>
+            <Button
+              className="w-full max-w-md mx-auto"
+              disabled={loading}
+              onClick={() => {
+                reportData && onSubmit(reportData);
+              }}
+            >
+              {loading ? btnText.loading : btnText.default}
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </>

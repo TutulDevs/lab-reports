@@ -46,8 +46,8 @@ model Buyer {
   cf_persp_cc_acd       Float?
   cf_persp_cs_alk       Float?
   cf_persp_cc_alk       Float?
-  piling_min            Float?
-  piling_max            Float?
+  pilling_min            Float?
+  pilling_max            Float?
   bursting_strength_kpa Int?
   ph_min                Decimal?
   ph_max                Decimal?
@@ -96,8 +96,8 @@ model Report {
   cf_persp_cc_acd       Float?
   cf_persp_cs_alk       Float?
   cf_persp_cc_alk       Float?
-  piling_min            Float?
-  piling_max            Float?
+  pilling_min            Float?
+  pilling_max            Float?
   bursting_strength_kpa Int?
   ph_min                Decimal?
   ph_max                Decimal?

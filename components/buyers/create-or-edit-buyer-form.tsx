@@ -77,8 +77,8 @@ export const CreateOrEditBuyerForm: React.FC<{ buyer?: Buyer }> = ({
       cf_persp_cs_alk: buyer?.cf_persp_cs_alk ?? undefined,
       cf_persp_cc_alk: buyer?.cf_persp_cc_alk ?? undefined,
 
-      piling_min: buyer?.piling_min ?? undefined,
-      piling_max: buyer?.piling_max ?? undefined,
+      pilling_min: buyer?.pilling_min ?? undefined,
+      pilling_max: buyer?.pilling_max ?? undefined,
 
       bursting_strength_kpa: buyer?.bursting_strength_kpa ?? undefined,
 
@@ -527,11 +527,11 @@ export const CreateOrEditBuyerForm: React.FC<{ buyer?: Buyer }> = ({
             />
           </FromGroupWrapper>
 
-          {/* piling */}
-          <FromGroupWrapper text="Piling">
+          {/* pilling */}
+          <FromGroupWrapper text="Pilling">
             <FormField
               control={form.control}
-              name="piling_min"
+              name="pilling_min"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Minimum</FormLabel>
@@ -550,7 +550,7 @@ export const CreateOrEditBuyerForm: React.FC<{ buyer?: Buyer }> = ({
 
             <FormField
               control={form.control}
-              name="piling_max"
+              name="pilling_max"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Maximum</FormLabel>
