@@ -29,7 +29,6 @@ model Buyer {
   updatedAt     DateTime? @updatedAt
   userId        String
   lastUpdatedBy User      @relation("BuyerUpdatedBy", fields: [userId], references: [id])
-  reports       Report[]
 
   ds_wash_length_min    Float
   ds_wash_length_max    Float
@@ -46,8 +45,8 @@ model Buyer {
   cf_persp_cc_acd       Float?
   cf_persp_cs_alk       Float?
   cf_persp_cc_alk       Float?
-  pilling_min            Float?
-  pilling_max            Float?
+  pilling_min           Float?
+  pilling_max           Float?
   bursting_strength_kpa Int?
   ph_min                Decimal?
   ph_max                Decimal?
@@ -64,11 +63,11 @@ model Report {
   updatedAt     DateTime? @updatedAt
   lastUpdatedBy User      @relation("ReportUpdatedBy", fields: [userId], references: [id])
   userId        String
-  buyer         Buyer     @relation(fields: [buyerId], references: [id])
   buyerId       String
+  buyer         Json?
 
   sample_receive_date DateTime?
-  report_id           String
+  report_id           String    @unique
   status              Int?      @default(1)
   sample_type         Int?
   sample_stage        Int?
@@ -96,8 +95,8 @@ model Report {
   cf_persp_cc_acd       Float?
   cf_persp_cs_alk       Float?
   cf_persp_cc_alk       Float?
-  pilling_min            Float?
-  pilling_max            Float?
+  pilling_min           Float?
+  pilling_max           Float?
   bursting_strength_kpa Int?
   ph_min                Decimal?
   ph_max                Decimal?

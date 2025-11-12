@@ -31,6 +31,7 @@ import {
 import { createReportSchema, updateReportSchema } from "@/lib/schemas";
 import {
   BuyersForReport,
+  ReportOverallResult,
   ReportSampleStage,
   ReportSampleType,
   ReportStatus,
@@ -65,17 +66,19 @@ export const CreateOrEditReportForm: React.FC<{
 
       // report related
       sample_receive_date: report?.sample_receive_date ?? new Date(),
-      report_id:
-        report?.report_id ?? `TIL-${dateFormatter(new Date(), "yyyyMMdd")}-`,
+      report_id: report?.report_id ?? ``,
       status: report?.status ?? ReportStatus.IN_PROGRESS,
       sample_type: report?.sample_type ?? ReportSampleType.FABRIC,
       sample_stage: report?.sample_stage ?? ReportSampleStage.A_STENTER,
-      order_number: report?.order_number,
-      batch_number: report?.batch_number,
+      order_number: report?.order_number ?? 1111111,
+      batch_number: report?.batch_number ?? 3333333,
       color: report?.color ?? "",
       fabric_type: report?.fabric_type ?? "",
       roll_number: report?.roll_number ?? 999999,
       remarks: report?.remarks ?? "",
+
+      result: report?.result ?? ReportOverallResult.PENDING,
+      fail_portions: report?.fail_portions ?? "",
 
       // for buyer req
       ds_wash_length_min: report?.ds_wash_length_min ?? 55,

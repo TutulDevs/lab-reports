@@ -1,3 +1,4 @@
+import { Buyer } from "@prisma/client";
 import { z } from "zod";
 
 const reqNumNeg = z.preprocess(
@@ -119,6 +120,7 @@ export const updateBuyerSchema = buyerSchema.partial();
 const reportSchema = z.object({
   id: z.string().optional(),
   buyerId: z.string().min(1, "Buyer is required"),
+  buyer: z.custom<Buyer>().optional(),
 
   // report related
   sample_receive_date: z.coerce.date(), // .max(new Date(), "Date cannot be in the future"),
@@ -126,13 +128,13 @@ const reportSchema = z.object({
   status: z.number(),
   sample_type: numOptional,
   sample_stage: numOptional,
-  order_number: numOptional,
-  batch_number: numOptional,
+  order_number: reqNum,
+  batch_number: reqNum,
   color: z.string().optional(),
   fabric_type: z.string().optional(),
   roll_number: reqNumPos,
-  // result: z.string(),
-  // fail_portions: z.string().optional(),
+  result: z.number(),
+  fail_portions: z.string().optional(),
   remarks: z.string().optional(),
 
   // for buyer req

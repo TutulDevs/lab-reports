@@ -93,8 +93,24 @@ export async function getServerReportsAll(): Promise<Report[] | null> {
   const session = await verifyJwt<{ id: string; role: string }>(token);
   if (!session) return null;
 
-  const reports = await prisma.report.findMany({
-    // include: { lastUpdatedBy: { select: { username: true } } },
+  const reports = await prisma.report.findMany({});
+  return reports;
+}
+
+export async function getServerReportsDetails(
+  id: string,
+): Promise<Report | null> {
+  const cookieStore = await cookies();
+  const token = cookieStore.get(COOKIE_NAME)?.value;
+
+  if (!token) return null;
+
+  const session = await verifyJwt<{ id: string; role: string }>(token);
+  if (!session) return null;
+
+  const reports = await prisma.report.findUnique({
+    where: { id },
+    include: { lastUpdatedBy: { select: { username: true } } },
   });
   return reports;
 }

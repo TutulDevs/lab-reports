@@ -1,5 +1,4 @@
 import { PageHeaderSection } from "@/components/page-header";
-import { getServerReportsAll } from "@/lib/fetcher";
 import {
   Table,
   TableBody,
@@ -11,6 +10,7 @@ import {
 import { cn, dateFormatter } from "@/lib/utils";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
+import { getServerReportsAll } from "@/lib/fetcher";
 
 export default async function ReportsPage() {
   const reports = await getServerReportsAll();
@@ -46,7 +46,12 @@ export default async function ReportsPage() {
                     {dateFormatter(report.createdAt, "dd MMM yyyy")}
                   </TableCell>
                   <TableCell className="text-right">
-                    <button className="">details</button>
+                    <Link
+                      href={`/reports/${report.id}`}
+                      className={cn(buttonVariants({}))}
+                    >
+                      details
+                    </Link>
                   </TableCell>
                 </TableRow>
               );
