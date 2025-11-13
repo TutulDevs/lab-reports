@@ -32,6 +32,7 @@ export const FormPreviewContent: React.FC<{
   const router = useRouter();
 
   const [loading, setLoading] = useState(false);
+  const [loadingPending, setLoadingPending] = useState(false);
 
   const btnText = {
     default: report ? "Update" : "Create",
@@ -42,8 +43,9 @@ export const FormPreviewContent: React.FC<{
     try {
       setLoading(true);
 
-      const data: ReportFormType = {
+      const dataToSend: ReportFormType = {
         ...formData,
+        buyer: buyer,
         fail_portions: failPortions.join(","),
         result:
           failPortions.length > 0
@@ -51,31 +53,31 @@ export const FormPreviewContent: React.FC<{
             : ReportOverallResult.PASS,
       };
 
-      console.table(data);
+      // console.table(data);
 
-      // const res = await fetch("/api/buyer", {
-      //   method: buyer ? "PUT" : "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify(payload),
-      // });
-      // const status = res.status;
-      // const data = await res.json();
-      // const buyerData: Buyer = data.buyer;
+      const res = await fetch("/api/report", {
+        method: report ? "PUT" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(dataToSend),
+      });
+      const status = res.status;
+      const data = await res.json();
+      const reportData = data.report;
 
-      // // console.log("res:", status, res);
-      // // console.log("data:", data);
+      // console.log("res:", status, res);
+      // console.log("data:", reportData);
 
-      // if (data?.success) {
-      //   toast.success(
-      //     data?.message || `Successfully ${buyer ? "updated" : "created"}`,
-      //   );
+      if (data?.success) {
+        toast.success(
+          data?.message || `Successfully ${buyer ? "updated" : "created"}`,
+        );
 
-      //   router.push(`/buyers/${buyerData.id}`);
-      //   router.refresh();
-      // } else {
-      //   toast.error(data?.error || `Failed to ${buyer ? "update" : "create"}`);
-      //   if (status == 401) window.location.href = "/login";
-      // }
+        router.push(`/reports/${reportData.id}`);
+        router.refresh();
+      } else {
+        toast.error(data?.error || `Failed to ${buyer ? "update" : "create"}`);
+        if (status == 401) window.location.href = "/login";
+      }
     } catch (error: any) {
       console.error(error);
       toast.error(error?.message || "Failed to update");
@@ -86,7 +88,7 @@ export const FormPreviewContent: React.FC<{
 
   const handleSaveAsPending = async () => {
     try {
-      setLoading(true);
+      setLoadingPending(true);
 
       const dataToSend: ReportFormType = {
         ...formData,
@@ -106,8 +108,8 @@ export const FormPreviewContent: React.FC<{
       const data = await res.json();
       const reportData = data.report;
 
-      console.log("res:", status, res);
-      console.log("data:", reportData);
+      // console.log("res:", status, res);
+      // console.log("data:", reportData);
 
       if (data?.success) {
         toast.success(
@@ -124,7 +126,7 @@ export const FormPreviewContent: React.FC<{
       console.error(error);
       toast.error(error?.message || "Failed to update");
     } finally {
-      setLoading(false);
+      setLoadingPending(false);
     }
   };
 
@@ -223,17 +225,16 @@ export const FormPreviewContent: React.FC<{
           <Button
             type="button"
             variant={"outline"}
-            disabled={loading}
+            disabled={loadingPending || loading}
             onClick={handleSaveAsPending}
           >
-            {loading ? "Saving..." : "Save as pending"}
+            {loadingPending ? "Saving..." : "Save as pending"}
           </Button>
         )}
 
         <Button
           type="button"
-          // className="flex-1"
-          disabled={loading}
+          disabled={loading || loadingPending}
           onClick={handleSubmit}
         >
           {loading ? btnText.loading : btnText.default}

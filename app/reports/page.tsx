@@ -11,6 +11,14 @@ import { cn, dateFormatter } from "@/lib/utils";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import { getServerReportsAll } from "@/lib/fetcher";
+import {
+  reportOverallResultText,
+  reportOverallResultVariants,
+  reportStatusText,
+  reportStatusVariants,
+} from "@/lib/corearrays";
+import { Badge } from "@/components/ui/badge";
+import { Buyer } from "@prisma/client";
 
 export default async function ReportsPage() {
   const reports = await getServerReportsAll();
@@ -31,7 +39,11 @@ export default async function ReportsPage() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>ID</TableHead>
+              {/* <TableHead>ID</TableHead> */}
+              <TableHead>Report ID</TableHead>
+              <TableHead>Buyer</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Result</TableHead>
               <TableHead>Created At</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
@@ -41,16 +53,38 @@ export default async function ReportsPage() {
             {reports?.map((report) => {
               return (
                 <TableRow key={report.id}>
-                  <TableCell className="font-medium">{report.id}</TableCell>
+                  {/* <TableCell className="font-medium">{report.id}</TableCell> */}
+                  <TableCell className="font-medium">
+                    {report.report_id}
+                  </TableCell>
+                  <TableCell className="font-medium">
+                    {(report.buyer as Buyer)?.title}
+                  </TableCell>
+                  <TableCell className="font-medium">
+                    {!report.status ? (
+                      "N/A"
+                    ) : (
+                      <Badge variant={reportStatusVariants[report.status]}>
+                        {reportStatusText[report.status]}
+                      </Badge>
+                    )}
+                  </TableCell>
+                  <TableCell className="font-medium">
+                    <Badge variant={reportOverallResultVariants[report.result]}>
+                      {reportOverallResultText[report.result]}
+                    </Badge>
+                  </TableCell>
                   <TableCell>
                     {dateFormatter(report.createdAt, "dd MMM yyyy")}
                   </TableCell>
                   <TableCell className="text-right">
                     <Link
                       href={`/reports/${report.id}`}
-                      className={cn(buttonVariants({}))}
+                      className={cn(
+                        buttonVariants({ size: "sm", variant: "outline" }),
+                      )}
                     >
-                      details
+                      Details
                     </Link>
                   </TableCell>
                 </TableRow>

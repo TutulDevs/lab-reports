@@ -46,14 +46,14 @@ export const reportStatusList = Object.entries(reportStatusText).map(
 );
 
 // report sample type
-export const reportSampleText: any = {
+export const reportSampleTypeText: any = {
   [ReportSampleType.FABRIC]: "Fabric",
   [ReportSampleType.GARMENT]: "Garment",
   [ReportSampleType.YARN]: "Yarn",
   [ReportSampleType.MOCKUP]: "Mockup",
 };
 
-export const reportSampleList = Object.entries(reportSampleText).map(
+export const reportSampleList = Object.entries(reportSampleTypeText).map(
   ([value, label]) => ({
     value: Number(value),
     label: String(label),
@@ -98,6 +98,12 @@ export const reportOverallResultText: any = {
   [ReportOverallResult.PENDING]: "Pending",
   [ReportOverallResult.PASS]: "Pass",
   [ReportOverallResult.FAIL]: "Fail",
+};
+
+export const reportOverallResultVariants: any = {
+  [ReportOverallResult.PENDING]: "secondary",
+  [ReportOverallResult.PASS]: "success",
+  [ReportOverallResult.FAIL]: "destructive",
 };
 
 export const reportOverallResultsList = Object.entries(

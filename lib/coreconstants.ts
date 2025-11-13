@@ -9,6 +9,10 @@ export type BuyerWithUser = Prisma.BuyerGetPayload<{
   include: { lastUpdatedBy: { select: { username: true } } };
 }>;
 
+export type ReportWithUser = Prisma.ReportGetPayload<{
+  include: { lastUpdatedBy: { select: { username: true } } };
+}>;
+
 export type BuyersForReport = {
   id: string;
   title: string;

@@ -1,7 +1,12 @@
 import { cookies } from "next/headers";
 import { COOKIE_NAME, verifyJwt } from "./auth";
 import { prisma } from "@/lib/prisma";
-import { BuyersForReport, BuyerWithUser, PartialUser } from "./coreconstants";
+import {
+  BuyersForReport,
+  BuyerWithUser,
+  PartialUser,
+  ReportWithUser,
+} from "./coreconstants";
 import { Buyer, Report } from "@prisma/client";
 
 export async function getServerUser(): Promise<PartialUser | null> {
@@ -99,7 +104,7 @@ export async function getServerReportsAll(): Promise<Report[] | null> {
 
 export async function getServerReportsDetails(
   id: string,
-): Promise<Report | null> {
+): Promise<ReportWithUser | null> {
   const cookieStore = await cookies();
   const token = cookieStore.get(COOKIE_NAME)?.value;
 
@@ -108,8 +113,8 @@ export async function getServerReportsDetails(
   const session = await verifyJwt<{ id: string; role: string }>(token);
   if (!session) return null;
 
-  const reports = await prisma.report.findUnique({
-    where: { id },
+  const reports = await prisma.report.findFirst({
+    where: { OR: [{ id: id }, { report_id: id }] },
     include: { lastUpdatedBy: { select: { username: true } } },
   });
   return reports;
