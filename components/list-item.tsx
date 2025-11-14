@@ -1,14 +1,29 @@
 import { cn } from "@/lib/utils";
-import React from "react";
 
-export const ListItem: React.FC<{
+export type ListItemProps = {
   title?: React.ReactNode;
+  hideColon?: boolean;
   children?: React.ReactNode;
   className?: string;
-}> = ({ title, children, className }) => {
+  classNameStrong?: string;
+  classNameSpan?: string;
+};
+
+export const ListItem: React.FC<ListItemProps> = ({
+  title,
+  hideColon,
+  children,
+  className,
+  classNameStrong,
+  classNameSpan,
+}) => {
   return (
     <p className={cn(className)}>
-      <strong>{title}:</strong> <span>{children}</span>
+      <strong className={cn(classNameStrong)}>
+        {title}
+        {hideColon ? "" : ":"}
+      </strong>{" "}
+      <span className={cn(classNameSpan)}>{children}</span>
     </p>
   );
 };

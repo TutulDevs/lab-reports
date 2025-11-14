@@ -108,7 +108,6 @@ export async function PUT(req: Request) {
       where: { id: data.id },
       data: {
         ...restData,
-        // userId: userId ,
         lastUpdatedBy: { connect: { id: userId } },
       },
       select: { title: true, id: true },

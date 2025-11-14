@@ -5,7 +5,7 @@ import {
   DialogTitle,
 } from "../ui/dialog";
 import { Buyer, Report } from "@prisma/client";
-import { Button, buttonVariants } from "../ui/button";
+import { Button } from "../ui/button";
 import { useState } from "react";
 import { toast } from "sonner";
 import { ReportFormType } from "./create-edit-report-from";
@@ -19,9 +19,19 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ListItem } from "../list-item";
+import { ListItem, ListItemProps } from "../list-item";
 import { ReportOverallResult } from "@/lib/coreconstants";
 import Link from "next/link";
+import { Badge } from "../ui/badge";
+import {
+  reportBuyerCommonFieldsText,
+  reportOverallResultText,
+  reportOverallResultVariants,
+  reportSampleStageText,
+  reportSampleTypeText,
+  reportStatusText,
+  reportStatusVariants,
+} from "@/lib/corearrays";
 
 export const FormPreviewContent: React.FC<{
   report?: Report;
@@ -143,17 +153,102 @@ export const FormPreviewContent: React.FC<{
     fabric_type,
     roll_number,
     remarks,
+    result,
+    fail_portions,
     ...restFormData
   } = formData;
+
+  const listItemsData: ListItemProps[] = [
+    {
+      title: "Sample Receive Date",
+      children: dateFormatter(sample_receive_date ?? new Date()),
+    },
+    ...(!report
+      ? []
+      : [
+          {
+            title: "Created At",
+            children: dateFormatter(report.createdAt ?? new Date()),
+          },
+          {
+            title: "Updated At",
+            children: dateFormatter(report.updatedAt ?? new Date()),
+          },
+          {
+            title: "ID",
+            children: report.id,
+          },
+          {
+            title: "Report ID",
+            children: report.report_id,
+          },
+        ]),
+    {
+      title: "Status",
+      children: !status ? (
+        "N/A"
+      ) : (
+        <Badge variant={reportStatusVariants[status]}>
+          {reportStatusText[status]}
+        </Badge>
+      ),
+    },
+    {
+      title: "Result",
+      children: !result ? (
+        "N/A"
+      ) : (
+        <Badge variant={reportOverallResultVariants[result]}>
+          {reportOverallResultText[result]}
+        </Badge>
+      ),
+    },
+    {
+      title: "Sample Type",
+      children: !sample_type ? "N/A" : reportSampleTypeText[sample_type],
+    },
+    {
+      title: "Sample Stage",
+      children: !sample_stage ? "N/A" : reportSampleStageText[sample_stage],
+    },
+    {
+      title: "Order Number",
+      children: order_number,
+    },
+    {
+      title: "Batch Number",
+      children: batch_number,
+    },
+    {
+      title: "Roll Number",
+      children: roll_number,
+    },
+    {
+      title: "Color",
+      children: color,
+    },
+    {
+      title: "Fabric Type",
+      children: fabric_type,
+    },
+    {
+      title: "Remarks",
+      children: remarks,
+      className: cn("flex flex-col whitespace-pre-line"),
+    },
+  ];
 
   return (
     <>
       <DialogHeader>
-        <DialogTitle>Preview</DialogTitle>
+        <DialogTitle>
+          Preview
+          {report && ` of ${report.report_id}`}
+        </DialogTitle>
       </DialogHeader>
 
       <DialogDescription asChild>
-        <div className="mt-4 flex gap-6">
+        <div className="mt-4 flex flex-col md:flex-row gap-10">
           <div className="flex-1">
             <div className="font-medium text-xl border-b mb-2 pb-1">
               <span>{buyer.title}</span> (
@@ -161,26 +256,20 @@ export const FormPreviewContent: React.FC<{
                 href={`/buyers/${buyerId}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={cn(buttonVariants({ variant: "link" }), "p-0")}
+                className="text-primary"
               >
                 Details
               </Link>
               )
             </div>
-            <ListItem title={"Sample Receive Date"}>
-              {dateFormatter(sample_receive_date ?? new Date())}
-            </ListItem>
-            <ListItem title={"Report ID"}>{report_id}</ListItem>
 
-            <ListItem title={"Status"}>{status}</ListItem>
-            <ListItem title={"sample_type"}>{sample_type}</ListItem>
-            <ListItem title={"sample_stage"}>{sample_stage}</ListItem>
-            <ListItem title={"order_number"}>{order_number}</ListItem>
-            <ListItem title={"batch_number"}>{batch_number}</ListItem>
-            <ListItem title={"color"}>{color}</ListItem>
-            <ListItem title={"fabric_type"}>{fabric_type}</ListItem>
-            <ListItem title={"roll_number"}>{roll_number}</ListItem>
-            <ListItem title={"remarks"}>{remarks}</ListItem>
+            {listItemsData.map((item, idx) => (
+              <ListItem
+                key={item.title?.toString() || idx}
+                {...item}
+                className={cn(item?.className, "mt-1")}
+              />
+            ))}
           </div>
 
           <div className="">
@@ -188,8 +277,8 @@ export const FormPreviewContent: React.FC<{
               <TableHeader>
                 <TableRow>
                   <TableHead>Field</TableHead>
-                  <TableHead>Form Value</TableHead>
-                  <TableHead>Buyer Requirement</TableHead>
+                  <TableHead className="text-end">Value</TableHead>
+                  <TableHead className="text-end">Requirement</TableHead>
                 </TableRow>
               </TableHeader>
 
@@ -199,12 +288,15 @@ export const FormPreviewContent: React.FC<{
                     <TableRow
                       key={x}
                       className={cn({
-                        ["text-red-500"]: failPortions.includes(
+                        ["text-destructive"]: failPortions.includes(
                           x as keyof Buyer,
                         ),
                       })}
+                      hidden={x == "id"}
                     >
-                      <TableCell className="p-0">{x}</TableCell>
+                      <TableCell className="p-0">
+                        {reportBuyerCommonFieldsText[x]}
+                      </TableCell>
                       <TableCell className="p-0 text-end">
                         {String(formData[x as keyof ReportFormType] ?? "")}
                       </TableCell>
@@ -221,7 +313,7 @@ export const FormPreviewContent: React.FC<{
       </DialogDescription>
 
       <DialogFooter>
-        {!report && (
+        {(!report || report?.result == ReportOverallResult.PENDING) && (
           <Button
             type="button"
             variant={"outline"}
@@ -243,30 +335,3 @@ export const FormPreviewContent: React.FC<{
     </>
   );
 };
-
-{
-  /* <div className={cn("grid grid-cols-4 border-b")}>
-              <span className="col-span-2">Field</span>
-              <span className="">Form Value</span>
-
-              <span className="">Buyer Requirement</span>
-            </div>
-
-            {Object.keys(restFormData).map((x) => (
-              <div
-                key={x}
-                className={cn("grid grid-cols-4 border-b", {
-                  ["text-red-500"]: failPortions.includes(x as keyof Buyer),
-                })}
-              >
-                <span className="col-span-2">{x}</span>
-                <span className="">
-                  {String(formData[x as keyof ReportFormType] ?? "")}
-                </span>
-
-                <span className="">
-                  {String(buyer[x as keyof Buyer] ?? "")}
-                </span>
-              </div>
-            ))} */
-}

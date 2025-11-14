@@ -1,6 +1,6 @@
 "use client";
 
-import { Buyer, Report } from "@prisma/client";
+import { Buyer } from "@prisma/client";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { useForm, useWatch } from "react-hook-form";
@@ -23,7 +23,6 @@ import {
   SelectValue,
 } from "../ui/select";
 import {
-  commonValuesList,
   reportSampleList,
   reportSampleStageList,
   reportStatusList,
@@ -35,10 +34,10 @@ import {
   ReportSampleStage,
   ReportSampleType,
   ReportStatus,
+  ReportWithUser,
 } from "@/lib/coreconstants";
 import { FromGroupWrapper } from "../form-group-wrapper";
 import { Dialog, DialogContent } from "../ui/dialog";
-import { dateFormatter } from "@/lib/utils";
 import { Textarea } from "../ui/textarea";
 import { FormPreviewContent } from "./form-preview-content";
 
@@ -48,10 +47,12 @@ type UpdateSchemaType = z.infer<typeof updateReportSchema>;
 export type ReportFormType = CreateSchemaType | UpdateSchemaType;
 
 export const CreateOrEditReportForm: React.FC<{
-  report?: Report;
+  report?: ReportWithUser;
   buyers: BuyersForReport[];
 }> = ({ report, buyers }) => {
-  const [buyer, setBuyer] = useState<null | Buyer>(null);
+  const [buyer, setBuyer] = useState<null | Buyer>(
+    (report?.buyer as Buyer) ?? null,
+  );
   const [reportData, setReportData] = useState<null | ReportFormType>(null);
 
   const schema = report ? updateReportSchema : createReportSchema;
@@ -131,8 +132,9 @@ export const CreateOrEditReportForm: React.FC<{
       }
     };
 
-    getBuyer();
-  }, [buyerId]);
+    if (!report) getBuyer();
+    // if (report) setBuyer(report.buyer as Buyer);
+  }, [buyerId, report]);
 
   const [failPortions, setFailPortions] = useState<(keyof Buyer)[]>([]);
 
@@ -382,6 +384,7 @@ export const CreateOrEditReportForm: React.FC<{
                   onValueChange={(e) => field.onChange(e)}
                   defaultValue={field.value}
                   required
+                  disabled={!!report}
                 >
                   <FormControl>
                     <SelectTrigger className="w-full">
@@ -390,11 +393,17 @@ export const CreateOrEditReportForm: React.FC<{
                   </FormControl>
 
                   <SelectContent>
-                    {buyers.map((x) => (
-                      <SelectItem key={x.id} value={x.id}>
-                        {x.title}
+                    {report ? (
+                      <SelectItem value={buyer?.id ?? ""}>
+                        {buyer?.title}
                       </SelectItem>
-                    ))}
+                    ) : (
+                      buyers.map((x) => (
+                        <SelectItem key={x.id} value={x.id}>
+                          {x.title}
+                        </SelectItem>
+                      ))
+                    )}
                   </SelectContent>
                 </Select>
 
@@ -1230,9 +1239,9 @@ export const CreateOrEditReportForm: React.FC<{
       </Form>
 
       {/* show errors */}
-      <div className="border p-2 mt-4">
+      {/* <div className="border p-2 mt-4">
         <pre>{JSON.stringify(form.formState.errors, null, 2)}</pre>
-      </div>
+      </div> */}
 
       {/* show details */}
       <Dialog
@@ -1243,7 +1252,7 @@ export const CreateOrEditReportForm: React.FC<{
         }}
       >
         <DialogContent
-          className="!max-w-6xl"
+          className="!max-w-4xl"
           onEscapeKeyDown={(e) => e.preventDefault()}
         >
           {reportData && buyer && (

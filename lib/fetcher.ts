@@ -119,3 +119,22 @@ export async function getServerReportsDetails(
   });
   return reports;
 }
+
+export async function getServerReportsValidity(id: string): Promise<{
+  id: string;
+  report_id: string;
+} | null> {
+  const cookieStore = await cookies();
+  const token = cookieStore.get(COOKIE_NAME)?.value;
+
+  if (!token) return null;
+
+  const session = await verifyJwt<{ id: string; role: string }>(token);
+  if (!session) return null;
+
+  const reports = await prisma.report.findFirst({
+    where: { OR: [{ id: id }, { report_id: id }] },
+    select: { id: true, report_id: true },
+  });
+  return reports;
+}

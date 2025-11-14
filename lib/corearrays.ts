@@ -112,3 +112,32 @@ export const reportOverallResultsList = Object.entries(
   value: Number(value),
   label: String(label),
 }));
+
+// report buyer values field text
+export const reportBuyerCommonFieldsText: any = {
+  ds_wash_length_min: "DS Wash Length (Min)",
+  ds_wash_length_max: "DS Wash Length (Max)",
+  ds_wash_width_min: "DS Wash Width (Min)",
+  ds_wash_width_max: "DS Wash Width (Max)",
+  spirality_max: "Spirality (Max)",
+  cf_wash_cs: "CF to Wash - CS",
+  cf_wash_cc: "CF to Wash - CC",
+  cf_rub_dry: "CF to Rubbing - Dry",
+  cf_rub_wet: "CF to Rubbing - Wet",
+  cf_water_cs: "CF to Water - CS",
+  cf_water_cc: "CF to Water -CC",
+  cf_persp_cs_acd: "CF to Perspiration Acid - CS",
+  cf_persp_cc_acd: "CF to Perspiration Acid - CC",
+  cf_persp_cs_alk: "CF to Perspiration Alkaline - CS",
+  cf_persp_cc_alk: "CF to Perspiration Alkaline - CC",
+  pilling_min: "Pilling (Min)",
+  pilling_max: "Pilling (Max)",
+  bursting_strength_kpa: "Bursting Strength (kPa)",
+  ph_min: "pH (Min)",
+  ph_max: "pH (Max)",
+  cf_dye_transfer: "CF to Dye Transfer",
+  fabric_r_dia: "Fabric R. Dia",
+  fabric_f_dia: "Fabric F. Dia",
+  fabric_r_gsm: "Fabric R. GSM",
+  fabric_f_gsm: "Fabric F. GSM",
+};
