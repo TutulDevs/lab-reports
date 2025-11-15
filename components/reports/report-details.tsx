@@ -5,7 +5,6 @@ import { Buyer } from "@prisma/client";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -22,6 +21,10 @@ import {
   reportStatusText,
   reportStatusVariants,
 } from "@/lib/corearrays";
+import { PageHeaderSection } from "../page-header";
+import Link from "next/link";
+import { buttonVariants } from "../ui/button";
+import { ReportDeleteAction } from "./report-actions";
 
 export const ReportDetails: React.FC<{ reportId: string }> = async ({
   reportId,
@@ -158,6 +161,21 @@ export const ReportDetails: React.FC<{ reportId: string }> = async ({
 
   return (
     <>
+      <PageHeaderSection title={report.report_id}>
+        <div className="space-x-2">
+          <Link
+            href={"/reports/edit/" + report.id}
+            className={cn(buttonVariants())}
+          >
+            Edit
+          </Link>
+
+          <ReportDeleteAction
+            report={{ id: report.id, report_id: report.report_id }}
+          />
+        </div>
+      </PageHeaderSection>
+
       {/* report & buyer info */}
       <div className="">
         {listItemsData.map((item, index) => (
@@ -210,6 +228,11 @@ export const ReportDetails: React.FC<{ reportId: string }> = async ({
           })}
         </TableBody>
       </Table>
+
+      {/* <div className="grid grid-cols-2">
+          <pre className="text-wrap">{JSON.stringify(report, null, 2)}</pre>
+          <pre className="text-wrap"> {JSON.stringify(buyer, null, 2)}</pre>
+        </div> */}
     </>
   );
 };
