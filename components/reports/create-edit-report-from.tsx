@@ -142,22 +142,22 @@ export const CreateOrEditReportForm: React.FC<{
     if (buyer) {
       const fails: (keyof Buyer)[] = [];
 
-      // check ds_wash_length_min
+      // check ds_wash_length_min NOT-DONE
       if (Number(payload.ds_wash_length_min) < buyer?.ds_wash_length_min) {
         fails.push("ds_wash_length_min");
       }
 
-      // check ds_wash_length_max
+      // check ds_wash_length_max NOT-DONE
       if (Number(payload.ds_wash_length_max) > buyer?.ds_wash_length_max) {
         fails.push("ds_wash_length_max");
       }
 
-      // check ds_wash_width_min
+      // check ds_wash_width_min NOT-DONE
       if (Number(payload.ds_wash_width_min) < buyer?.ds_wash_width_min) {
         fails.push("ds_wash_width_min");
       }
 
-      // check ds_wash_width_max
+      // check ds_wash_width_max NOT-DONE
       if (Number(payload.ds_wash_width_max) > buyer?.ds_wash_width_max) {
         fails.push("ds_wash_width_max");
       }
@@ -171,7 +171,7 @@ export const CreateOrEditReportForm: React.FC<{
         fails.push("spirality_max");
       }
 
-      // check pilling_min
+      // check pilling_min NOT-DONE
       if (
         buyer?.pilling_min &&
         payload.pilling_min &&
@@ -180,7 +180,7 @@ export const CreateOrEditReportForm: React.FC<{
         fails.push("pilling_min");
       }
 
-      // check pilling_max
+      // check pilling_max NOT-DONE
       if (
         buyer?.pilling_max &&
         payload.pilling_max &&
@@ -189,7 +189,7 @@ export const CreateOrEditReportForm: React.FC<{
         fails.push("pilling_max");
       }
 
-      // check ph_min
+      // check ph_min NOT-DONE
       if (
         buyer?.ph_min &&
         payload.ph_min &&
@@ -198,7 +198,7 @@ export const CreateOrEditReportForm: React.FC<{
         fails.push("ph_min");
       }
 
-      // check ph_max
+      // check ph_max NOT-DONE
       if (
         buyer?.ph_max &&
         payload.ph_max &&
@@ -211,7 +211,7 @@ export const CreateOrEditReportForm: React.FC<{
       if (
         buyer?.cf_wash_cs &&
         payload.cf_wash_cs &&
-        payload.cf_wash_cs > buyer?.cf_wash_cs
+        payload.cf_wash_cs < buyer?.cf_wash_cs
       ) {
         fails.push("cf_wash_cs");
       }
@@ -220,7 +220,7 @@ export const CreateOrEditReportForm: React.FC<{
       if (
         buyer?.cf_wash_cc &&
         payload.cf_wash_cc &&
-        payload.cf_wash_cc > buyer?.cf_wash_cc
+        payload.cf_wash_cc < buyer?.cf_wash_cc
       ) {
         fails.push("cf_wash_cc");
       }
@@ -229,7 +229,7 @@ export const CreateOrEditReportForm: React.FC<{
       if (
         buyer?.cf_rub_dry &&
         payload.cf_rub_dry &&
-        payload.cf_rub_dry > buyer?.cf_rub_dry
+        payload.cf_rub_dry < buyer?.cf_rub_dry
       ) {
         fails.push("cf_rub_dry");
       }
@@ -238,7 +238,7 @@ export const CreateOrEditReportForm: React.FC<{
       if (
         buyer?.cf_rub_wet &&
         payload.cf_rub_wet &&
-        payload.cf_rub_wet > buyer?.cf_rub_wet
+        payload.cf_rub_wet < buyer?.cf_rub_wet
       ) {
         fails.push("cf_rub_wet");
       }
@@ -247,7 +247,7 @@ export const CreateOrEditReportForm: React.FC<{
       if (
         buyer?.cf_water_cs &&
         payload.cf_water_cs &&
-        payload.cf_water_cs > buyer?.cf_water_cs
+        payload.cf_water_cs < buyer?.cf_water_cs
       ) {
         fails.push("cf_water_cs");
       }
@@ -256,7 +256,7 @@ export const CreateOrEditReportForm: React.FC<{
       if (
         buyer?.cf_water_cc &&
         payload.cf_water_cc &&
-        payload.cf_water_cc > buyer?.cf_water_cc
+        payload.cf_water_cc < buyer?.cf_water_cc
       ) {
         fails.push("cf_water_cc");
       }
@@ -265,7 +265,7 @@ export const CreateOrEditReportForm: React.FC<{
       if (
         buyer?.cf_persp_cs_acd &&
         payload.cf_persp_cs_acd &&
-        payload.cf_persp_cs_acd > buyer?.cf_persp_cs_acd
+        payload.cf_persp_cs_acd < buyer?.cf_persp_cs_acd
       ) {
         fails.push("cf_persp_cs_acd");
       }
@@ -274,7 +274,7 @@ export const CreateOrEditReportForm: React.FC<{
       if (
         buyer?.cf_persp_cc_acd &&
         payload.cf_persp_cc_acd &&
-        payload.cf_persp_cc_acd > buyer?.cf_persp_cc_acd
+        payload.cf_persp_cc_acd < buyer?.cf_persp_cc_acd
       ) {
         fails.push("cf_persp_cc_acd");
       }
@@ -283,7 +283,7 @@ export const CreateOrEditReportForm: React.FC<{
       if (
         buyer?.cf_persp_cs_alk &&
         payload.cf_persp_cs_alk &&
-        payload.cf_persp_cs_alk > buyer?.cf_persp_cs_alk
+        payload.cf_persp_cs_alk < buyer?.cf_persp_cs_alk
       ) {
         fails.push("cf_persp_cs_alk");
       }
@@ -292,16 +292,16 @@ export const CreateOrEditReportForm: React.FC<{
       if (
         buyer?.cf_persp_cc_alk &&
         payload.cf_persp_cc_alk &&
-        payload.cf_persp_cc_alk > buyer?.cf_persp_cc_alk
+        payload.cf_persp_cc_alk < buyer?.cf_persp_cc_alk
       ) {
         fails.push("cf_persp_cc_alk");
       }
 
-      // check cf_dye_transfer
+      // check cf_dye_transfer NOT-DONE
       if (
         buyer?.cf_dye_transfer &&
         payload.cf_dye_transfer &&
-        payload.cf_dye_transfer > buyer?.cf_dye_transfer
+        payload.cf_dye_transfer < buyer?.cf_dye_transfer
       ) {
         fails.push("cf_dye_transfer");
       }
@@ -310,12 +310,12 @@ export const CreateOrEditReportForm: React.FC<{
       if (
         buyer?.bursting_strength_kpa &&
         payload.bursting_strength_kpa &&
-        payload.bursting_strength_kpa > buyer?.bursting_strength_kpa
+        payload.bursting_strength_kpa < buyer?.bursting_strength_kpa
       ) {
         fails.push("bursting_strength_kpa");
       }
 
-      // check fabric_r_dia
+      // check fabric_r_dia NOT-DONE
       if (
         buyer?.fabric_r_dia &&
         payload.fabric_r_dia &&
@@ -324,7 +324,7 @@ export const CreateOrEditReportForm: React.FC<{
         fails.push("fabric_r_dia");
       }
 
-      // check fabric_f_dia
+      // check fabric_f_dia NOT-DONE
       if (
         buyer?.fabric_f_dia &&
         payload.fabric_f_dia &&
@@ -333,7 +333,7 @@ export const CreateOrEditReportForm: React.FC<{
         fails.push("fabric_f_dia");
       }
 
-      // check fabric_r_gsm
+      // check fabric_r_gsm NOT-DONE
       if (
         buyer?.fabric_r_gsm &&
         payload.fabric_r_gsm &&
@@ -342,7 +342,7 @@ export const CreateOrEditReportForm: React.FC<{
         fails.push("fabric_r_gsm");
       }
 
-      // check fabric_f_gsm
+      // check fabric_f_gsm NOT-DONE
       if (
         buyer?.fabric_f_gsm &&
         payload.fabric_f_gsm &&
@@ -351,7 +351,7 @@ export const CreateOrEditReportForm: React.FC<{
         fails.push("fabric_f_gsm");
       }
 
-      console.log(fails);
+      // console.log(fails);
 
       setFailPortions(fails);
       setReportData(payload);
