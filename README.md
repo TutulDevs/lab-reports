@@ -2,11 +2,12 @@
 
 ## To-Dos
 
-- report: ph only one value
-- pilling one value
-- bursting with [{gsm:number; kpa:number}] in buyer
-- bursting from range in report
-- Dye Transfer CC with CS
+- [DONE] report: width & length is like range
+- [DONE] report: ph is like range
+- [DONE] report pilling like range
+- [DONE] buyer: bursting with [{gsm:number; kpa:number}]
+- [DONE] bursting from range in report
+- [DONE] Dye Transfer CC with CS
 - report form fail logic update
 - report & buyer max-w
 - dashboard with charts, insights

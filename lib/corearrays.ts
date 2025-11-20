@@ -115,8 +115,10 @@ export const reportOverallResultsList = Object.entries(
 
 // report buyer values field text
 export const reportBuyerCommonFieldsText: any = {
+  ds_wash_length: "DS Wash Length",
   ds_wash_length_min: "DS Wash Length (Min)",
   ds_wash_length_max: "DS Wash Length (Max)",
+  ds_wash_width: "DS Wash Width",
   ds_wash_width_min: "DS Wash Width (Min)",
   ds_wash_width_max: "DS Wash Width (Max)",
   spirality_max: "Spirality (Max)",
@@ -130,12 +132,16 @@ export const reportBuyerCommonFieldsText: any = {
   cf_persp_cc_acd: "CF to Perspiration Acid - CC",
   cf_persp_cs_alk: "CF to Perspiration Alkaline - CS",
   cf_persp_cc_alk: "CF to Perspiration Alkaline - CC",
+  pilling: "Pilling",
   pilling_min: "Pilling (Min)",
   pilling_max: "Pilling (Max)",
   bursting_strength_kpa: "Bursting Strength (kPa)",
+  ph: "pH",
   ph_min: "pH (Min)",
   ph_max: "pH (Max)",
+  gsm: "GSM",
   cf_dye_transfer: "CF to Dye Transfer",
+  cc_dye_transfer: "CC to Dye Transfer",
   fabric_r_dia: "Fabric R. Dia",
   fabric_f_dia: "Fabric F. Dia",
   fabric_r_gsm: "Fabric R. GSM",

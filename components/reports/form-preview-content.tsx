@@ -37,7 +37,7 @@ export const FormPreviewContent: React.FC<{
   report?: Report;
   formData: ReportFormType;
   buyer: Buyer;
-  failPortions: (keyof Buyer)[];
+  failPortions: (keyof Report)[];
 }> = ({ report, formData, buyer, failPortions }) => {
   const router = useRouter();
 
@@ -289,19 +289,19 @@ export const FormPreviewContent: React.FC<{
                       key={x}
                       className={cn({
                         ["text-destructive"]: failPortions.includes(
-                          x as keyof Buyer,
+                          x as keyof Report,
                         ),
                       })}
                       hidden={x == "id"}
                     >
                       <TableCell className="p-0">
-                        {reportBuyerCommonFieldsText[x]}
+                        {reportBuyerCommonFieldsText[x] ?? x}
                       </TableCell>
                       <TableCell className="p-0 text-end">
                         {String(formData[x as keyof ReportFormType] ?? "")}
                       </TableCell>
                       <TableCell className="p-0 pr-3 text-end">
-                        {String(buyer[x as keyof Buyer] ?? "")}
+                        {String(buyer[x as keyof Buyer] ?? "-")}
                       </TableCell>
                     </TableRow>
                   );

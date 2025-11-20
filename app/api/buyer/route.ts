@@ -37,10 +37,12 @@ export async function POST(req: Request) {
       );
     }
 
+    const { burstingRules, ...restData } = data;
+
     const buyer = await prisma.buyer.create({
       data: {
-        ...data,
-        // userId: userId
+        ...restData,
+        burstingRules: { create: burstingRules },
         lastUpdatedBy: { connect: { id: userId } },
       },
       select: { title: true, id: true },
@@ -102,12 +104,16 @@ export async function PUT(req: Request) {
       );
     }
 
-    const { id, ...restData } = data;
+    const { id, burstingRules, ...restData } = data;
 
     const buyer = await prisma.buyer.update({
       where: { id: data.id },
       data: {
         ...restData,
+        burstingRules: {
+          deleteMany: {},
+          create: burstingRules,
+        },
         lastUpdatedBy: { connect: { id: userId } },
       },
       select: { title: true, id: true },

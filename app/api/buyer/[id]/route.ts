@@ -27,6 +27,9 @@ export async function GET(
 
     const buyer = await prisma.buyer.findUnique({
       where: { id },
+      include: {
+        burstingRules: { select: { gsm: true, bursting_strength_kpa: true } },
+      },
     });
 
     if (!buyer) {

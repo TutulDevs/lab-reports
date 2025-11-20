@@ -48,7 +48,10 @@ export async function getServerBuyersAll(): Promise<BuyerWithUser[] | null> {
   if (!session) return null;
 
   const buyers = await prisma.buyer.findMany({
-    include: { lastUpdatedBy: { select: { username: true } } },
+    include: {
+      lastUpdatedBy: { select: { username: true } },
+      burstingRules: { select: { gsm: true, bursting_strength_kpa: true } },
+    },
   });
   return buyers;
 }
@@ -83,7 +86,10 @@ export async function getServerBuyerDetails(
 
   const buyer = await prisma.buyer.findUnique({
     where: { id },
-    include: { lastUpdatedBy: { select: { username: true } } },
+    include: {
+      lastUpdatedBy: { select: { username: true } },
+      burstingRules: { select: { gsm: true, bursting_strength_kpa: true } },
+    },
   });
 
   return buyer;

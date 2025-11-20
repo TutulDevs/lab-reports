@@ -6,7 +6,10 @@ export const SESSION_COOKIE_NAME = "lab_session";
 export type PartialUser = Omit<User, "password">;
 
 export type BuyerWithUser = Prisma.BuyerGetPayload<{
-  include: { lastUpdatedBy: { select: { username: true } } };
+  include: {
+    lastUpdatedBy: { select: { username: true } };
+    burstingRules: { select: { gsm: true; bursting_strength_kpa: true } };
+  };
 }>;
 
 export type ReportWithUser = Prisma.ReportGetPayload<{

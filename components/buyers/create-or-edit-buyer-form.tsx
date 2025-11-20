@@ -5,7 +5,7 @@ import React from "react";
 import { createBuyerSchema, updateBuyerSchema } from "@/lib/schemas";
 import { useState } from "react";
 import { z } from "zod";
-import { useForm } from "react-hook-form";
+import { useFieldArray, useForm, useFormContext } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Form,
@@ -28,13 +28,16 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { commonValuesList } from "@/lib/corearrays";
 import { FromGroupWrapper } from "../form-group-wrapper";
+import { BuyerWithUser } from "@/lib/coreconstants";
+import { Plus, X } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 type CreateSchemaType = z.infer<typeof createBuyerSchema>;
 type UpdateSchemaType = z.infer<typeof updateBuyerSchema>;
 
 type FormType = CreateSchemaType | UpdateSchemaType;
 
-export const CreateOrEditBuyerForm: React.FC<{ buyer?: Buyer }> = ({
+export const CreateOrEditBuyerForm: React.FC<{ buyer?: BuyerWithUser }> = ({
   buyer,
 }) => {
   const router = useRouter();
@@ -55,6 +58,8 @@ export const CreateOrEditBuyerForm: React.FC<{ buyer?: Buyer }> = ({
     defaultValues: {
       id: buyer?.id ?? "",
       title: buyer?.title ?? "",
+      // burstingRules: buyer?.burstingRules  ?? [{gsm:100,bursting_strength_kpa:200}],
+      burstingRules: buyer?.burstingRules ?? [],
 
       ds_wash_length_min: buyer?.ds_wash_length_min,
       ds_wash_length_max: buyer?.ds_wash_length_max,
@@ -80,12 +85,11 @@ export const CreateOrEditBuyerForm: React.FC<{ buyer?: Buyer }> = ({
       pilling_min: buyer?.pilling_min ?? undefined,
       pilling_max: buyer?.pilling_max ?? undefined,
 
-      bursting_strength_kpa: buyer?.bursting_strength_kpa ?? undefined,
-
       ph_min: buyer?.ph_min ? Number(buyer.ph_min) : undefined,
       ph_max: buyer?.ph_max ? Number(buyer.ph_max) : undefined,
 
       cf_dye_transfer: buyer?.cf_dye_transfer ?? undefined,
+      cc_dye_transfer: buyer?.cc_dye_transfer ?? undefined,
 
       fabric_r_dia: buyer?.fabric_r_dia ?? undefined,
       fabric_f_dia: buyer?.fabric_f_dia ?? undefined,
@@ -99,7 +103,7 @@ export const CreateOrEditBuyerForm: React.FC<{ buyer?: Buyer }> = ({
   const onSubmit = async (payload: FormType) => {
     try {
       setLoading(true);
-      // console.table(payload);
+      // console.log("submit:", payload);
 
       const res = await fetch("/api/buyer", {
         method: buyer ? "PUT" : "POST",
@@ -568,28 +572,8 @@ export const CreateOrEditBuyerForm: React.FC<{ buyer?: Buyer }> = ({
             />
           </FromGroupWrapper>
 
-          {/* bursting_strength_kpa */}
-          <FormField
-            control={form.control}
-            name="bursting_strength_kpa"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Bursting Strength (KPA)</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="Enter value"
-                    type="number"
-                    step="any"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
           {/* ph level */}
-          <FromGroupWrapper text="PH Level">
+          <FromGroupWrapper text="pH Level">
             <FormField
               control={form.control}
               name="ph_min"
@@ -629,34 +613,61 @@ export const CreateOrEditBuyerForm: React.FC<{ buyer?: Buyer }> = ({
             />
           </FromGroupWrapper>
 
-          {/* cf to dye transfer */}
-          <FormField
-            control={form.control}
-            name="cf_dye_transfer"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>CF to Dye Transfer</FormLabel>
+          {/* dye transfer */}
+          <FromGroupWrapper text="Dye Transfer">
+            <FormField
+              control={form.control}
+              name="cf_dye_transfer"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>CF </FormLabel>
 
-                <Select
-                  onValueChange={(e) => field.onChange(parseFloat(e))}
-                  defaultValue={String(field.value)}
-                >
-                  <FormControl>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select a value" />
-                    </SelectTrigger>
-                  </FormControl>
+                  <Select
+                    onValueChange={(e) => field.onChange(parseFloat(e))}
+                    defaultValue={String(field.value)}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select a value" />
+                      </SelectTrigger>
+                    </FormControl>
 
-                  {commonValuesSelect}
-                </Select>
+                    {commonValuesSelect}
+                  </Select>
 
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="cc_dye_transfer"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>CC </FormLabel>
+
+                  <Select
+                    onValueChange={(e) => field.onChange(parseFloat(e))}
+                    defaultValue={String(field.value)}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select a value" />
+                      </SelectTrigger>
+                    </FormControl>
+
+                    {commonValuesSelect}
+                  </Select>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </FromGroupWrapper>
 
           {/* Fabric Dia */}
-          <FromGroupWrapper text="Fabric Dia">
+          <FromGroupWrapper text="Fabrics">
             <FormField
               control={form.control}
               name="fabric_r_dia"
@@ -694,10 +705,7 @@ export const CreateOrEditBuyerForm: React.FC<{ buyer?: Buyer }> = ({
                 </FormItem>
               )}
             />
-          </FromGroupWrapper>
 
-          {/* Fabric Weight */}
-          <FromGroupWrapper text="Fabric Weight">
             <FormField
               control={form.control}
               name="fabric_r_gsm"
@@ -737,6 +745,9 @@ export const CreateOrEditBuyerForm: React.FC<{ buyer?: Buyer }> = ({
             />
           </FromGroupWrapper>
 
+          {/* bursting rules */}
+          <BurstingRulesSection />
+
           {/* submit */}
           <div className="flex justify-center">
             <Button
@@ -749,6 +760,78 @@ export const CreateOrEditBuyerForm: React.FC<{ buyer?: Buyer }> = ({
           </div>
         </form>
       </Form>
+    </>
+  );
+};
+
+const BurstingRulesSection: React.FC = () => {
+  const { control } = useFormContext<FormType>();
+
+  const { fields, append, remove } = useFieldArray({
+    control: control,
+    name: "burstingRules",
+  });
+
+  return (
+    <>
+      <div className="space-y-3">
+        <h2 className="text-lg font-medium">Bursting Rules</h2>
+
+        {fields.map((field, index) => (
+          <div key={field.id} className="flex gap-3 items-end">
+            {/* GSM */}
+            <FormField
+              control={control}
+              name={`burstingRules.${index}.gsm`}
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <FormLabel>GSM</FormLabel>
+                  <FormControl>
+                    <Input type="number" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Bursting Strength */}
+            <FormField
+              control={control}
+              name={`burstingRules.${index}.bursting_strength_kpa`}
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <FormLabel>Strength (kPa)</FormLabel>
+                  <FormControl>
+                    <Input type="number" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Delete */}
+            <Button
+              type="button"
+              variant="destructive"
+              size="icon"
+              onClick={() => remove(index)}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+        ))}
+
+        {/* Add More */}
+        <Button
+          type="button"
+          variant={"outline"}
+          className={cn("text-green-600 w-full")}
+          onClick={() => append({ gsm: 0, bursting_strength_kpa: 0 })}
+        >
+          <Plus className="h-4 w-4" />
+          <span>{fields.length == 0 ? "Add Bursting Rules" : "Add More"}</span>
+        </Button>
+      </div>
     </>
   );
 };

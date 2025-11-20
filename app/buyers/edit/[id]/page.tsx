@@ -1,5 +1,6 @@
 import { CreateOrEditBuyerForm } from "@/components/buyers/create-or-edit-buyer-form";
 import { PageHeaderSection } from "@/components/page-header";
+import { BuyerWithUser } from "@/lib/coreconstants";
 import { getServerBuyerDetails } from "@/lib/fetcher";
 import { toPlainObject } from "@/lib/utils";
 import { Buyer } from "@prisma/client";
@@ -17,7 +18,7 @@ export default async function BuyerDetailsPage({
     notFound();
   }
 
-  const safeBuyer: Buyer = toPlainObject(buyer);
+  const safeBuyer: BuyerWithUser = toPlainObject(buyer);
 
   return (
     <div className="p-6 md:p-10">

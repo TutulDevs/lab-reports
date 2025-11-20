@@ -1,6 +1,6 @@
 "use client";
 
-import { Buyer } from "@prisma/client";
+import { Buyer, Report } from "@prisma/client";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { useForm, useWatch } from "react-hook-form";
@@ -30,6 +30,7 @@ import {
 import { createReportSchema, updateReportSchema } from "@/lib/schemas";
 import {
   BuyersForReport,
+  BuyerWithUser,
   ReportOverallResult,
   ReportSampleStage,
   ReportSampleType,
@@ -50,8 +51,8 @@ export const CreateOrEditReportForm: React.FC<{
   report?: ReportWithUser;
   buyers: BuyersForReport[];
 }> = ({ report, buyers }) => {
-  const [buyer, setBuyer] = useState<null | Buyer>(
-    (report?.buyer as Buyer) ?? null,
+  const [buyer, setBuyer] = useState<null | BuyerWithUser>(
+    (report?.buyer as BuyerWithUser) ?? null,
   );
   const [reportData, setReportData] = useState<null | ReportFormType>(null);
 
@@ -82,12 +83,14 @@ export const CreateOrEditReportForm: React.FC<{
       fail_portions: report?.fail_portions ?? "",
 
       // for buyer req
-      ds_wash_length_min: report?.ds_wash_length_min ?? 55,
-      ds_wash_length_max: report?.ds_wash_length_max ?? 55,
-      ds_wash_width_min: report?.ds_wash_length_min ?? 55,
-      ds_wash_width_max: report?.ds_wash_length_max ?? 55,
+      ds_wash_length: report?.ds_wash_length ?? 55,
+      ds_wash_width: report?.ds_wash_width ?? 55,
 
       spirality_max: report?.spirality_max ?? undefined,
+      pilling: report?.pilling ?? undefined,
+      ph: report?.ph ? Number(report?.ph) : undefined,
+      bursting_strength_kpa: report?.bursting_strength_kpa ?? undefined,
+      gsm: report?.gsm ?? undefined,
 
       cf_wash_cs: report?.cf_wash_cs ?? undefined,
       cf_wash_cc: report?.cf_wash_cc ?? undefined,
@@ -103,15 +106,8 @@ export const CreateOrEditReportForm: React.FC<{
       cf_persp_cs_alk: report?.cf_persp_cs_alk ?? undefined,
       cf_persp_cc_alk: report?.cf_persp_cc_alk ?? undefined,
 
-      pilling_min: report?.pilling_min ?? undefined,
-      pilling_max: report?.pilling_max ?? undefined,
-
-      bursting_strength_kpa: report?.bursting_strength_kpa ?? undefined,
-
-      ph_min: report?.ph_min ? Number(report.ph_min) : undefined,
-      ph_max: report?.ph_max ? Number(report.ph_max) : undefined,
-
       cf_dye_transfer: report?.cf_dye_transfer ?? undefined,
+      cc_dye_transfer: report?.cc_dye_transfer ?? undefined,
 
       fabric_r_dia: report?.fabric_r_dia ?? undefined,
       fabric_f_dia: report?.fabric_f_dia ?? undefined,
@@ -121,6 +117,11 @@ export const CreateOrEditReportForm: React.FC<{
   });
 
   const buyerId = useWatch({ control: form.control, name: "buyerId" }) ?? "";
+  const burstingRules = (buyer?.burstingRules ?? []).sort(
+    (a, b) => a.gsm - b.gsm,
+  );
+
+  // console.log("buyer: ", buyerId, burstingRules);
 
   useEffect(() => {
     const getBuyer = async () => {
@@ -136,82 +137,68 @@ export const CreateOrEditReportForm: React.FC<{
     // if (report) setBuyer(report.buyer as Buyer);
   }, [buyerId, report]);
 
-  const [failPortions, setFailPortions] = useState<(keyof Buyer)[]>([]);
+  const [failPortions, setFailPortions] = useState<(keyof Report)[]>([]);
 
   const onPreviewSubmit = async (payload: ReportFormType) => {
     if (buyer) {
-      const fails: (keyof Buyer)[] = [];
+      const fails: (keyof Report)[] = [];
 
-      // check ds_wash_length_min NOT-DONE
-      if (Number(payload.ds_wash_length_min) < buyer?.ds_wash_length_min) {
-        fails.push("ds_wash_length_min");
+      // check ds_wash_length
+      if (
+        Number(payload.ds_wash_length) < Number(buyer?.ds_wash_length_min) ||
+        Number(payload.ds_wash_length) > Number(buyer?.ds_wash_length_max)
+      ) {
+        fails.push("ds_wash_length");
       }
 
-      // check ds_wash_length_max NOT-DONE
-      if (Number(payload.ds_wash_length_max) > buyer?.ds_wash_length_max) {
-        fails.push("ds_wash_length_max");
-      }
-
-      // check ds_wash_width_min NOT-DONE
-      if (Number(payload.ds_wash_width_min) < buyer?.ds_wash_width_min) {
-        fails.push("ds_wash_width_min");
-      }
-
-      // check ds_wash_width_max NOT-DONE
-      if (Number(payload.ds_wash_width_max) > buyer?.ds_wash_width_max) {
-        fails.push("ds_wash_width_max");
+      // check ds_wash_width
+      if (
+        Number(payload.ds_wash_width) < Number(buyer?.ds_wash_width_min) ||
+        Number(payload.ds_wash_width) > Number(buyer?.ds_wash_width_max)
+      ) {
+        fails.push("ds_wash_width");
       }
 
       // check spirality_max
       if (
         buyer?.spirality_max &&
-        payload.spirality_max &&
-        payload.spirality_max > buyer?.spirality_max
+        payload?.spirality_max &&
+        Number(payload?.spirality_max) > Number(buyer?.spirality_max)
       ) {
         fails.push("spirality_max");
       }
 
-      // check pilling_min NOT-DONE
-      if (
+      // check pilling
+      const isPillingLess =
         buyer?.pilling_min &&
-        payload.pilling_min &&
-        payload.pilling_min < buyer?.pilling_min
-      ) {
-        fails.push("pilling_min");
-      }
-
-      // check pilling_max NOT-DONE
-      if (
+        payload?.pilling &&
+        Number(payload?.pilling) < Number(buyer?.pilling_min);
+      const isPillingMore =
         buyer?.pilling_max &&
-        payload.pilling_max &&
-        payload.pilling_max > buyer?.pilling_max
-      ) {
-        fails.push("pilling_max");
+        payload?.pilling &&
+        Number(payload?.pilling) > Number(buyer?.pilling_max);
+      if (isPillingLess || isPillingMore) {
+        fails.push("pilling");
       }
 
       // check ph_min NOT-DONE
-      if (
+      const isPhLess =
         buyer?.ph_min &&
-        payload.ph_min &&
-        payload.ph_min < Number(buyer?.ph_min)
-      ) {
-        fails.push("ph_min");
-      }
-
-      // check ph_max NOT-DONE
-      if (
+        payload?.ph &&
+        Number(payload?.ph) < Number(buyer?.ph_min);
+      const isPhMore =
         buyer?.ph_max &&
-        payload.ph_max &&
-        payload.ph_max > Number(buyer?.ph_max)
-      ) {
-        fails.push("ph_max");
+        payload?.ph &&
+        Number(payload?.ph) > Number(buyer?.ph_max);
+      if (isPhLess || isPhMore) {
+        fails.push("ph");
       }
 
       // check cf_wash_cs
       if (
         buyer?.cf_wash_cs &&
         payload.cf_wash_cs &&
-        payload.cf_wash_cs < buyer?.cf_wash_cs
+        Number(payload.cf_wash_cs) < Number(buyer?.cf_wash_cs)
       ) {
         fails.push("cf_wash_cs");
       }
@@ -220,7 +207,7 @@ export const CreateOrEditReportForm: React.FC<{
       if (
         buyer?.cf_wash_cc &&
         payload.cf_wash_cc &&
-        payload.cf_wash_cc < buyer?.cf_wash_cc
+        Number(payload.cf_wash_cc) < Number(buyer?.cf_wash_cc)
       ) {
         fails.push("cf_wash_cc");
       }
@@ -229,7 +216,7 @@ export const CreateOrEditReportForm: React.FC<{
       if (
         buyer?.cf_rub_dry &&
         payload.cf_rub_dry &&
-        payload.cf_rub_dry < buyer?.cf_rub_dry
+        Number(payload.cf_rub_dry) < Number(buyer?.cf_rub_dry)
       ) {
         fails.push("cf_rub_dry");
       }
@@ -238,7 +225,7 @@ export const CreateOrEditReportForm: React.FC<{
       if (
         buyer?.cf_rub_wet &&
         payload.cf_rub_wet &&
-        payload.cf_rub_wet < buyer?.cf_rub_wet
+        Number(payload.cf_rub_wet) < Number(buyer?.cf_rub_wet)
       ) {
         fails.push("cf_rub_wet");
       }
@@ -247,7 +234,7 @@ export const CreateOrEditReportForm: React.FC<{
       if (
         buyer?.cf_water_cs &&
         payload.cf_water_cs &&
-        payload.cf_water_cs < buyer?.cf_water_cs
+        Number(payload.cf_water_cs) < Number(buyer?.cf_water_cs)
       ) {
         fails.push("cf_water_cs");
       }
@@ -256,7 +243,7 @@ export const CreateOrEditReportForm: React.FC<{
       if (
         buyer?.cf_water_cc &&
         payload.cf_water_cc &&
-        payload.cf_water_cc < buyer?.cf_water_cc
+        Number(payload.cf_water_cc) < Number(buyer?.cf_water_cc)
       ) {
         fails.push("cf_water_cc");
       }
@@ -265,7 +252,7 @@ export const CreateOrEditReportForm: React.FC<{
       if (
         buyer?.cf_persp_cs_acd &&
         payload.cf_persp_cs_acd &&
-        payload.cf_persp_cs_acd < buyer?.cf_persp_cs_acd
+        Number(payload.cf_persp_cs_acd) < Number(buyer?.cf_persp_cs_acd)
       ) {
         fails.push("cf_persp_cs_acd");
       }
@@ -274,7 +261,7 @@ export const CreateOrEditReportForm: React.FC<{
       if (
         buyer?.cf_persp_cc_acd &&
         payload.cf_persp_cc_acd &&
-        payload.cf_persp_cc_acd < buyer?.cf_persp_cc_acd
+        Number(payload.cf_persp_cc_acd) < Number(buyer?.cf_persp_cc_acd)
       ) {
         fails.push("cf_persp_cc_acd");
       }
@@ -283,7 +270,7 @@ export const CreateOrEditReportForm: React.FC<{
       if (
         buyer?.cf_persp_cs_alk &&
         payload.cf_persp_cs_alk &&
-        payload.cf_persp_cs_alk < buyer?.cf_persp_cs_alk
+        Number(payload.cf_persp_cs_alk) < Number(buyer?.cf_persp_cs_alk)
       ) {
         fails.push("cf_persp_cs_alk");
       }
@@ -292,77 +279,82 @@ export const CreateOrEditReportForm: React.FC<{
       if (
         buyer?.cf_persp_cc_alk &&
         payload.cf_persp_cc_alk &&
-        payload.cf_persp_cc_alk < buyer?.cf_persp_cc_alk
+        Number(payload.cf_persp_cc_alk) < Number(buyer?.cf_persp_cc_alk)
       ) {
         fails.push("cf_persp_cc_alk");
       }
 
-      // check cf_dye_transfer NOT-DONE
+      // check cf_dye_transfer
       if (
         buyer?.cf_dye_transfer &&
         payload.cf_dye_transfer &&
-        payload.cf_dye_transfer < buyer?.cf_dye_transfer
+        Number(payload.cf_dye_transfer) < Number(buyer?.cf_dye_transfer)
       ) {
         fails.push("cf_dye_transfer");
       }
 
-      // check bursting_strength_kpa
+      // check cc_dye_transfer
       if (
-        buyer?.bursting_strength_kpa &&
-        payload.bursting_strength_kpa &&
-        payload.bursting_strength_kpa < buyer?.bursting_strength_kpa
+        buyer?.cc_dye_transfer &&
+        payload.cc_dye_transfer &&
+        Number(payload.cc_dye_transfer) < Number(buyer?.cc_dye_transfer)
       ) {
-        fails.push("bursting_strength_kpa");
+        fails.push("cc_dye_transfer");
+      }
+
+      // check bursting_strength_kpa
+      if (payload.bursting_strength_kpa && burstingRules.length > 0) {
+        const gsm = Number(payload?.gsm);
+        const ruleIdx = burstingRules.findIndex((x) => x.gsm >= gsm);
+        const reqStrength = burstingRules[ruleIdx]?.bursting_strength_kpa;
+
+        // console.log(ruleIdx,burstingRules)
+
+        if (payload.bursting_strength_kpa < reqStrength) {
+          fails.push("bursting_strength_kpa");
+        }
       }
 
       // check fabric_r_dia NOT-DONE
-      if (
-        buyer?.fabric_r_dia &&
-        payload.fabric_r_dia &&
-        payload.fabric_r_dia > buyer?.fabric_r_dia
-      ) {
-        fails.push("fabric_r_dia");
-      }
+      // if (        buyer?.fabric_r_dia &&        payload.fabric_r_dia &&        Number(payload.fabric_r_dia) > Number(buyer?.fabric_r_dia)      ) {        fails.push("fabric_r_dia");      }
 
       // check fabric_f_dia NOT-DONE
-      if (
-        buyer?.fabric_f_dia &&
-        payload.fabric_f_dia &&
-        payload.fabric_f_dia > buyer?.fabric_f_dia
-      ) {
-        fails.push("fabric_f_dia");
-      }
+      // if (        buyer?.fabric_f_dia &&        payload.fabric_f_dia &&        Number(payload.fabric_f_dia) > Number(buyer?.fabric_f_dia)      ) {        fails.push("fabric_f_dia");      }
 
       // check fabric_r_gsm NOT-DONE
-      if (
-        buyer?.fabric_r_gsm &&
-        payload.fabric_r_gsm &&
-        payload.fabric_r_gsm > buyer?.fabric_r_gsm
-      ) {
-        fails.push("fabric_r_gsm");
-      }
+      // if (       buyer?.fabric_r_gsm &&       payload.fabric_r_gsm &&       Number(payload.fabric_r_gsm) > Number(buyer?.fabric_r_gsm)     ) {       fails.push("fabric_r_gsm");     }
 
       // check fabric_f_gsm NOT-DONE
-      if (
-        buyer?.fabric_f_gsm &&
-        payload.fabric_f_gsm &&
-        payload.fabric_f_gsm > buyer?.fabric_f_gsm
-      ) {
-        fails.push("fabric_f_gsm");
-      }
+      // if (buyer?.fabric_f_gsm &&payload.fabric_f_gsm &&Number(payload.fabric_f_gsm) > Number(buyer?.fabric_f_gsm)) {fails.push("fabric_f_gsm");}
 
       // console.log(fails);
-
       setFailPortions(fails);
       setReportData(payload);
     }
   };
 
-  const getBuyerValue = (key: keyof Buyer) => {
+  const getBuyerValue = (key: keyof Report) => {
     if (!buyer) return null;
-    const value = buyer[key];
+
+    if (key == "ds_wash_length") {
+      return ` (${buyer["ds_wash_length_min"]} to ${buyer["ds_wash_length_max"]})`;
+    }
+
+    if (key == "ds_wash_width") {
+      return ` (${buyer["ds_wash_width_min"]} to ${buyer["ds_wash_width_max"]})`;
+    }
+
+    if (key == "pilling" && (buyer["pilling_min"] || buyer["pilling_max"])) {
+      return ` (${buyer["pilling_min"] ?? "--"} to ${buyer["pilling_max"] ?? "--"})`;
+    }
+
+    if (key == "ph" && (buyer["ph_min"] || buyer["ph_max"])) {
+      return ` (${buyer["ph_min"] ?? "--"} to ${buyer["ph_max"] ?? "--"})`;
+    }
+
+    const value = buyer[key as keyof Buyer];
     if (value == null || value == undefined) return null;
-    return ` (${buyer[key]})`;
+    return ` (${buyer[key as keyof Buyer]})`;
   };
 
   return (
@@ -650,16 +642,16 @@ export const CreateOrEditReportForm: React.FC<{
           <FromGroupWrapper text={"Dimensional stability to Wash"}>
             <FormField
               control={form.control}
-              name="ds_wash_length_min"
+              name="ds_wash_length"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    Length Minimum
-                    {getBuyerValue("ds_wash_length_min")}
+                    Length
+                    {getBuyerValue("ds_wash_length")}
                   </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Enter min length"
+                      placeholder="Enter length"
                       type="number"
                       step="any"
                       {...field}
@@ -672,60 +664,16 @@ export const CreateOrEditReportForm: React.FC<{
 
             <FormField
               control={form.control}
-              name="ds_wash_length_max"
+              name="ds_wash_width"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    Length Maximum
-                    {getBuyerValue("ds_wash_length_max")}
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Enter max length"
-                      type="number"
-                      step="any"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="ds_wash_width_min"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    Width Minimum
-                    {getBuyerValue("ds_wash_width_min")}
+                    Width
+                    {getBuyerValue("ds_wash_width")}
                   </FormLabel>
                   <FormControl>
                     <Input
                       placeholder="Enter min width"
-                      type="number"
-                      step="any"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="ds_wash_width_max"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    Width Maximum
-                    {getBuyerValue("ds_wash_length_max")}
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Enter max width"
                       type="number"
                       step="any"
                       {...field}
@@ -744,11 +692,31 @@ export const CreateOrEditReportForm: React.FC<{
               control={form.control}
               name="spirality_max"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="md:col-span-2">
                   <FormLabel>
                     Spirality Maximum
                     {getBuyerValue("spirality_max")}
                   </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Enter value"
+                      type="number"
+                      step="any"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* gsm */}
+            <FormField
+              control={form.control}
+              name="gsm"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>GSM</FormLabel>
                   <FormControl>
                     <Input
                       placeholder="Enter value"
@@ -769,8 +737,8 @@ export const CreateOrEditReportForm: React.FC<{
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    Bursting Strength (KPA)
-                    {getBuyerValue("bursting_strength_kpa")}
+                    Bursting Strength (kPA)
+                    {/* {getBuyerValue("bursting_strength_kpa")} */}
                   </FormLabel>
                   <FormControl>
                     <Input
@@ -785,15 +753,84 @@ export const CreateOrEditReportForm: React.FC<{
               )}
             />
 
-            {/* bursting_strength_kpa */}
+            {/* cf_dye_transfer */}
             <FormField
               control={form.control}
               name="cf_dye_transfer"
               render={({ field }) => (
-                <FormItem className="md:col-span-2">
+                <FormItem>
                   <FormLabel>
                     CF to Dye Transfer
                     {getBuyerValue("cf_dye_transfer")}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Enter value"
+                      type="number"
+                      step="any"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* cc_dye_transfer */}
+            <FormField
+              control={form.control}
+              name="cc_dye_transfer"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    CC to Dye Transfer
+                    {getBuyerValue("cc_dye_transfer")}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Enter value"
+                      type="number"
+                      step="any"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* pilling */}
+            <FormField
+              control={form.control}
+              name="pilling"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Pilling
+                    {getBuyerValue("pilling")}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Enter value"
+                      type="number"
+                      step="any"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* ph */}
+            <FormField
+              control={form.control}
+              name="ph"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    pH Level
+                    {getBuyerValue("ph")}
                   </FormLabel>
                   <FormControl>
                     <Input
@@ -1041,102 +1078,8 @@ export const CreateOrEditReportForm: React.FC<{
             />
           </FromGroupWrapper>
 
-          {/* pilling */}
-          <FromGroupWrapper text="Pilling">
-            <FormField
-              control={form.control}
-              name="pilling_min"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    Minimum
-                    {getBuyerValue("pilling_min")}
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Enter value"
-                      type="number"
-                      step="any"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="pilling_max"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    Maximum
-                    {getBuyerValue("pilling_max")}
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Enter value"
-                      type="number"
-                      step="any"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </FromGroupWrapper>
-
-          {/* ph level */}
-          <FromGroupWrapper text="PH Level">
-            <FormField
-              control={form.control}
-              name="ph_min"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    Minimum
-                    {getBuyerValue("ph_min")}
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Enter value"
-                      type="number"
-                      step="any"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="ph_max"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    Maximum
-                    {getBuyerValue("ph_max")}
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Enter value"
-                      type="number"
-                      step="any"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </FromGroupWrapper>
-
           {/* fabric dia */}
-          <FromGroupWrapper text="Fabric Dia">
+          <FromGroupWrapper text="Fabrics">
             <FormField
               control={form.control}
               name="fabric_r_dia"
@@ -1180,10 +1123,7 @@ export const CreateOrEditReportForm: React.FC<{
                 </FormItem>
               )}
             />
-          </FromGroupWrapper>
 
-          {/* fabric weight */}
-          <FromGroupWrapper text="Fabric Weight">
             <FormField
               control={form.control}
               name="fabric_r_gsm"

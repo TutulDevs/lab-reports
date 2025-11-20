@@ -32,6 +32,7 @@ export const BuyerDetails: React.FC<{ buyerId: string }> = async ({
     updatedAt,
     userId,
     lastUpdatedBy,
+    burstingRules,
     ...restBuyer
   } = buyer;
 
@@ -84,7 +85,7 @@ export const BuyerDetails: React.FC<{ buyerId: string }> = async ({
             return (
               <TableRow key={x}>
                 <TableCell className="py-1">
-                  {reportBuyerCommonFieldsText[x]}
+                  {reportBuyerCommonFieldsText[x] ?? x}
                 </TableCell>
                 <TableCell className="py-1 text-end">
                   {/* @ts-expect-errors typecasting */}
@@ -95,6 +96,42 @@ export const BuyerDetails: React.FC<{ buyerId: string }> = async ({
           })}
         </TableBody>
       </Table>
+
+      {burstingRules?.length == 0 ? null : (
+        <>
+          <div className="text-center text-2xl font-semibold mt-8 mb-2">
+            Bursting Rules
+          </div>
+
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>GSM</TableHead>
+                <TableHead className="text-end">
+                  Bursting Strength (KPA)
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+
+            <TableBody>
+              {burstingRules?.map((x, idx, arr) => {
+                return (
+                  <TableRow key={x.gsm}>
+                    <TableCell className="py-1">
+                      {idx == 0
+                        ? `0 - ${x.gsm}`
+                        : `${arr[idx - 1].gsm} - ${x.gsm}`}
+                    </TableCell>
+                    <TableCell className="py-1 text-end">
+                      {String(x.bursting_strength_kpa ?? "")}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </>
+      )}
     </>
   );
 };

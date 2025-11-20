@@ -86,6 +86,9 @@ export const updateStaffSchema = z.object({
 const buyerSchema = z.object({
   id: z.string().optional(),
   title: z.string().min(3, "Title must be at least 3 characters"),
+  burstingRules: z
+    .array(z.object({ gsm: reqNumPos, bursting_strength_kpa: reqNumPos }))
+    .optional(),
   ds_wash_length_min: reqNumNeg,
   ds_wash_length_max: reqNumPos,
   ds_wash_width_min: reqNumNeg,
@@ -103,10 +106,10 @@ const buyerSchema = z.object({
   cf_persp_cc_alk: numOptional,
   pilling_min: numOptional,
   pilling_max: numOptional,
-  bursting_strength_kpa: numOptional,
   ph_min: numOptional,
   ph_max: numOptional,
   cf_dye_transfer: numOptional,
+  cc_dye_transfer: numOptional,
   fabric_r_dia: numOptional,
   fabric_f_dia: numOptional,
   fabric_r_gsm: numOptional,
@@ -123,7 +126,7 @@ const reportSchema = z.object({
   buyer: z.custom<Buyer>().optional(),
 
   // report related
-  sample_receive_date: z.coerce.date(), // .max(new Date(), "Date cannot be in the future"),
+  sample_receive_date: z.coerce.date(),
   report_id: z.string(),
   status: z.number(),
   sample_type: numOptional,
@@ -136,12 +139,11 @@ const reportSchema = z.object({
   result: z.number(),
   fail_portions: z.string().optional(),
   remarks: z.string().optional(),
+  gsm: reqNum,
 
   // for buyer req
-  ds_wash_length_min: reqNum, // reqNumNeg,
-  ds_wash_length_max: reqNum, // reqNumPos,
-  ds_wash_width_min: reqNum, // reqNumNeg,
-  ds_wash_width_max: reqNum, // reqNumPos,
+  ds_wash_length: reqNum,
+  ds_wash_width: reqNum,
   spirality_max: numOptional,
   cf_wash_cs: numOptional,
   cf_wash_cc: numOptional,
@@ -153,12 +155,11 @@ const reportSchema = z.object({
   cf_persp_cc_acd: numOptional,
   cf_persp_cs_alk: numOptional,
   cf_persp_cc_alk: numOptional,
-  pilling_min: numOptional,
-  pilling_max: numOptional,
+  pilling: numOptional,
   bursting_strength_kpa: numOptional,
-  ph_min: numOptional,
-  ph_max: numOptional,
+  ph: numOptional,
   cf_dye_transfer: numOptional,
+  cc_dye_transfer: numOptional,
   fabric_r_dia: numOptional,
   fabric_f_dia: numOptional,
   fabric_r_gsm: numOptional,
