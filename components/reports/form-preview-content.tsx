@@ -20,10 +20,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ListItem, ListItemProps } from "../list-item";
-import { ReportOverallResult } from "@/lib/coreconstants";
+import { BuyerWithUser, ReportOverallResult } from "@/lib/coreconstants";
 import Link from "next/link";
 import { Badge } from "../ui/badge";
 import {
+  getBuyerValue,
   reportBuyerCommonFieldsText,
   reportOverallResultText,
   reportOverallResultVariants,
@@ -36,7 +37,7 @@ import {
 export const FormPreviewContent: React.FC<{
   report?: Report;
   formData: ReportFormType;
-  buyer: Buyer;
+  buyer: BuyerWithUser;
   failPortions: (keyof Report)[];
 }> = ({ report, formData, buyer, failPortions }) => {
   const router = useRouter();
@@ -301,7 +302,12 @@ export const FormPreviewContent: React.FC<{
                         {String(formData[x as keyof ReportFormType] ?? "")}
                       </TableCell>
                       <TableCell className="p-0 pr-3 text-end">
-                        {String(buyer[x as keyof Buyer] ?? "-")}
+                        {getBuyerValue(
+                          x as keyof Report,
+                          buyer,
+                          false,
+                          restFormData?.gsm,
+                        )}
                       </TableCell>
                     </TableRow>
                   );

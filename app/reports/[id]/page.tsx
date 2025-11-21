@@ -11,11 +11,9 @@ export default async function ReportDetailsPage({
 
   return (
     <>
-      <div className="p-6 md:p-10">
-        <Suspense fallback={<Loader className="py-8" />}>
-          <ReportDetails reportId={reportId} />
-        </Suspense>
-      </div>
+      <Suspense fallback={<Loader className="py-8" />}>
+        <ReportDetails reportId={reportId} />
+      </Suspense>
     </>
   );
 }

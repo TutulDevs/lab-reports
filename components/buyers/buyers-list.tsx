@@ -26,7 +26,7 @@ export const BuyersList = async () => {
         </Link>
       </PageHeaderSection>
 
-      <Table>
+      <Table className="max-w-7xl mx-auto">
         <TableHeader>
           <TableRow>
             <TableHead>Title</TableHead>

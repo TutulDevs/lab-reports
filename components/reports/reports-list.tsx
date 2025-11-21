@@ -35,7 +35,7 @@ export const ReportsList = async () => {
       </PageHeaderSection>
 
       {/* table */}
-      <Table>
+      <Table className="max-w-7xl mx-auto">
         <TableHeader>
           <TableRow>
             {/* <TableHead>ID</TableHead> */}
@@ -76,7 +76,7 @@ export const ReportsList = async () => {
                 <TableCell>
                   {dateFormatter(report.createdAt, "dd MMM yyyy")}
                 </TableCell>
-                <TableCell className="text-right">
+                <TableCell className="text-right space-x-2">
                   <Link
                     href={`/reports/${report.id}`}
                     className={cn(
@@ -84,6 +84,13 @@ export const ReportsList = async () => {
                     )}
                   >
                     Details
+                  </Link>
+
+                  <Link
+                    href={"/reports/edit/" + report.id}
+                    className={cn(buttonVariants({ size: "sm" }))}
+                  >
+                    Edit
                   </Link>
                 </TableCell>
               </TableRow>

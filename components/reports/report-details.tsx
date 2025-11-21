@@ -1,7 +1,7 @@
 import { cn, dateFormatter } from "@/lib/utils";
 import { getServerReportsDetails } from "@/lib/fetcher";
 import { notFound } from "next/navigation";
-import { Buyer } from "@prisma/client";
+import { Buyer, Report } from "@prisma/client";
 import {
   Table,
   TableBody,
@@ -13,6 +13,7 @@ import {
 import { ListItem, ListItemProps } from "@/components/list-item";
 import { Badge } from "@/components/ui/badge";
 import {
+  getBuyerValue,
   reportBuyerCommonFieldsText,
   reportOverallResultText,
   reportOverallResultVariants,
@@ -25,6 +26,7 @@ import { PageHeaderSection } from "../page-header";
 import Link from "next/link";
 import { buttonVariants } from "../ui/button";
 import { ReportDeleteAction } from "./report-actions";
+import { BuyerWithUser } from "@/lib/coreconstants";
 
 export const ReportDetails: React.FC<{ reportId: string }> = async ({
   reportId,
@@ -176,58 +178,68 @@ export const ReportDetails: React.FC<{ reportId: string }> = async ({
         </div>
       </PageHeaderSection>
 
-      {/* report & buyer info */}
-      <div className="">
-        {listItemsData.map((item, index) => (
-          <ListItem
-            key={item.title?.toString() || index}
-            hideColon={true}
-            {...item}
-          />
-        ))}
-      </div>
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-20 xl:gap-30 max-w-7xl mx-auto">
+        {/* report & buyer info */}
+        <div className="">
+          <h3 className="text-center text-2xl font-semibold mb-2">
+            Report Info
+          </h3>
 
-      {/* <hr className="my-8" /> */}
+          {listItemsData.map((item, index) => (
+            <ListItem
+              key={item.title?.toString() || index}
+              hideColon={true}
+              {...item}
+            />
+          ))}
+        </div>
 
-      {/* compare */}
-      <div className="text-center text-2xl font-semibold mt-8 mb-2">
-        Report Comparison
-      </div>
+        {/* compare */}
+        <div>
+          <h3 className="text-center text-2xl font-semibold mb-2">
+            Report Comparison
+          </h3>
 
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Field</TableHead>
-            <TableHead className="text-end">Report Value</TableHead>
-            <TableHead className="text-end">Buyer Requirement</TableHead>
-          </TableRow>
-        </TableHeader>
-
-        <TableBody>
-          {Object.keys(restReport)?.map((x) => {
-            return (
-              <TableRow
-                key={x}
-                className={cn({
-                  ["text-destructive"]: fail_portions?.includes(x),
-                })}
-              >
-                <TableCell className="py-1">
-                  {reportBuyerCommonFieldsText[x]}
-                </TableCell>
-                <TableCell className="py-1 text-end">
-                  {/* @ts-expect-errors typecasting */}
-                  {String(restReport[x] ?? "")}
-                </TableCell>
-                <TableCell className="py-1 text-end">
-                  {/* @ts-expect-errors typecasting */}
-                  {String(buyer[x] ?? "")}
-                </TableCell>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Field</TableHead>
+                <TableHead className="text-end">Report Value</TableHead>
+                <TableHead className="text-end">Buyer Requirement</TableHead>
               </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
+            </TableHeader>
+
+            <TableBody>
+              {Object.keys(restReport)?.map((x) => {
+                return (
+                  <TableRow
+                    key={x}
+                    className={cn({
+                      ["text-destructive"]: fail_portions?.includes(x),
+                    })}
+                  >
+                    <TableCell className="py-1">
+                      {reportBuyerCommonFieldsText[x] ?? x}
+                    </TableCell>
+                    <TableCell className="py-1 text-end">
+                      {/* @ts-expect-errors typecasting */}
+                      {String(restReport[x] ?? "")}
+                    </TableCell>
+                    <TableCell className="py-1 text-end">
+                      {getBuyerValue(
+                        x as keyof Report,
+                        buyer as BuyerWithUser,
+                        false,
+                        restReport?.gsm,
+                      )}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </div>
+      </div>
 
       {/* <div className="grid grid-cols-2">
           <pre className="text-wrap">{JSON.stringify(report, null, 2)}</pre>

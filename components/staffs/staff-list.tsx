@@ -31,7 +31,7 @@ export const StaffList: React.FC<{ me: PartialUser | null }> = async ({
         <CreateOrUpdateStaffButton canEdit={me?.role == Role.ADMIN} />
       </PageHeaderSection>
 
-      <Table>
+      <Table className="max-w-7xl mx-auto">
         <TableHeader>
           <TableRow>
             <TableHead>ID</TableHead>

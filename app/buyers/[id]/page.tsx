@@ -10,10 +10,10 @@ export default async function BuyerDetailsPage({
   const { id } = await params;
 
   return (
-    <div className="p-6 md:p-10">
+    <>
       <Suspense fallback={<Loader className="py-8" />}>
         <BuyerDetails buyerId={id} />
       </Suspense>
-    </div>
+    </>
   );
 }

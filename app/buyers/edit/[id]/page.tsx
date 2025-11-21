@@ -21,13 +21,13 @@ export default async function BuyerDetailsPage({
   const safeBuyer: BuyerWithUser = toPlainObject(buyer);
 
   return (
-    <div className="p-6 md:p-10">
+    <>
       <PageHeaderSection
         title={`Update ${buyer.title}`}
         subtitle={"Fill the form to update buyer with the requirements."}
       />
 
       <CreateOrEditBuyerForm buyer={safeBuyer} />
-    </div>
+    </>
   );
 }

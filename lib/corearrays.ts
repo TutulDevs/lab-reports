@@ -1,4 +1,6 @@
+import { Buyer, Report } from "@prisma/client";
 import {
+  BuyerWithUser,
   ReportDryProcess,
   ReportOverallResult,
   ReportSampleStage,
@@ -146,4 +148,51 @@ export const reportBuyerCommonFieldsText: any = {
   fabric_f_dia: "Fabric F. Dia",
   fabric_r_gsm: "Fabric R. GSM",
   fabric_f_gsm: "Fabric F. GSM",
+};
+
+export const getBuyerValue = (
+  key: keyof Report,
+  buyer?: null | BuyerWithUser,
+  withBrackets = true,
+  gsm?: null | number,
+): string | null => {
+  if (!buyer) return null;
+
+  // length
+  if (key == "ds_wash_length") {
+    const val = `${buyer["ds_wash_length_min"]} to ${buyer["ds_wash_length_max"]}`;
+    return withBrackets ? ` (${val})` : val;
+  }
+
+  // width
+  if (key == "ds_wash_width") {
+    const val = `${buyer["ds_wash_width_min"]} to ${buyer["ds_wash_width_max"]}`;
+    return withBrackets ? ` (${val})` : val;
+  }
+
+  // pilling
+  if (key == "pilling" && (buyer["pilling_min"] || buyer["pilling_max"])) {
+    const val = `${buyer["pilling_min"]} to ${buyer["pilling_max"]}`;
+    return withBrackets ? ` (${val})` : val;
+  }
+
+  // ph
+  if (key == "ph" && (buyer["ph_min"] || buyer["ph_max"])) {
+    const val = `${buyer["ph_min"]} to ${buyer["ph_max"]}`;
+    return withBrackets ? ` (${val})` : val;
+  }
+
+  // bursting strength
+  if (key == "bursting_strength_kpa" && gsm) {
+    const rules = buyer?.burstingRules ?? [];
+    const ruleIdx = rules.findIndex((x) => x.gsm >= gsm);
+    const reqStrength = rules[ruleIdx]?.bursting_strength_kpa;
+
+    return withBrackets ? ` (${reqStrength})` : reqStrength.toString();
+  }
+
+  // others
+  const value = buyer[key as keyof Buyer];
+  if (value == null || value == undefined) return null;
+  return withBrackets ? ` (${value})` : value.toString();
 };

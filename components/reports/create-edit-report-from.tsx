@@ -23,6 +23,7 @@ import {
   SelectValue,
 } from "../ui/select";
 import {
+  getBuyerValue,
   reportSampleList,
   reportSampleStageList,
   reportStatusList,
@@ -72,19 +73,19 @@ export const CreateOrEditReportForm: React.FC<{
       status: report?.status ?? ReportStatus.IN_PROGRESS,
       sample_type: report?.sample_type ?? ReportSampleType.FABRIC,
       sample_stage: report?.sample_stage ?? ReportSampleStage.A_STENTER,
-      order_number: report?.order_number ?? 1111111,
-      batch_number: report?.batch_number ?? 3333333,
+      order_number: report?.order_number,
+      batch_number: report?.batch_number,
       color: report?.color ?? "",
       fabric_type: report?.fabric_type ?? "",
-      roll_number: report?.roll_number ?? 999999,
+      roll_number: report?.roll_number,
       remarks: report?.remarks ?? "",
 
       result: report?.result ?? ReportOverallResult.PENDING,
       fail_portions: report?.fail_portions ?? "",
 
       // for buyer req
-      ds_wash_length: report?.ds_wash_length ?? 55,
-      ds_wash_width: report?.ds_wash_width ?? 55,
+      ds_wash_length: report?.ds_wash_length,
+      ds_wash_width: report?.ds_wash_width,
 
       spirality_max: report?.spirality_max ?? undefined,
       pilling: report?.pilling ?? undefined,
@@ -333,36 +334,12 @@ export const CreateOrEditReportForm: React.FC<{
     }
   };
 
-  const getBuyerValue = (key: keyof Report) => {
-    if (!buyer) return null;
-
-    if (key == "ds_wash_length") {
-      return ` (${buyer["ds_wash_length_min"]} to ${buyer["ds_wash_length_max"]})`;
-    }
-
-    if (key == "ds_wash_width") {
-      return ` (${buyer["ds_wash_width_min"]} to ${buyer["ds_wash_width_max"]})`;
-    }
-
-    if (key == "pilling" && (buyer["pilling_min"] || buyer["pilling_max"])) {
-      return ` (${buyer["pilling_min"] ?? "--"} to ${buyer["pilling_max"] ?? "--"})`;
-    }
-
-    if (key == "ph" && (buyer["ph_min"] || buyer["ph_max"])) {
-      return ` (${buyer["ph_min"] ?? "--"} to ${buyer["ph_max"] ?? "--"})`;
-    }
-
-    const value = buyer[key as keyof Buyer];
-    if (value == null || value == undefined) return null;
-    return ` (${buyer[key as keyof Buyer]})`;
-  };
-
   return (
     <>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onPreviewSubmit)}
-          className="space-y-4 mt-6 mx-auto max-w-4xl "
+          className="space-y-4 mt-6 mx-auto max-w-5xl "
         >
           {/* buyer */}
           <FormField
@@ -647,7 +624,7 @@ export const CreateOrEditReportForm: React.FC<{
                 <FormItem>
                   <FormLabel>
                     Length
-                    {getBuyerValue("ds_wash_length")}
+                    {getBuyerValue("ds_wash_length", buyer)}
                   </FormLabel>
                   <FormControl>
                     <Input
@@ -669,7 +646,7 @@ export const CreateOrEditReportForm: React.FC<{
                 <FormItem>
                   <FormLabel>
                     Width
-                    {getBuyerValue("ds_wash_width")}
+                    {getBuyerValue("ds_wash_width", buyer)}
                   </FormLabel>
                   <FormControl>
                     <Input
@@ -695,7 +672,7 @@ export const CreateOrEditReportForm: React.FC<{
                 <FormItem className="md:col-span-2">
                   <FormLabel>
                     Spirality Maximum
-                    {getBuyerValue("spirality_max")}
+                    {getBuyerValue("spirality_max", buyer)}
                   </FormLabel>
                   <FormControl>
                     <Input
@@ -738,7 +715,7 @@ export const CreateOrEditReportForm: React.FC<{
                 <FormItem>
                   <FormLabel>
                     Bursting Strength (kPA)
-                    {/* {getBuyerValue("bursting_strength_kpa")} */}
+                    {/* {getBuyerValue("bursting_strength_kpa",buyer)} */}
                   </FormLabel>
                   <FormControl>
                     <Input
@@ -761,7 +738,7 @@ export const CreateOrEditReportForm: React.FC<{
                 <FormItem>
                   <FormLabel>
                     CF to Dye Transfer
-                    {getBuyerValue("cf_dye_transfer")}
+                    {getBuyerValue("cf_dye_transfer", buyer)}
                   </FormLabel>
                   <FormControl>
                     <Input
@@ -784,7 +761,7 @@ export const CreateOrEditReportForm: React.FC<{
                 <FormItem>
                   <FormLabel>
                     CC to Dye Transfer
-                    {getBuyerValue("cc_dye_transfer")}
+                    {getBuyerValue("cc_dye_transfer", buyer)}
                   </FormLabel>
                   <FormControl>
                     <Input
@@ -807,7 +784,7 @@ export const CreateOrEditReportForm: React.FC<{
                 <FormItem>
                   <FormLabel>
                     Pilling
-                    {getBuyerValue("pilling")}
+                    {getBuyerValue("pilling", buyer)}
                   </FormLabel>
                   <FormControl>
                     <Input
@@ -830,7 +807,7 @@ export const CreateOrEditReportForm: React.FC<{
                 <FormItem>
                   <FormLabel>
                     pH Level
-                    {getBuyerValue("ph")}
+                    {getBuyerValue("ph", buyer)}
                   </FormLabel>
                   <FormControl>
                     <Input
@@ -855,7 +832,7 @@ export const CreateOrEditReportForm: React.FC<{
                 <FormItem>
                   <FormLabel>
                     CS
-                    {getBuyerValue("cf_wash_cs")}
+                    {getBuyerValue("cf_wash_cs", buyer)}
                   </FormLabel>
                   <FormControl>
                     <Input
@@ -877,7 +854,7 @@ export const CreateOrEditReportForm: React.FC<{
                 <FormItem>
                   <FormLabel>
                     CC
-                    {getBuyerValue("cf_wash_cc")}
+                    {getBuyerValue("cf_wash_cc", buyer)}
                   </FormLabel>
                   <FormControl>
                     <Input
@@ -902,7 +879,7 @@ export const CreateOrEditReportForm: React.FC<{
                 <FormItem>
                   <FormLabel>
                     Dry
-                    {getBuyerValue("cf_rub_dry")}
+                    {getBuyerValue("cf_rub_dry", buyer)}
                   </FormLabel>
                   <FormControl>
                     <Input
@@ -924,7 +901,7 @@ export const CreateOrEditReportForm: React.FC<{
                 <FormItem>
                   <FormLabel>
                     Wet
-                    {getBuyerValue("cf_rub_wet")}
+                    {getBuyerValue("cf_rub_wet", buyer)}
                   </FormLabel>
                   <FormControl>
                     <Input
@@ -949,7 +926,7 @@ export const CreateOrEditReportForm: React.FC<{
                 <FormItem>
                   <FormLabel>
                     CS
-                    {getBuyerValue("cf_water_cs")}
+                    {getBuyerValue("cf_water_cs", buyer)}
                   </FormLabel>
                   <FormControl>
                     <Input
@@ -971,7 +948,7 @@ export const CreateOrEditReportForm: React.FC<{
                 <FormItem>
                   <FormLabel>
                     CC
-                    {getBuyerValue("cf_water_cc")}
+                    {getBuyerValue("cf_water_cc", buyer)}
                   </FormLabel>
                   <FormControl>
                     <Input
@@ -996,7 +973,7 @@ export const CreateOrEditReportForm: React.FC<{
                 <FormItem>
                   <FormLabel>
                     CS ACD
-                    {getBuyerValue("cf_persp_cs_acd")}
+                    {getBuyerValue("cf_persp_cs_acd", buyer)}
                   </FormLabel>
                   <FormControl>
                     <Input
@@ -1018,7 +995,7 @@ export const CreateOrEditReportForm: React.FC<{
                 <FormItem>
                   <FormLabel>
                     CC ACD
-                    {getBuyerValue("cf_persp_cc_acd")}
+                    {getBuyerValue("cf_persp_cc_acd", buyer)}
                   </FormLabel>
                   <FormControl>
                     <Input
@@ -1040,7 +1017,7 @@ export const CreateOrEditReportForm: React.FC<{
                 <FormItem>
                   <FormLabel>
                     CS ALK
-                    {getBuyerValue("cf_persp_cs_alk")}
+                    {getBuyerValue("cf_persp_cs_alk", buyer)}
                   </FormLabel>
                   <FormControl>
                     <Input
@@ -1062,7 +1039,7 @@ export const CreateOrEditReportForm: React.FC<{
                 <FormItem>
                   <FormLabel>
                     CC ALK
-                    {getBuyerValue("cf_persp_cc_alk")}
+                    {getBuyerValue("cf_persp_cc_alk", buyer)}
                   </FormLabel>
                   <FormControl>
                     <Input
@@ -1087,7 +1064,7 @@ export const CreateOrEditReportForm: React.FC<{
                 <FormItem>
                   <FormLabel>
                     R. Dia
-                    {getBuyerValue("fabric_r_dia")}
+                    {getBuyerValue("fabric_r_dia", buyer)}
                   </FormLabel>
                   <FormControl>
                     <Input
@@ -1109,7 +1086,7 @@ export const CreateOrEditReportForm: React.FC<{
                 <FormItem>
                   <FormLabel>
                     F. Dia
-                    {getBuyerValue("fabric_f_dia")}
+                    {getBuyerValue("fabric_f_dia", buyer)}
                   </FormLabel>
                   <FormControl>
                     <Input
@@ -1131,7 +1108,7 @@ export const CreateOrEditReportForm: React.FC<{
                 <FormItem>
                   <FormLabel>
                     R. GSM
-                    {getBuyerValue("fabric_r_gsm")}
+                    {getBuyerValue("fabric_r_gsm", buyer)}
                   </FormLabel>
                   <FormControl>
                     <Input
@@ -1153,7 +1130,7 @@ export const CreateOrEditReportForm: React.FC<{
                 <FormItem>
                   <FormLabel>
                     F. GSM
-                    {getBuyerValue("fabric_f_gsm")}
+                    {getBuyerValue("fabric_f_gsm", buyer)}
                   </FormLabel>
                   <FormControl>
                     <Input

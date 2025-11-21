@@ -57,7 +57,7 @@ export default async function RootLayout({
             <SidebarInset>
               <SiteHeader isLoggedIn={!!userData} />
 
-              {children}
+              <main className="p-6 md:p-10">{children}</main>
             </SidebarInset>
           </SidebarProvider>
         </ThemeProvider>

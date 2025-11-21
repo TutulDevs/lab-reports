@@ -8,8 +8,8 @@
 - [DONE] buyer: bursting with [{gsm:number; kpa:number}]
 - [DONE] bursting from range in report
 - [DONE] Dye Transfer CC with CS
-- report form fail logic update
-- report & buyer max-w
+- [DONE] report form fail logic update
+- [DONE] report & buyer max-w
 - dashboard with charts, insights
 - all tables filter
 - all tables download csv/xlsx/pdf

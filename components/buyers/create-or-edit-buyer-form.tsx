@@ -153,7 +153,7 @@ export const CreateOrEditBuyerForm: React.FC<{ buyer?: BuyerWithUser }> = ({
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-4 mt-6 mx-auto max-w-4xl "
+          className="space-y-4 mt-6 mx-auto max-w-5xl "
         >
           {/* title */}
           <FormField
@@ -824,8 +824,8 @@ const BurstingRulesSection: React.FC = () => {
         {/* Add More */}
         <Button
           type="button"
-          variant={"outline"}
-          className={cn("text-green-600 w-full")}
+          variant={"success"}
+          className={cn(fields.length == 0 ? "w-full" : "")}
           onClick={() => append({ gsm: 0, bursting_strength_kpa: 0 })}
         >
           <Plus className="h-4 w-4" />
