@@ -7,6 +7,7 @@ import { SiteHeader } from "@/components/site-header";
 import { getServerUser } from "@/lib/fetcher";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
+import { TanstackQueryProvider } from "@/components/tanstack-query-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,31 +37,33 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         suppressHydrationWarning
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <Toaster />
-
-          <SidebarProvider
-            style={
-              {
-                "--sidebar-width": "calc(var(--spacing) * 72)",
-                "--header-height": "calc(var(--spacing) * 12)",
-              } as React.CSSProperties
-            }
+        <TanstackQueryProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
           >
-            <AppSidebar variant="inset" userData={userData} />
+            <Toaster />
 
-            <SidebarInset>
-              <SiteHeader isLoggedIn={!!userData} />
+            <SidebarProvider
+              style={
+                {
+                  "--sidebar-width": "calc(var(--spacing) * 72)",
+                  "--header-height": "calc(var(--spacing) * 12)",
+                } as React.CSSProperties
+              }
+            >
+              <AppSidebar variant="inset" userData={userData} />
 
-              <main className="p-6 md:p-10">{children}</main>
-            </SidebarInset>
-          </SidebarProvider>
-        </ThemeProvider>
+              <SidebarInset>
+                <SiteHeader isLoggedIn={!!userData} />
+
+                <main className="p-6 md:p-10">{children}</main>
+              </SidebarInset>
+            </SidebarProvider>
+          </ThemeProvider>
+        </TanstackQueryProvider>
       </body>
     </html>
   );
