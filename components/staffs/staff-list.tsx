@@ -13,7 +13,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { roleText, roleVariants } from "@/lib/corearrays";
-import { PartialUser, Role } from "@/lib/coreconstants";
+import { Role } from "@/lib/coreconstants";
+import { PartialUser } from "@/lib/types";
 import { getServerUsersAll } from "@/lib/fetcher";
 import { dateFormatter } from "@/lib/utils";
 

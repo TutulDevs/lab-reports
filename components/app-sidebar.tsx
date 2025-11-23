@@ -33,8 +33,8 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
-import { PartialUser } from "@/lib/coreconstants";
 import { Users, UserStar } from "lucide-react";
+import { PartialUser } from "@/lib/types";
 
 const data = {
   navMain: [

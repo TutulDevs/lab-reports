@@ -1,6 +1,6 @@
 "use client";
 
-import { PartialUser, Role } from "@/lib/coreconstants";
+import { PartialUser } from "@/lib/types";
 import React, { useState } from "react";
 import { Button, buttonVariants } from "../ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";

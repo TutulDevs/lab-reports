@@ -1,25 +1,5 @@
-import { Prisma, User } from "@prisma/client";
-
 export const MAX_AGE_IN_SECONDS = 86400;
 export const SESSION_COOKIE_NAME = "lab_session";
-
-export type PartialUser = Omit<User, "password">;
-
-export type BuyerWithUser = Prisma.BuyerGetPayload<{
-  include: {
-    lastUpdatedBy: { select: { username: true } };
-    burstingRules: { select: { gsm: true; bursting_strength_kpa: true } };
-  };
-}>;
-
-export type ReportWithUser = Prisma.ReportGetPayload<{
-  include: { lastUpdatedBy: { select: { username: true } } };
-}>;
-
-export type BuyersForReport = {
-  id: string;
-  title: string;
-};
 
 export enum Role {
   ADMIN = 1,

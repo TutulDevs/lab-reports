@@ -4,12 +4,18 @@ import { SectionCards } from "@/components/section-cards";
 import { DashboardQuickKpi } from "@/components/dashboard/dashboard-quick-kpi";
 
 import data from "./data.json";
+import { ReportsOverTimeChart } from "@/components/dashboard/dashboard-report-overtime-chart";
 
 export default function Page() {
   return (
     <>
-      {/* kpis */}
-      <DashboardQuickKpi />
+      <div className="space-y-8">
+        {/* kpis */}
+        <DashboardQuickKpi />
+
+        {/* report over time */}
+        <ReportsOverTimeChart />
+      </div>
 
       {/* dummy */}
       <div className="flex flex-1 flex-col">

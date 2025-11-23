@@ -30,14 +30,12 @@ import {
 } from "@/lib/corearrays";
 import { createReportSchema, updateReportSchema } from "@/lib/schemas";
 import {
-  BuyersForReport,
-  BuyerWithUser,
   ReportOverallResult,
   ReportSampleStage,
   ReportSampleType,
   ReportStatus,
-  ReportWithUser,
 } from "@/lib/coreconstants";
+import { BuyersForReport, BuyerWithUser, ReportWithUser } from "@/lib/types";
 import { FromGroupWrapper } from "../form-group-wrapper";
 import { Dialog, DialogContent } from "../ui/dialog";
 import { Textarea } from "../ui/textarea";

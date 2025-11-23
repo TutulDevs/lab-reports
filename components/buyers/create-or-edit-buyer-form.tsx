@@ -28,7 +28,7 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { commonValuesList } from "@/lib/corearrays";
 import { FromGroupWrapper } from "../form-group-wrapper";
-import { BuyerWithUser } from "@/lib/coreconstants";
+import { BuyerWithUser } from "@/lib/types";
 import { Plus, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 

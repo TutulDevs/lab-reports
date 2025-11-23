@@ -2,39 +2,19 @@
 
 import React from "react";
 import { Card, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Users,
-  FileText,
-  CheckCircle2,
-  XCircle,
-  RefreshCw,
-} from "lucide-react";
+import { Users, FileText, CheckCircle2, XCircle } from "lucide-react";
 import { useState } from "react";
-import { getDaysPassed, getSubDate } from "@/lib/utils";
-import { Button } from "../ui/button";
 import { useDashboardKpi } from "@/hooks/dashboards";
 import { Loader } from "../loader";
-
-const periodOptions = [
-  { value: "ALL", title: "All Time" },
-  { value: getSubDate(7), title: "Last 7 days" },
-  { value: getSubDate(getDaysPassed("month")), title: "This Month" },
-  { value: getSubDate(getDaysPassed("year")), title: "This Year" },
-];
+import { DashboardHeader } from "../dashboard-header";
+import { periodOptions } from "@/lib/corearrays";
 
 export const DashboardQuickKpi = () => {
   const [selectedPeriod, setSelectedPeriod] = useState(periodOptions[0].value);
 
-  const { data, isLoading, error, refetch } = useDashboardKpi(
-    selectedPeriod == "ALL" ? undefined : selectedPeriod,
-  );
+  const { data, isLoading, error, refetch } = useDashboardKpi({
+    from: selectedPeriod == "ALL" ? undefined : selectedPeriod,
+  });
 
   const kpiData = [
     {
@@ -67,38 +47,16 @@ export const DashboardQuickKpi = () => {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-wrap gap-4 items-center justify-between">
-        <h2 className="text-lg font-semibold md:text-xl">KPI Overview</h2>
+      {/* header */}
+      <DashboardHeader
+        title="KPI Overview"
+        isLoading={isLoading}
+        refetch={refetch}
+        selectedPeriod={selectedPeriod}
+        setSelectedPeriod={setSelectedPeriod}
+      />
 
-        <div className="flex">
-          <Button
-            variant="outline"
-            size="icon"
-            className="mr-2"
-            onClick={() => refetch()}
-            disabled={isLoading}
-          >
-            <RefreshCw className="h-4 w-4" />
-          </Button>
-
-          <Select
-            value={selectedPeriod}
-            onValueChange={(val) => setSelectedPeriod(val)}
-          >
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Select period" />
-            </SelectTrigger>
-            <SelectContent>
-              {periodOptions.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.title}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-
+      {/* items */}
       {isLoading ? (
         <Loader />
       ) : (

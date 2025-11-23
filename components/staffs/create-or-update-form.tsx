@@ -1,6 +1,6 @@
 "use client";
 
-import { PartialUser, Role } from "@/lib/coreconstants";
+import { PartialUser } from "@/lib/types";
 import { registerStaffSchema, updateStaffSchema } from "@/lib/schemas";
 import { useState } from "react";
 import { z } from "zod";
@@ -27,6 +27,7 @@ import {
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { roleList } from "@/lib/corearrays";
+import { Role } from "@/lib/coreconstants";
 
 type RegisterSchemaType = z.infer<typeof registerStaffSchema>;
 type UpdateSchemaType = z.infer<typeof updateStaffSchema>;

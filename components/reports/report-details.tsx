@@ -26,7 +26,7 @@ import { PageHeaderSection } from "../page-header";
 import Link from "next/link";
 import { buttonVariants } from "../ui/button";
 import { ReportDeleteAction } from "./report-actions";
-import { BuyerWithUser } from "@/lib/coreconstants";
+import { BuyerWithUser } from "@/lib/types";
 
 export const ReportDetails: React.FC<{ reportId: string }> = async ({
   reportId,

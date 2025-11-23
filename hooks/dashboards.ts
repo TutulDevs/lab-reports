@@ -1,7 +1,12 @@
-import { DashboardKpi } from "@/lib/types";
+import { DashboardKpi, DashboardReportsOvertime } from "@/lib/types";
 import { useQuery } from "@tanstack/react-query";
 
-export const useDashboardKpi = (from?: string, to?: string) => {
+type FromTo = {
+  from?: string;
+  to?: string;
+};
+
+export const useDashboardKpi = ({ from, to }: FromTo) => {
   return useQuery<DashboardKpi, Error>({
     queryKey: ["dashboardKpi", { from, to }],
     queryFn: async () => {
@@ -12,6 +17,24 @@ export const useDashboardKpi = (from?: string, to?: string) => {
       const res = await fetch(`/api/dashboard/kpi?${query.toString()}`);
       if (res?.status == 401) window.location.href = "/login";
       if (!res.ok) throw new Error("Failed to fetch dashboard KPI");
+      return res.json();
+    },
+  });
+};
+
+export const useDashboardReportsOvertime = ({ from, to }: FromTo) => {
+  return useQuery<DashboardReportsOvertime[], Error>({
+    queryKey: ["dashboardReportsOvertime", { from, to }],
+    queryFn: async () => {
+      const query = new URLSearchParams();
+      if (from) query.append("from", from);
+      if (to) query.append("to", to);
+
+      const res = await fetch(
+        `/api/dashboard/reports-overtime?${query.toString()}`,
+      );
+      if (res?.status == 401) window.location.href = "/login";
+      if (!res.ok) throw new Error("Failed to fetch reports");
       return res.json();
     },
   });

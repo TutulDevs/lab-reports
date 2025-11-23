@@ -1,9 +1,8 @@
 import { CreateOrEditBuyerForm } from "@/components/buyers/create-or-edit-buyer-form";
 import { PageHeaderSection } from "@/components/page-header";
-import { BuyerWithUser } from "@/lib/coreconstants";
 import { getServerBuyerDetails } from "@/lib/fetcher";
+import { BuyerWithUser } from "@/lib/types";
 import { toPlainObject } from "@/lib/utils";
-import { Buyer } from "@prisma/client";
 import { notFound } from "next/navigation";
 
 export default async function BuyerDetailsPage({

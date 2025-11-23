@@ -20,7 +20,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ListItem, ListItemProps } from "../list-item";
-import { BuyerWithUser, ReportOverallResult } from "@/lib/coreconstants";
+import { ReportOverallResult } from "@/lib/coreconstants";
 import Link from "next/link";
 import { Badge } from "../ui/badge";
 import {
@@ -33,6 +33,7 @@ import {
   reportStatusText,
   reportStatusVariants,
 } from "@/lib/corearrays";
+import { BuyerWithUser } from "@/lib/types";
 
 export const FormPreviewContent: React.FC<{
   report?: Report;

@@ -1,6 +1,5 @@
 import { Buyer, Report } from "@prisma/client";
 import {
-  BuyerWithUser,
   ReportDryProcess,
   ReportOverallResult,
   ReportSampleStage,
@@ -8,6 +7,8 @@ import {
   ReportStatus,
   Role,
 } from "./coreconstants";
+import { BuyerWithUser } from "@/lib/types";
+import { getDaysPassed, getSubDate } from "./utils";
 
 export const commonValuesList = [1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5];
 
@@ -188,7 +189,7 @@ export const getBuyerValue = (
     const ruleIdx = rules.findIndex((x) => x.gsm >= gsm);
     const reqStrength = rules[ruleIdx]?.bursting_strength_kpa;
 
-    return withBrackets ? ` (${reqStrength})` : reqStrength.toString();
+    return withBrackets ? ` (${reqStrength})` : reqStrength?.toString();
   }
 
   // others
@@ -196,3 +197,10 @@ export const getBuyerValue = (
   if (value == null || value == undefined) return null;
   return withBrackets ? ` (${value})` : value.toString();
 };
+
+export const periodOptions = [
+  { value: getSubDate(7), title: "Last 7 days" },
+  { value: getSubDate(getDaysPassed("month")), title: "This Month" },
+  { value: getSubDate(getDaysPassed("year")), title: "This Year" },
+  { value: "ALL", title: "All Time" },
+];

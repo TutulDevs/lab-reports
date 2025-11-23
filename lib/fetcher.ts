@@ -6,7 +6,7 @@ import {
   BuyerWithUser,
   PartialUser,
   ReportWithUser,
-} from "./coreconstants";
+} from "./types";
 import { Buyer, Report } from "@prisma/client";
 
 export async function getServerUser(): Promise<PartialUser | null> {
