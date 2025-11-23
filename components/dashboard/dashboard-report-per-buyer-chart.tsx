@@ -21,6 +21,7 @@ import {
 } from "../ui/chart";
 import { periodOptions } from "@/lib/corearrays";
 import { useDashboardReportsPerBuyer } from "@/hooks/dashboards";
+import { cn } from "@/lib/utils";
 
 // ---- Chart config ----
 const chartConfig = {
@@ -33,7 +34,9 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export const ReportsPerBuyerChart = () => {
+export const ReportsPerBuyerChart: React.FC<{ className?: string }> = ({
+  className,
+}) => {
   const [selectedPeriod, setSelectedPeriod] = React.useState(
     periodOptions[0].value,
   );
@@ -43,7 +46,7 @@ export const ReportsPerBuyerChart = () => {
   });
 
   return (
-    <Card className="@container/card">
+    <Card className={cn("@container/card", className)}>
       <CardHeader>
         <DashboardHeader
           title={
@@ -52,7 +55,7 @@ export const ReportsPerBuyerChart = () => {
             </>
           }
           isLoading={isLoading}
-          refetch={() => {}}
+          refetch={() => refetch()}
           selectedPeriod={selectedPeriod}
           setSelectedPeriod={setSelectedPeriod}
         />

@@ -1,4 +1,5 @@
 import { Prisma, User } from "@prisma/client";
+import { ReportOverallResult } from "./coreconstants";
 
 export type PartialUser = Omit<User, "password">;
 
@@ -30,5 +31,10 @@ export type DashboardReportsOvertime = Prisma.ReportGetPayload<{
 
 export type DashboardReportsPerBuyer = {
   title: string;
+  count: number;
+};
+
+export type DashboardReportOverallResult = {
+  status: ReportOverallResult;
   count: number;
 };

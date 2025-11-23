@@ -1,5 +1,6 @@
 import {
   DashboardKpi,
+  DashboardReportOverallResult,
   DashboardReportsOvertime,
   DashboardReportsPerBuyer,
 } from "@/lib/types";
@@ -57,6 +58,24 @@ export const useDashboardReportsPerBuyer = ({ from, to }: FromTo) => {
       );
       if (res?.status == 401) window.location.href = "/login";
       if (!res.ok) throw new Error("Failed to fetch reports per buyer");
+      return res.json();
+    },
+  });
+};
+
+export const useDashboardReportOverallResult = ({ from, to }: FromTo) => {
+  return useQuery<DashboardReportOverallResult[], Error>({
+    queryKey: ["dashboardReportOverallResult", { from, to }],
+    queryFn: async () => {
+      const query = new URLSearchParams();
+      if (from) query.append("from", from);
+      if (to) query.append("to", to);
+
+      const res = await fetch(
+        `/api/dashboard/reports-overall-result?${query.toString()}`,
+      );
+      if (res?.status == 401) window.location.href = "/login";
+      if (!res.ok) throw new Error("Failed to fetch reports overall result");
       return res.json();
     },
   });
