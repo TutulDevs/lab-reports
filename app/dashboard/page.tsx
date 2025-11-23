@@ -5,6 +5,7 @@ import { DashboardQuickKpi } from "@/components/dashboard/dashboard-quick-kpi";
 
 import data from "./data.json";
 import { ReportsOverTimeChart } from "@/components/dashboard/dashboard-report-overtime-chart";
+import { ReportsPerBuyerChart } from "@/components/dashboard/dashboard-report-per-buyer-chart";
 
 export default function Page() {
   return (
@@ -15,20 +16,23 @@ export default function Page() {
 
         {/* report over time */}
         <ReportsOverTimeChart />
+
+        {/* reports by buyer */}
+        <ReportsPerBuyerChart />
       </div>
 
       {/* dummy */}
-      <div className="flex flex-1 flex-col">
+      {/* <div className="flex flex-1 flex-col">
         <div className="@container/main flex flex-1 flex-col gap-2">
           <div className="flex flex-col gap-4 py-4">
-            {/* <SectionCards /> */}
+            <SectionCards />
             <div className="px-4 lg:px-6">
               <ChartAreaInteractive />
             </div>
             <DataTable data={data} />
           </div>
         </div>
-      </div>
+      </div> */}
     </>
   );
 }

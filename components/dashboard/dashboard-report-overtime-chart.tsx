@@ -17,13 +17,13 @@ import { Loader } from "../loader";
 import { dateFormatter } from "@/lib/utils";
 
 const chartConfig = {
-  reports: {
-    label: "Reports",
+  count: {
+    label: "Count",
     color: "var(--primary)",
   },
 } satisfies ChartConfig;
 
-export function ReportsOverTimeChart() {
+export const ReportsOverTimeChart = () => {
   const [selectedPeriod, setSelectedPeriod] = React.useState(
     periodOptions[0].value,
   );
@@ -102,7 +102,7 @@ export function ReportsOverTimeChart() {
               <Line
                 type="monotone"
                 dataKey="count"
-                stroke="var(--color-reports)"
+                stroke="var(--color-count)"
                 strokeWidth={2}
                 dot={false}
               />
@@ -112,7 +112,7 @@ export function ReportsOverTimeChart() {
       </CardContent>
     </Card>
   );
-}
+};
 
 const DUMMY_REPORTS = [
   // January

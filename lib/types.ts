@@ -27,3 +27,8 @@ export type DashboardKpi = {
 export type DashboardReportsOvertime = Prisma.ReportGetPayload<{
   select: { id: true; createdAt: true };
 }>;
+
+export type DashboardReportsPerBuyer = {
+  title: string;
+  count: number;
+};
