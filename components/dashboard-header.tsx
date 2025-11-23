@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Button } from "./ui/button";
-import { RefreshCw } from "lucide-react";
+import { Camera, RefreshCw } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -18,7 +18,15 @@ export const DashboardHeader: React.FC<{
   refetch: () => void;
   selectedPeriod: string;
   setSelectedPeriod: (val: string) => void;
-}> = ({ title, isLoading, refetch, selectedPeriod, setSelectedPeriod }) => {
+  onCapture?: () => void;
+}> = ({
+  title,
+  isLoading,
+  refetch,
+  selectedPeriod,
+  setSelectedPeriod,
+  onCapture,
+}) => {
   return (
     <>
       <div className="flex flex-wrap gap-4 items-center justify-between">
@@ -33,9 +41,23 @@ export const DashboardHeader: React.FC<{
             className="mr-2"
             onClick={() => refetch()}
             disabled={isLoading}
+            aria-label="refetch"
           >
             <RefreshCw className="h-4 w-4" />
           </Button>
+
+          {onCapture && (
+            <Button
+              variant="outline"
+              size="icon"
+              className="mr-2"
+              onClick={onCapture}
+              disabled={isLoading}
+              aria-label="capture dom"
+            >
+              <Camera className="h-4 w-4" />
+            </Button>
+          )}
 
           <Select
             value={selectedPeriod}

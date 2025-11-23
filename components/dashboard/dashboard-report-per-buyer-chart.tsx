@@ -22,6 +22,7 @@ import {
 import { periodOptions } from "@/lib/corearrays";
 import { useDashboardReportsPerBuyer } from "@/hooks/dashboards";
 import { cn } from "@/lib/utils";
+import { useDownloadDOM } from "@/hooks/use-download-dom";
 
 // ---- Chart config ----
 const chartConfig = {
@@ -45,8 +46,10 @@ export const ReportsPerBuyerChart: React.FC<{ className?: string }> = ({
     from: selectedPeriod == "ALL" ? undefined : selectedPeriod,
   });
 
+  const { ref, downloadImage } = useDownloadDOM();
+
   return (
-    <Card className={cn("@container/card", className)}>
+    <Card className={cn("@container/card", className)} ref={ref}>
       <CardHeader>
         <DashboardHeader
           title={
@@ -58,6 +61,7 @@ export const ReportsPerBuyerChart: React.FC<{ className?: string }> = ({
           refetch={() => refetch()}
           selectedPeriod={selectedPeriod}
           setSelectedPeriod={setSelectedPeriod}
+          onCapture={downloadImage}
         />
       </CardHeader>
 

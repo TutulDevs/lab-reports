@@ -15,6 +15,7 @@ import { DashboardHeader } from "../dashboard-header";
 import { FileText } from "lucide-react";
 import { Loader } from "../loader";
 import { dateFormatter } from "@/lib/utils";
+import { useDownloadDOM } from "@/hooks/use-download-dom";
 
 const chartConfig = {
   count: {
@@ -66,8 +67,10 @@ export const ReportsOverTimeChart = () => {
       }));
   }, [selectedPeriod, data]);
 
+  const { ref, downloadImage } = useDownloadDOM();
+
   return (
-    <Card className="@container/card">
+    <Card className="@container/card" ref={ref}>
       <CardHeader>
         <DashboardHeader
           title={
@@ -79,6 +82,7 @@ export const ReportsOverTimeChart = () => {
           refetch={refetch}
           selectedPeriod={selectedPeriod}
           setSelectedPeriod={setSelectedPeriod}
+          onCapture={downloadImage}
         />
       </CardHeader>
 

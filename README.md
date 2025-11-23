@@ -10,7 +10,7 @@
 - [DONE] Dye Transfer CC with CS
 - [DONE] report form fail logic update
 - [DONE] report & buyer max-w
-- dashboard with charts, insights
+- [DONE] dashboard with charts, insights
 - all tables filter
 - all tables download csv/xlsx/pdf
 - download single item as csv

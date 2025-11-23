@@ -17,6 +17,7 @@ import {
 import { periodOptions, reportOverallResultText } from "@/lib/corearrays";
 import { useDashboardReportOverallResult } from "@/hooks/dashboards";
 import { ReportOverallResult } from "@/lib/coreconstants";
+import { useDownloadDOM } from "@/hooks/use-download-dom";
 
 // ---- Chart config ----
 const chartConfig = {
@@ -49,8 +50,10 @@ export const DashboardReportOverallResultChart = () => {
     fill: `var(--color-${reportOverallResultText[item.status]})`,
   }));
 
+  const { ref, downloadImage } = useDownloadDOM();
+
   return (
-    <Card className="@container/card">
+    <Card className="@container/card" ref={ref}>
       <CardHeader>
         <DashboardHeader
           title={
@@ -62,6 +65,7 @@ export const DashboardReportOverallResultChart = () => {
           refetch={() => refetch()}
           selectedPeriod={selectedPeriod}
           setSelectedPeriod={setSelectedPeriod}
+          onCapture={downloadImage}
         />
       </CardHeader>
 
