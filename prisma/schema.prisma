@@ -20,6 +20,7 @@ model User {
   updatedAt      DateTime? @updatedAt
   Buyer          Buyer[]   @relation("BuyerUpdatedBy")
   reportsUpdated Report[]  @relation("ReportUpdatedBy")
+  logs           Log[]
 }
 
 model BuyerBurstingRule {
@@ -112,4 +113,13 @@ model Report {
   fabric_f_dia          Int?
   fabric_r_gsm          Int?
   fabric_f_gsm          Int?
+}
+
+model Log {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id])
+  event       Int
+  description String?
 }

@@ -8,6 +8,7 @@ import {
   ReportWithUser,
 } from "./types";
 import { Buyer, Report } from "@prisma/client";
+import { LogEvent } from "./coreconstants";
 
 export async function getServerUser(): Promise<PartialUser | null> {
   const cookieStore = await cookies();
@@ -125,3 +126,13 @@ export async function getServerReportsDetails(
   });
   return reports;
 }
+
+export const logEventHandler = async (
+  event: LogEvent,
+  userId?: string,
+  description?: string,
+) => {
+  await prisma.log.create({
+    data: { event, description, userId },
+  });
+};

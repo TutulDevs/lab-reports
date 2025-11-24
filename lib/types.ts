@@ -38,3 +38,9 @@ export type DashboardReportOverallResult = {
   status: ReportOverallResult;
   count: number;
 };
+
+export type LogWithUser = Prisma.LogGetPayload<{
+  include: {
+    user: { select: { id: true; username: true } };
+  };
+}>;

@@ -4,7 +4,8 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 import { cookies } from "next/headers";
 import { COOKIE_NAME, verifyJwt } from "@/lib/auth";
-import { Role } from "@/lib/coreconstants";
+import { LogEvent, Role } from "@/lib/coreconstants";
+import { logEventHandler } from "@/lib/fetcher";
 
 // register
 export async function POST(req: Request) {
@@ -53,6 +54,12 @@ export async function POST(req: Request) {
       },
       omit: { password: true },
     });
+
+    await logEventHandler(
+      LogEvent.STAFF_CREATE,
+      session?.id,
+      `Staff ID: ${user.id}`,
+    );
 
     return NextResponse.json(
       { success: true, message: `${user.username} created successfully` },
@@ -126,6 +133,12 @@ export async function PUT(req: Request) {
           },
       select: { username: true },
     });
+
+    await logEventHandler(
+      LogEvent.STAFF_UPDATE,
+      session?.id,
+      `Staff ID: ${user.id}`,
+    );
 
     return NextResponse.json({
       success: true,

@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { COOKIE_NAME, verifyJwt } from "@/lib/auth";
+import { logEventHandler } from "@/lib/fetcher";
+import { LogEvent } from "@/lib/coreconstants";
 
 // create
 export async function POST(req: Request) {
@@ -47,6 +49,12 @@ export async function POST(req: Request) {
       },
       select: { title: true, id: true },
     });
+
+    await logEventHandler(
+      LogEvent.BUYER_CREATE,
+      session?.id,
+      `Buyer ID: ${buyer.id}`,
+    );
 
     return NextResponse.json(
       {
@@ -118,6 +126,12 @@ export async function PUT(req: Request) {
       },
       select: { title: true, id: true },
     });
+
+    await logEventHandler(
+      LogEvent.BUYER_UPDATE,
+      session?.id,
+      `Buyer ID: ${buyer.id}`,
+    );
 
     return NextResponse.json({
       success: true,

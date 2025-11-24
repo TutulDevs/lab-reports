@@ -9,10 +9,10 @@ import {
   IconFileAi,
   IconFileDescription,
   IconFileWord,
-  IconFolder,
-  IconInnerShadowTop,
   IconReport,
   IconSettings,
+  // IconFolder,
+  // IconInnerShadowTop,
   // IconHelp,
   // IconListDetails,
   // IconSearch,
@@ -33,7 +33,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
-import { Users, UserStar } from "lucide-react";
+import { Home, List, Users, UserStar } from "lucide-react";
 import { PartialUser } from "@/lib/types";
 
 const data = {
@@ -109,20 +109,15 @@ const data = {
   ],
   navSecondary: [
     {
+      title: "Activity Logs",
+      url: "/logs",
+      icon: List,
+    },
+    {
       title: "Settings",
       url: "/settings",
       icon: IconSettings,
     },
-    // {
-    //   title: "Get Help",
-    //   url: "#",
-    //   icon: IconHelp,
-    // },
-    // {
-    //   title: "Search",
-    //   url: "#",
-    //   icon: IconSearch,
-    // },
   ],
   documents: [
     {
@@ -158,8 +153,8 @@ export function AppSidebar({ userData, ...props }: AppSidebarProps) {
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
               <Link href="/">
-                <IconInnerShadowTop className="!size-5" />
-                <span className="text-base font-semibold">Tosrifa Inc</span>
+                <Home className="!size-5" />
+                <span className="text-base font-semibold">Home</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>

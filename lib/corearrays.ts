@@ -1,5 +1,6 @@
 import { Buyer, Report } from "@prisma/client";
 import {
+  LogEvent,
   ReportDryProcess,
   ReportOverallResult,
   ReportSampleStage,
@@ -204,3 +205,24 @@ export const periodOptions = [
   { value: getSubDate(getDaysPassed("year")), title: "This Year" },
   { value: "ALL", title: "All Time" },
 ];
+
+// logs
+export const logEventText: any = {
+  [LogEvent.LOGIN]: "Login",
+  [LogEvent.LOGOUT]: "Logout",
+
+  [LogEvent.STAFF_CREATE]: "Staff Create",
+  [LogEvent.STAFF_UPDATE]: "Staff Update",
+  [LogEvent.STAFF_DELETE]: "Staff Delete",
+  [LogEvent.STAFF_DOWNLOAD]: "Staff Download",
+
+  [LogEvent.BUYER_CREATE]: "Buyer Create",
+  [LogEvent.BUYER_UPDATE]: "Buyer Update",
+  [LogEvent.BUYER_DELETE]: "Buyer Delete",
+  [LogEvent.BUYER_DOWNLOAD]: "Buyer Download",
+
+  [LogEvent.REPORT_CREATE]: "Report Create",
+  [LogEvent.REPORT_UPDATE]: "Report Update",
+  [LogEvent.REPORT_DELETE]: "Report Delete",
+  [LogEvent.REPORT_DOWNLOAD]: "Report Download",
+};

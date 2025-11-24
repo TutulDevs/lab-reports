@@ -39,10 +39,10 @@ export async function GET(req: Request) {
     const buyersCount = await prisma.buyer.count({ where });
     const reportsCount = await prisma.report.count({ where });
     const passCount = await prisma.report.count({
-      where: { ...where, status: ReportOverallResult.PASS },
+      where: { ...where, result: ReportOverallResult.PASS },
     });
     const failCount = await prisma.report.count({
-      where: { ...where, status: ReportOverallResult.FAIL },
+      where: { ...where, result: ReportOverallResult.FAIL },
     });
 
     return NextResponse.json({

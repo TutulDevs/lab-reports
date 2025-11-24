@@ -2,7 +2,8 @@ import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { COOKIE_NAME, verifyJwt } from "@/lib/auth";
-import { Role } from "@/lib/coreconstants";
+import { LogEvent, Role } from "@/lib/coreconstants";
+import { logEventHandler } from "@/lib/fetcher";
 
 // get details
 export async function GET(
@@ -84,6 +85,12 @@ export async function DELETE(
     await prisma.report.delete({
       where: { id: report.id },
     });
+
+    await logEventHandler(
+      LogEvent.REPORT_DELETE,
+      session?.id,
+      `Report ID: ${report.id}`,
+    );
 
     return NextResponse.json({
       success: true,

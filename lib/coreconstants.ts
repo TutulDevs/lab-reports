@@ -41,3 +41,23 @@ export enum ReportOverallResult {
   PASS = 2,
   FAIL = 3,
 }
+
+export enum LogEvent {
+  LOGIN = 1,
+  LOGOUT = 2,
+
+  STAFF_CREATE = 3,
+  STAFF_UPDATE = 4,
+  STAFF_DELETE = 5,
+  STAFF_DOWNLOAD = 6,
+
+  BUYER_CREATE = 7,
+  BUYER_UPDATE = 8,
+  BUYER_DELETE = 9,
+  BUYER_DOWNLOAD = 10,
+
+  REPORT_CREATE = 11,
+  REPORT_UPDATE = 12,
+  REPORT_DELETE = 13,
+  REPORT_DOWNLOAD = 14,
+}

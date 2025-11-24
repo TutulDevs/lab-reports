@@ -34,4 +34,4 @@ export function cookieOptions() {
   };
 }
 
-export { COOKIE_NAME };
+export { COOKIE_NAME, MAX_AGE };

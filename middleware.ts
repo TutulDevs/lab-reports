@@ -15,6 +15,7 @@ export async function middleware(req: NextRequest) {
     "/buyers",
     "/settings",
     "/reports",
+    "/logs",
   ];
 
   if (!session && protectedRoutes.some((r) => pathname.startsWith(r))) {
@@ -36,5 +37,6 @@ export const config = {
     "/reports/:path*",
     "/login",
     "/settings",
+    "/logs",
   ],
 };

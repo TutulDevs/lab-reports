@@ -4,6 +4,8 @@ import { cookies } from "next/headers";
 import { COOKIE_NAME, verifyJwt } from "@/lib/auth";
 import { createReportSchema, updateReportSchema } from "@/lib/schemas";
 import { format } from "date-fns";
+import { logEventHandler } from "@/lib/fetcher";
+import { LogEvent } from "@/lib/coreconstants";
 
 // create
 export async function POST(req: Request) {
@@ -40,6 +42,12 @@ export async function POST(req: Request) {
     });
 
     // console.log(data.buyer);
+
+    await logEventHandler(
+      LogEvent.REPORT_CREATE,
+      session?.id,
+      `Report ID: ${report.id}`,
+    );
 
     return NextResponse.json(
       {
@@ -94,6 +102,12 @@ export async function PUT(req: Request) {
     });
 
     // console.log(data.buyer);
+
+    await logEventHandler(
+      LogEvent.REPORT_UPDATE,
+      session?.id,
+      `Report ID: ${report.id}`,
+    );
 
     return NextResponse.json({
       success: true,

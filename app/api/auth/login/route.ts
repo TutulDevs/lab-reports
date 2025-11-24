@@ -2,7 +2,9 @@ import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 import { loginSchema } from "@/lib/schemas";
-import { COOKIE_NAME, signJwt } from "@/lib/auth";
+import { COOKIE_NAME, MAX_AGE, signJwt } from "@/lib/auth";
+import { logEventHandler } from "@/lib/fetcher";
+import { LogEvent } from "@/lib/coreconstants";
 
 export async function POST(req: Request) {
   try {
@@ -39,8 +41,10 @@ export async function POST(req: Request) {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       path: "/",
-      maxAge: 60 * 60 * 24,
+      maxAge: MAX_AGE,
     });
+
+    await logEventHandler(LogEvent.LOGIN, user?.id);
 
     return res;
   } catch (err) {
