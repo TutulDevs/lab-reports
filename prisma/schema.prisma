@@ -122,4 +122,5 @@ model Log {
   user        User?    @relation(fields: [userId], references: [id])
   event       Int
   description String?
+  ip_address  String?
 }

@@ -44,3 +44,10 @@ export type LogWithUser = Prisma.LogGetPayload<{
     user: { select: { id: true; username: true } };
   };
 }>;
+
+export type LogWithUserForList = {
+  data: LogWithUser[];
+  total: number;
+  limit: number;
+  offset: number;
+};

@@ -1,4 +1,4 @@
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { COOKIE_NAME, verifyJwt } from "./auth";
 import { prisma } from "@/lib/prisma";
 import {
@@ -132,7 +132,13 @@ export const logEventHandler = async (
   userId?: string,
   description?: string,
 ) => {
+  const h = await headers();
+  const ip =
+    h.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    h.get("x-real-ip") ||
+    "unknown";
+
   await prisma.log.create({
-    data: { event, description, userId },
+    data: { event, description, userId, ip_address: ip },
   });
 };

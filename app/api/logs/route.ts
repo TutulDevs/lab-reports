@@ -19,26 +19,53 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: "Access denied" }, { status: 401 });
     }
 
-    // const { searchParams } = new URL(req.url);
-    // const fromStr = searchParams.get("from");
-    // const toStr = searchParams.get("to");
+    // ---- Parse query params ----
+    // /api/logs?from=2025-11-19&sort=dsc&limit=10
+    const { searchParams } = new URL(req.url);
+    const fromStr = searchParams.get("from");
+    const toStr = searchParams.get("to");
+    const query = searchParams.get("query") ?? "";
+    const sort = searchParams.get("sort") === "asc" ? "asc" : "desc"; // fallback desc
+    const limit = Number(searchParams.get("limit") ?? 10);
+    const offset = Number(searchParams.get("offset") ?? 0);
 
-    // const from = fromStr ? parseISO(fromStr) : null;
-    // const to = toStr ? parseISO(toStr) : new Date();
+    const from = fromStr ? parseISO(fromStr) : null;
+    const to = toStr ? parseISO(toStr) : new Date();
 
-    // const where: any = {};
+    // ---- Build prisma filter ----
+    const where: any = {};
 
-    // if (from && isValid(from))
-    //   where.createdAt = { ...where.createdAt, gte: from };
-    // if (to && isValid(to)) where.createdAt = { ...where.createdAt, lte: to };
+    if (from && isValid(from))
+      where.createdAt = { ...where.createdAt, gte: from };
+    if (to && isValid(to)) where.createdAt = { ...where.createdAt, lte: to };
 
+    if (query) {
+      where.OR = [
+        { message: { contains: query, mode: "insensitive" } },
+        { user: { username: { contains: query, mode: "insensitive" } } },
+      ];
+    }
+
+    // ---- Total count (for pagination) ----
+    const total = await prisma.log.count({ where });
+
+    // ---- Paginated data ----
     const logs = await prisma.log.findMany({
-      where: {},
-      include: { user: { select: { id: true, username: true } } },
-      orderBy: { createdAt: "desc" },
+      where,
+      include: {
+        user: { select: { id: true, username: true } },
+      },
+      orderBy: { createdAt: sort },
+      take: limit,
+      skip: offset,
     });
 
-    return NextResponse.json(logs);
+    return NextResponse.json({
+      data: logs,
+      total,
+      limit,
+      offset,
+    });
   } catch (error) {
     console.error("Error fetching report:", error);
     return NextResponse.json(
