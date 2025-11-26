@@ -8,6 +8,7 @@ import {
   SelectItem,
   SelectValue,
 } from "@/components/ui/select";
+import { DEFAULT_TABLE_LIMITS } from "@/lib/corearrays";
 import {
   ChevronLeft,
   ChevronRight,
@@ -16,7 +17,7 @@ import {
 } from "lucide-react";
 
 export const DataTablePaginationBar: React.FC<{
-  total: number; // total rows from API
+  total: number;
   limit: number;
   offset: number;
   onLimitChange: (value: number) => void;
@@ -32,23 +33,25 @@ export const DataTablePaginationBar: React.FC<{
   const goToLast = () => onOffsetChange((totalPages - 1) * limit);
 
   return (
-    <div className="flex items-center justify-between gap-6 py-4 text-sm">
+    <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 md:gap-6 py-4 text-sm">
       {/* Rows per page */}
       <div className="flex items-center gap-2">
-        <span className="text-muted-foreground">Rows per page</span>
+        <span className="text-muted-foreground hidden md:block">
+          Rows per page
+        </span>
 
         <Select
           value={String(limit)}
           onValueChange={(v) => {
             onLimitChange(Number(v));
-            onOffsetChange(0); // reset page when limit changes
+            onOffsetChange(0);
           }}
         >
-          <SelectTrigger className="h-8 w-20">
+          <SelectTrigger className="h-8 w-18">
             <SelectValue />
           </SelectTrigger>
           <SelectContent side="top">
-            {[5, 10, 20, 50, 100].map((num) => (
+            {DEFAULT_TABLE_LIMITS.map((num) => (
               <SelectItem key={num} value={String(num)}>
                 {num}
               </SelectItem>
@@ -58,12 +61,12 @@ export const DataTablePaginationBar: React.FC<{
       </div>
 
       {/* Page info */}
-      <div className="text-muted-foreground">
+      <div className="text-muted-foreground text-center">
         Page {currentPage} of {totalPages}
       </div>
 
       {/* Pagination buttons */}
-      <div className="flex items-center gap-1">
+      <div className="flex items-center justify-end gap-1">
         <Button
           variant="outline"
           size="icon"

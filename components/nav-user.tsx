@@ -38,11 +38,9 @@ export function NavUser({ user }: { user: PartialUser }) {
         method: "POST",
       });
 
-      console.log("res:", res);
-
       const data = await res.json();
-
-      console.log("data:", data);
+      // console.log("res:", res);
+      // console.log("data:", data);
 
       toast.success("Logged out successfully");
       window.location.href = "/login";

@@ -2,54 +2,74 @@
 
 import { LogWithUser, LogWithUserForList, PartialUser } from "@/lib/types";
 import { useQuery } from "@tanstack/react-query";
-import React, { useRef, useState } from "react";
 import { ColumnDef } from "@tanstack/react-table";
-import { logEventText, periodOptions } from "@/lib/corearrays";
+import { logEventList, logEventText } from "@/lib/corearrays";
 import { dateFormatter } from "@/lib/utils";
 import { DataTable } from "../data-table/data-table";
-import { Button } from "../ui/button";
-import { ArrowUpDown } from "lucide-react";
 import { DataTableToolbar } from "../data-table/data-table-toolbar";
 import { DataTablePaginationBar } from "../data-table/data-table-pagination-bar";
+import { useTableFilters } from "@/hooks/use-table-filters";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
+import { useState } from "react";
+import { Label } from "../ui/label";
 
 export const LogsList: React.FC<{ me?: null | PartialUser; users?: any[] }> = ({
   me,
   users,
 }) => {
-  const [from, setFrom] = useState(periodOptions[0].value);
-  const [query, setQuery] = useState("");
-  const [sort, setSort] = useState<"asc" | "dsc">("dsc");
-  const [limit, setLimit] = useState(10);
-  const [offset, setOffset] = useState(0);
+  const {
+    from,
+    handleFromChange,
+    query,
+    debouncedQuery,
+    sort,
+    limit,
+    setLimit,
+    offset,
+    setOffset,
+    onSortChange,
+    handleQueryChange,
+  } = useTableFilters();
 
-  const toggleSort = () => {
-    setSort((prev) => (prev === "asc" ? "dsc" : "asc"));
-    setOffset(0);
-  };
-
-  const handleQueryChange = (value: string) => {
-    setQuery(value);
-    setOffset(0);
-  };
+  const [event, setEvent] = useState<string>("ALL");
+  const [userId, setUserId] = useState<string>("ALL");
 
   const { isLoading, error, data } = useQuery<LogWithUserForList, Error>({
-    queryKey: ["logs_query", { from, query, sort, limit, offset }],
-    queryFn: async () => {
-      const q = new URLSearchParams();
-      if (from) q.append("from", from);
-      if (query) q.append("query", query);
-      if (sort) q.append("sort", sort);
-      if (limit) q.append("limit", limit.toString());
-      if (offset) q.append("offset", offset.toString());
-      const endpoint = `/api/logs?${q.toString()}`;
+    // queryKey: [
+    //   "logs_query",
+    //   { from, debouncedQuery, sort, limit, offset, userId },
+    // ],
+    // queryFn: async () => {
+    //   const q = new URLSearchParams();
+    //   if (from) q.append("from", from);
+    //   if (debouncedQuery) q.append("query", debouncedQuery);
+    //   if (sort) q.append("sort", sort);
+    //   if (limit) q.append("limit", limit.toString());
+    //   if (offset) q.append("offset", offset.toString());
+    //   if (userId && userId !== "ALL") q.append("userId", userId);
 
-      // console.log('endpoint:',endpoint)
-
-      const res = await fetch(endpoint);
-      if (res?.status == 401) window.location.href = "/login";
-      if (!res.ok) throw new Error("Failed to fetch logs");
-      return res.json();
-    },
+    //   const res = await fetch(`/api/logs?${q.toString()}`);
+    //   // if (res?.status == 401) window.location.href = "/login";
+    //   if (!res.ok) throw new Error("Failed to fetch logs");
+    //   return res.json();
+    // },
+    queryKey: [
+      `/api/logs?${new URLSearchParams({
+        from,
+        query: debouncedQuery || "",
+        sort,
+        limit: limit.toString(),
+        offset: offset.toString(),
+        userId: userId !== "ALL" ? userId : "",
+        event: event !== "ALL" ? event : "",
+      })}`,
+    ],
   });
 
   const list: LogWithUser[] = data?.data ?? [];
@@ -58,18 +78,9 @@ export const LogsList: React.FC<{ me?: null | PartialUser; users?: any[] }> = ({
   const columns: ColumnDef<LogWithUser>[] = [
     {
       accessorKey: "createdAt",
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Date
-            <ArrowUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-          </Button>
-        );
-      },
-      cell: ({ row }) => dateFormatter(new Date(row.original.createdAt)),
+      header: "Date",
+      cell: ({ row }) =>
+        dateFormatter(row.original.createdAt, "dd MMM yyyy hh:mm:ss a"),
     },
     {
       accessorKey: "event",
@@ -80,7 +91,7 @@ export const LogsList: React.FC<{ me?: null | PartialUser; users?: any[] }> = ({
       accessorKey: "user.username",
       header: "User",
       cell: ({ row }) => {
-        const username = row.original.user?.username;
+        const username = row.original.user?.username ?? "N/A";
         const isMe = row.original.userId == me?.id;
 
         return `${username}${isMe ? " (me)" : ""}`;
@@ -102,10 +113,48 @@ export const LogsList: React.FC<{ me?: null | PartialUser; users?: any[] }> = ({
         query={query}
         sort={sort}
         onQueryChange={handleQueryChange}
-        onSortToggle={toggleSort}
+        onSortChange={onSortChange}
         from={from}
-        onFromChange={setFrom}
-      />
+        onFromChange={handleFromChange}
+      >
+        {/* events */}
+        <div className="">
+          <Label className="mb-2">Event</Label>
+          <Select value={event} onValueChange={(val) => setEvent(val)}>
+            <SelectTrigger className="w-34">
+              <SelectValue placeholder="Select Event" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={"ALL"}>All</SelectItem>
+
+              {logEventList?.map((ev) => (
+                <SelectItem key={ev.value} value={ev.value.toString()}>
+                  {ev.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>{" "}
+        </div>
+
+        {/* select user */}
+        <div className="">
+          <Label className="mb-2">User</Label>
+          <Select value={userId} onValueChange={(val) => setUserId(val)}>
+            <SelectTrigger className="w-34">
+              <SelectValue placeholder="Select User" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={"ALL"}>All</SelectItem>
+
+              {users?.map((user) => (
+                <SelectItem key={user.id} value={user.id}>
+                  {user.username}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </DataTableToolbar>
 
       <DataTable data={list} columns={columns} isLoading={isLoading} />
 

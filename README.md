@@ -11,7 +11,7 @@
 - [DONE] report form fail logic update
 - [DONE] report & buyer max-w
 - [DONE] dashboard with charts, insights
-- ip address in logs
+- [DONE] ip address in logs
 - all tables filter
 - all tables download csv/xlsx/pdf
 - download single item as csv

@@ -226,3 +226,12 @@ export const logEventText: any = {
   [LogEvent.REPORT_DELETE]: "Report Delete",
   [LogEvent.REPORT_DOWNLOAD]: "Report Download",
 };
+
+export const logEventList = Object.entries(logEventText).map(
+  ([value, label]) => ({
+    value: Number(value),
+    label: String(label),
+  }),
+);
+
+export const DEFAULT_TABLE_LIMITS = [5, 10, 20, 50, 100];

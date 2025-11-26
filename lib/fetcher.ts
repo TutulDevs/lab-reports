@@ -39,6 +39,28 @@ export async function getServerUsersAll(): Promise<PartialUser[] | null> {
   return user;
 }
 
+export async function getServerUsersAllForFilter(): Promise<
+  | {
+      id: string;
+      username: string;
+    }[]
+  | null
+> {
+  const cookieStore = await cookies();
+  const token = cookieStore.get(COOKIE_NAME)?.value;
+
+  if (!token) return null;
+
+  const session = await verifyJwt<{ id: string; role: string }>(token);
+  if (!session) return null;
+
+  const users = await prisma.user.findMany({
+    select: { id: true, username: true },
+  });
+
+  return users;
+}
+
 export async function getServerBuyersAll(): Promise<BuyerWithUser[] | null> {
   const cookieStore = await cookies();
   const token = cookieStore.get(COOKIE_NAME)?.value;

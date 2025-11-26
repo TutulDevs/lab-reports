@@ -34,22 +34,20 @@ export function DataTable<TData, TValue>({
   data,
   isLoading,
 }: DataTableProps<TData, TValue>) {
-  const [sorting, setSorting] = useState<SortingState>([]);
+  // const [sorting, setSorting] = useState<SortingState>([]);
 
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    onSortingChange: setSorting,
-    getSortedRowModel: getSortedRowModel(),
-    state: {
-      sorting,
-    },
+    // getPaginationRowModel: getPaginationRowModel(),
+    // onSortingChange: setSorting,
+    // getSortedRowModel: getSortedRowModel(),
+    // state: {sorting,},
   });
 
   return (
-    <div>
+    <>
       {/* table */}
       <div className="overflow-hidden rounded-md border">
         <Table>
@@ -91,10 +89,11 @@ export function DataTable<TData, TValue>({
                 </TableCell>
               </TableRow>
             ) : (
-              table.getRowModel().rows.map((row) => (
+              table.getRowModel().rows.map((row, idx) => (
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
+                  // title={idx+1 +''}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
@@ -113,6 +112,6 @@ export function DataTable<TData, TValue>({
 
       {/* pagination */}
       {/* <DataTablePagination table={table} /> */}
-    </div>
+    </>
   );
 }

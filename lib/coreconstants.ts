@@ -61,3 +61,6 @@ export enum LogEvent {
   REPORT_DELETE = 13,
   REPORT_DOWNLOAD = 14,
 }
+
+export const DEFAULT_TABLE_LIMIT = 20;
+export const DEFAULT_TABLE_OFFSET = 0;

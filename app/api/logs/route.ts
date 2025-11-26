@@ -32,6 +32,9 @@ export async function GET(req: Request) {
     const from = fromStr ? parseISO(fromStr) : null;
     const to = toStr ? parseISO(toStr) : new Date();
 
+    const userId = searchParams.get("userId") ?? "";
+    const event = Number(searchParams.get("event") ?? "") || null;
+
     // ---- Build prisma filter ----
     const where: any = {};
 
@@ -39,9 +42,15 @@ export async function GET(req: Request) {
       where.createdAt = { ...where.createdAt, gte: from };
     if (to && isValid(to)) where.createdAt = { ...where.createdAt, lte: to };
 
+    if (userId) where.userId = userId;
+    if (event) where.event = event;
+
     if (query) {
       where.OR = [
-        { message: { contains: query, mode: "insensitive" } },
+        { id: { contains: query, mode: "insensitive" } },
+        { userId: { contains: query, mode: "insensitive" } },
+        { description: { contains: query, mode: "insensitive" } },
+        { ip_address: { contains: query, mode: "insensitive" } },
         { user: { username: { contains: query, mode: "insensitive" } } },
       ];
     }

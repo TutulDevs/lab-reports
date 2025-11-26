@@ -51,3 +51,5 @@ export type LogWithUserForList = {
   limit: number;
   offset: number;
 };
+
+export type SortType = "asc" | "desc";
