@@ -18,6 +18,9 @@ import {
 } from "../ui/select";
 import { useState } from "react";
 import { Label } from "../ui/label";
+import { toast } from "sonner";
+import { addDays } from "date-fns";
+import * as XLSX from "xlsx";
 
 export const LogsList: React.FC<{ me?: null | PartialUser; users?: any[] }> = ({
   me,
@@ -107,6 +110,65 @@ export const LogsList: React.FC<{ me?: null | PartialUser; users?: any[] }> = ({
     },
   ];
 
+  const [isDownloading, setIsDownloading] = useState(false);
+
+  const handleDownlaod = async (from: string, to?: string) => {
+    try {
+      setIsDownloading(true);
+
+      const fromDate =
+        from == "ALL" ? null : dateFormatter(new Date(from), "yyyy-MM-dd");
+      const toDate = dateFormatter(
+        addDays(!to || to == "ALL" ? new Date() : new Date(to), 1),
+        "yyyy-MM-dd",
+      );
+
+      const q = new URLSearchParams();
+      if (fromDate) q.append("from", fromDate);
+      if (toDate) q.append("to", toDate);
+      q.append("isDownload", "1");
+
+      const res = await fetch(`/api/logs?${q.toString()}`);
+
+      if (!res.ok) {
+        toast.error("Failed to download");
+        return;
+      }
+
+      const data = await res.json();
+      const logs: LogWithUser[] = data?.data ?? [];
+      const formattedLogs = logs.map((x) => ({
+        ID: x.id,
+        Time: dateFormatter(x.createdAt, "dd MMM yyyy hh:mm:ss a"),
+        Event: logEventText[x.event],
+        "User ID": x.userId,
+        "User Name": x.user?.username ?? "N/A",
+        Description: x.description,
+        "IP Address": x?.ip_address ?? "",
+      }));
+
+      // convert list to worksheet
+      const worksheet = XLSX.utils.json_to_sheet(formattedLogs);
+
+      // create new workbook & append to worksheet
+      const workbook = XLSX.utils.book_new();
+
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet 1");
+
+      // write the workbook & trigger download
+      XLSX.writeFile(workbook, `logs-download-${fromDate}-${toDate}.xlsx`);
+
+      // console.log(formattedLogs);
+
+      toast.success("Downloaded Successfully");
+      // toast.success(`downlaoded ${logs.length} logs from ${fromDate} to ${toDate}`,);
+    } catch (error: any) {
+      toast.error(error?.message ?? "Failed to download");
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
   return (
     <>
       <DataTableToolbar
@@ -116,6 +178,8 @@ export const LogsList: React.FC<{ me?: null | PartialUser; users?: any[] }> = ({
         onSortChange={onSortChange}
         from={from}
         onFromChange={handleFromChange}
+        onDownload={handleDownlaod}
+        isDownloading={isDownloading}
       >
         {/* events */}
         <div className="">

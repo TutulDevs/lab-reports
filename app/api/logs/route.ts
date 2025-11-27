@@ -34,6 +34,25 @@ export async function GET(req: Request) {
 
     const userId = searchParams.get("userId") ?? "";
     const event = Number(searchParams.get("event") ?? "") || null;
+    const isDownload = Number(searchParams.get("isDownload") ?? 0);
+
+    if (isDownload) {
+      const where: any = {};
+
+      if (from && isValid(from))
+        where.createdAt = { ...where.createdAt, gte: from };
+      if (to && isValid(to)) where.createdAt = { ...where.createdAt, lte: to };
+
+      const logs = await prisma.log.findMany({
+        where,
+        include: {
+          user: { select: { username: true } },
+        },
+        orderBy: { createdAt: "desc" },
+      });
+
+      return NextResponse.json({ data: logs });
+    }
 
     // ---- Build prisma filter ----
     const where: any = {};
@@ -55,7 +74,6 @@ export async function GET(req: Request) {
       ];
     }
 
-    // ---- Total count (for pagination) ----
     const total = await prisma.log.count({ where });
 
     // ---- Paginated data ----

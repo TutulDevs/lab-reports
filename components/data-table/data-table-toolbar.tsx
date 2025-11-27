@@ -1,7 +1,7 @@
 "use client";
 
 import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+import { Download, Loader, Search } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -12,6 +12,15 @@ import {
 import { periodOptions } from "@/lib/corearrays";
 import { SortType } from "@/lib/types";
 import { Label } from "../ui/label";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button, buttonVariants } from "../ui/button";
+import { cn } from "@/lib/utils";
+import { IconFileExcel } from "@tabler/icons-react";
 
 export const DataTableToolbar: React.FC<{
   query: string;
@@ -20,6 +29,8 @@ export const DataTableToolbar: React.FC<{
   onSortChange: (value: SortType) => void;
   from: string;
   onFromChange: (value: string) => void;
+  onDownload?: (from: string, to?: string) => void;
+  isDownloading?: boolean;
   children?: React.ReactNode;
 }> = ({
   query,
@@ -28,6 +39,8 @@ export const DataTableToolbar: React.FC<{
   onSortChange,
   from,
   onFromChange,
+  onDownload,
+  isDownloading,
   children,
 }) => {
   return (
@@ -49,7 +62,7 @@ export const DataTableToolbar: React.FC<{
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-3">
+      <div className="flex flex-wrap items-end gap-3">
         {/* Sort toggle */}
         <div className="">
           <Label className="mb-2">Sort</Label>
@@ -85,7 +98,38 @@ export const DataTableToolbar: React.FC<{
           </Select>
         </div>
 
+        {/* children */}
         {children}
+
+        {/* download */}
+        {onDownload && (
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              className={cn(
+                buttonVariants({ variant: "outline", size: "icon" }),
+              )}
+              aria-label="download data"
+              disabled={isDownloading}
+            >
+              {isDownloading ? (
+                <Loader className="animate-spin" />
+              ) : (
+                <IconFileExcel />
+              )}
+            </DropdownMenuTrigger>
+
+            <DropdownMenuContent align="end">
+              {periodOptions.map((option) => (
+                <DropdownMenuItem
+                  key={option.value}
+                  onClick={() => onDownload(option.value)}
+                >
+                  {option.title}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
       </div>
     </div>
   );
