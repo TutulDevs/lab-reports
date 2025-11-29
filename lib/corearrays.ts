@@ -106,9 +106,9 @@ export const reportSampleStageList = Object.entries(reportSampleStageText).map(
 
 // report dry process
 export const reportDryProcessText: any = {
-  [ReportDryProcess.LINE]: "Line",
-  [ReportDryProcess.FLAT]: "Flat",
-  [ReportDryProcess.TUBLE]: "Tube",
+  [ReportDryProcess.LINE]: "Line Dry",
+  [ReportDryProcess.FLAT]: "Flat Dry",
+  [ReportDryProcess.TUBLE]: "Tube Dry",
 };
 
 export const reportDryProcessList = Object.entries(reportDryProcessText).map(

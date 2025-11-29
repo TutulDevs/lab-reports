@@ -133,6 +133,7 @@ const reportSchema = z.object({
   status: z.number(),
   sample_type: numOptional,
   sample_stage: numOptional,
+  dry_process: numOptional,
   order_number: reqNum,
   batch_number: reqNum,
   color: z.string().optional(),

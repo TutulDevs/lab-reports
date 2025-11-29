@@ -26,6 +26,7 @@ import { Badge } from "../ui/badge";
 import {
   getBuyerValue,
   reportBuyerCommonFieldsText,
+  reportDryProcessText,
   reportOverallResultText,
   reportOverallResultVariants,
   reportSampleStageText,
@@ -149,6 +150,7 @@ export const FormPreviewContent: React.FC<{
     status,
     sample_type,
     sample_stage,
+    dry_process,
     order_number,
     batch_number,
     color,
@@ -212,6 +214,10 @@ export const FormPreviewContent: React.FC<{
     {
       title: "Sample Stage",
       children: !sample_stage ? "N/A" : reportSampleStageText[sample_stage],
+    },
+    {
+      title: "Dry Process",
+      children: !dry_process ? "N/A" : reportDryProcessText[dry_process],
     },
     {
       title: "Order Number",

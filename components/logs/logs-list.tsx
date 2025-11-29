@@ -20,6 +20,7 @@ import { useState } from "react";
 import { Label } from "../ui/label";
 import { toast } from "sonner";
 import { useExport } from "@/hooks/use-export";
+import { MeIndicator } from "../me-indicator";
 
 export const LogsList: React.FC<{ me?: null | PartialUser; users?: any[] }> = ({
   me,
@@ -66,15 +67,8 @@ export const LogsList: React.FC<{ me?: null | PartialUser; users?: any[] }> = ({
     {
       accessorKey: "createdAt",
       header: "Date",
-      cell: ({ row }) => (
-        <div className="relative pl-1">
-          {row.original.userId == me?.id && (
-            <div className="bg-success w-1 h-8 rounded absolute -left-1 top-1/2 -translate-y-1/2" />
-          )}
-
-          {dateFormatter(row.original.createdAt, "dd MMM yyyy hh:mm:ss a")}
-        </div>
-      ),
+      cell: ({ row }) =>
+        dateFormatter(row.original.createdAt, "dd MMM yyyy hh:mm:ss a"),
     },
     {
       accessorKey: "event",
@@ -84,6 +78,21 @@ export const LogsList: React.FC<{ me?: null | PartialUser; users?: any[] }> = ({
     {
       accessorKey: "user.username",
       header: "User",
+      cell: ({ row }) => {
+        {
+          row.original.userId == me?.id && (
+            <div className="bg-success w-1 h-8 rounded absolute -left-1 top-1/2 -translate-y-1/2" />
+          );
+        }
+
+        return (
+          <>
+            <MeIndicator isMe={row.original.userId == me?.id} />
+            {"  "}
+            {row.original.user?.username}{" "}
+          </>
+        );
+      },
     },
     {
       accessorKey: "ip_address",

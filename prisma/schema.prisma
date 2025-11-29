@@ -82,16 +82,17 @@ model Report {
   status              Int?      @default(1)
   sample_type         Int?
   sample_stage        Int?
+  dry_process         Int?
+  roll_number         Int
   order_number        Int
   batch_number        Int
   color               String?
   fabric_type         String?
-  roll_number         Int
   result              Int       @default(1)
   fail_portions       String?
   remarks             String?
-  gsm                 Int?
 
+  gsm                   Int?
   ds_wash_length        Float
   ds_wash_width         Float
   spirality_max         Float?

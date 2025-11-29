@@ -24,6 +24,7 @@ import {
 } from "../ui/select";
 import {
   getBuyerValue,
+  reportDryProcessList,
   reportSampleList,
   reportSampleStageList,
   reportStatusList,
@@ -71,6 +72,7 @@ export const CreateOrEditReportForm: React.FC<{
       status: report?.status ?? ReportStatus.IN_PROGRESS,
       sample_type: report?.sample_type ?? ReportSampleType.FABRIC,
       sample_stage: report?.sample_stage ?? ReportSampleStage.A_STENTER,
+      dry_process: report?.dry_process ?? undefined,
       order_number: report?.order_number,
       batch_number: report?.batch_number,
       color: report?.color ?? "",
@@ -507,6 +509,40 @@ export const CreateOrEditReportForm: React.FC<{
               )}
             />
 
+            {/* dry process */}
+            <FormField
+              control={form.control}
+              name="dry_process"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Dry Process</FormLabel>
+
+                  <Select
+                    onValueChange={(e) => field.onChange(e)}
+                    defaultValue={String(field.value)}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select a value" />
+                      </SelectTrigger>
+                    </FormControl>
+
+                    <SelectContent>
+                      <SelectItem value={"undefined"}>None</SelectItem>
+
+                      {reportDryProcessList.map((x) => (
+                        <SelectItem key={x.value} value={String(x.value)}>
+                          {x.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             {/* roll no */}
             <FormField
               control={form.control}
@@ -602,7 +638,7 @@ export const CreateOrEditReportForm: React.FC<{
               control={form.control}
               name="remarks"
               render={({ field }) => (
-                <FormItem className="md:col-span-2">
+                <FormItem className="md:col-span-2x">
                   <FormLabel>Remarks</FormLabel>
                   <FormControl>
                     <Textarea placeholder="Enter value" {...field} />

@@ -80,8 +80,6 @@ export const StaffItemActions: React.FC<{
     { title: "Updated At", children: dateFormatter(user.updatedAt) },
   ];
 
-  const [openEdit, setOpenEdit] = useState(false);
-
   return (
     <>
       {/* view details */}

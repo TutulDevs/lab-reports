@@ -236,7 +236,7 @@ export async function GET(req: Request) {
       offset,
     });
   } catch (error) {
-    console.error("Error fetching report:", error);
+    console.error("Error fetching users:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 },

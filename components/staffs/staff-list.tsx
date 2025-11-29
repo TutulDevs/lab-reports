@@ -34,6 +34,7 @@ import { Role } from "@/lib/coreconstants";
 import { toast } from "sonner";
 import { useExport } from "@/hooks/use-export";
 import { PageHeaderSection } from "../page-header";
+import { MeIndicator } from "../me-indicator";
 
 export const StaffList: React.FC<{ me: PartialUser | null }> = ({ me }) => {
   const {
@@ -77,21 +78,16 @@ export const StaffList: React.FC<{ me: PartialUser | null }> = ({ me }) => {
     {
       accessorKey: "id",
       header: "ID",
-      cell: ({ row }) => (
-        <div className="relative pl-1">
-          {row.original.id == me?.id && (
-            <div className="bg-success w-1 h-8 rounded absolute -left-1 top-1/2 -translate-y-1/2" />
-          )}
-
-          {row.original.id}
-        </div>
-      ),
     },
     {
       accessorKey: "username",
       header: "Username",
       cell: ({ row }) => (
-        <span className="font-medium">{row.original.username}</span>
+        <>
+          <MeIndicator isMe={row.original.id == me?.id} />
+          {"  "}
+          <span className="font-medium">{row.original.username}</span>
+        </>
       ),
     },
     {
@@ -164,8 +160,8 @@ export const StaffList: React.FC<{ me: PartialUser | null }> = ({ me }) => {
       }
 
       const data = await res.json();
-      const logs: PartialUser[] = data?.data ?? [];
-      const formattedLogs = logs.map((x) => ({
+      const users: PartialUser[] = data?.data ?? [];
+      const formattedUsers = users.map((x) => ({
         ID: x.id,
         Username: x.username,
         Role: roleText[x.role],
@@ -178,7 +174,7 @@ export const StaffList: React.FC<{ me: PartialUser | null }> = ({ me }) => {
       }));
 
       await handleExport(
-        formattedLogs,
+        formattedUsers,
         [
           "ID",
           "Username",

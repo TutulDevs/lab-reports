@@ -56,3 +56,25 @@ export type SortType = "asc" | "desc";
 export type StaffsDataPaginated = {
   data: PartialUser[];
 } & PaginatedData;
+
+export type BuyersDataPaginated = {
+  data: BuyerWithUser[];
+} & PaginatedData;
+
+export type ReportForList = Prisma.ReportGetPayload<{
+  select: {
+    id: true;
+    report_id: true;
+    buyerId: true;
+    buyer: true;
+    status: true;
+    result: true;
+    createdAt: true;
+    updatedAt: true;
+    userId: true;
+  };
+}>;
+
+export type ReportsDataPaginated = {
+  data: ReportForList[];
+} & PaginatedData;

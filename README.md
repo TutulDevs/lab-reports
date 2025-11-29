@@ -13,7 +13,9 @@
 - [DONE] dashboard with charts, insights
 - [DONE] ip address in logs
 - all tables filter
-- all tables download csv/xlsx/pdf
+- [DONE] all tables download csv/xlsx/pdf
+- buyers .xlsx should have bursting rules
+- [DONE] reports need dry process
 - download single item as csv
 - settings page: backup all data in local & g drive, site texts
 - auth issue

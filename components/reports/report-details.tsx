@@ -15,6 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import {
   getBuyerValue,
   reportBuyerCommonFieldsText,
+  reportDryProcessText,
   reportOverallResultText,
   reportOverallResultVariants,
   reportSampleStageText,
@@ -48,6 +49,7 @@ export const ReportDetails: React.FC<{ reportId: string }> = async ({
     status,
     sample_type,
     sample_stage,
+    dry_process,
     order_number,
     batch_number,
     color,
@@ -122,6 +124,11 @@ export const ReportDetails: React.FC<{ reportId: string }> = async ({
     {
       title: "Sample Stage",
       children: !sample_stage ? "N/A" : reportSampleStageText[sample_stage],
+      className: cn(itemClass),
+    },
+    {
+      title: "Dry Process",
+      children: !dry_process ? "N/A" : reportDryProcessText[dry_process],
       className: cn(itemClass),
     },
     {
