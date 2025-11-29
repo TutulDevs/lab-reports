@@ -58,6 +58,7 @@ export const registerStaffSchema = z.object({
   phone: z.string().optional().or(z.literal("")),
   email: z.string().email().optional().or(z.literal("")),
   role: z.number(),
+  status: z.number(),
 });
 
 export const updateStaffSchema = z.object({
@@ -80,6 +81,7 @@ export const updateStaffSchema = z.object({
   phone: z.string().optional().or(z.literal("")),
   email: z.string().email().optional().or(z.literal("")),
   role: z.number(),
+  status: z.number(),
 });
 
 // buyer

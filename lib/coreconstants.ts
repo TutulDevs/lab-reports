@@ -6,6 +6,12 @@ export enum Role {
   STAFF = 2,
 }
 
+export enum UserStatus {
+  INACTIVE = 0,
+  ACTIVE = 1,
+  SUSPENDED = 2,
+}
+
 export enum ReportStatus {
   IN_PROGRESS = 1,
   PENDING = 2,
@@ -60,6 +66,8 @@ export enum LogEvent {
   REPORT_UPDATE = 12,
   REPORT_DELETE = 13,
   REPORT_DOWNLOAD = 14,
+
+  LOG_DOWNLOAD = 15,
 }
 
 export const DEFAULT_TABLE_LIMIT = 20;

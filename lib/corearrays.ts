@@ -7,6 +7,7 @@ import {
   ReportSampleType,
   ReportStatus,
   Role,
+  UserStatus,
 } from "./coreconstants";
 import { BuyerWithUser } from "@/lib/types";
 import { getDaysPassed, getSubDate } from "./utils";
@@ -28,6 +29,26 @@ export const roleList = Object.entries(roleText).map(([value, label]) => ({
   value: Number(value),
   label: String(label),
 }));
+
+// user status
+export const userStatusText: any = {
+  [UserStatus.ACTIVE]: "Active",
+  [UserStatus.INACTIVE]: "Inactive",
+  [UserStatus.SUSPENDED]: "Suspended",
+};
+
+export const userStatusVariants: any = {
+  [UserStatus.ACTIVE]: "success",
+  [UserStatus.INACTIVE]: "default",
+  [UserStatus.SUSPENDED]: "destructive",
+};
+
+export const userStatusList = Object.entries(userStatusText).map(
+  ([value, label]) => ({
+    value: Number(value),
+    label: String(label),
+  }),
+);
 
 // report status
 export const reportStatusText: any = {
@@ -225,6 +246,8 @@ export const logEventText: any = {
   [LogEvent.REPORT_UPDATE]: "Report Update",
   [LogEvent.REPORT_DELETE]: "Report Delete",
   [LogEvent.REPORT_DOWNLOAD]: "Report Download",
+
+  [LogEvent.LOG_DOWNLOAD]: "Log Download",
 };
 
 export const logEventList = Object.entries(logEventText).map(

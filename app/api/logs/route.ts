@@ -3,6 +3,8 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { COOKIE_NAME, verifyJwt } from "@/lib/auth";
 import { isValid, parseISO } from "date-fns";
+import { logEventHandler } from "@/lib/fetcher";
+import { LogEvent } from "@/lib/coreconstants";
 
 export async function GET(req: Request) {
   try {
@@ -22,6 +24,22 @@ export async function GET(req: Request) {
     // ---- Parse query params ----
     // /api/logs?from=2025-11-19&sort=dsc&limit=10
     const { searchParams } = new URL(req.url);
+    const isDownload = Number(searchParams.get("isDownload") ?? 0);
+
+    // for downloading
+    if (isDownload) {
+      const logs = await prisma.log.findMany({
+        include: {
+          user: { select: { username: true } },
+        },
+        orderBy: { createdAt: "desc" },
+      });
+
+      await logEventHandler(LogEvent.LOG_DOWNLOAD, session.id);
+
+      return NextResponse.json({ data: logs });
+    }
+
     const fromStr = searchParams.get("from");
     const toStr = searchParams.get("to");
     const query = searchParams.get("query") ?? "";
@@ -34,25 +52,6 @@ export async function GET(req: Request) {
 
     const userId = searchParams.get("userId") ?? "";
     const event = Number(searchParams.get("event") ?? "") || null;
-    const isDownload = Number(searchParams.get("isDownload") ?? 0);
-
-    if (isDownload) {
-      const where: any = {};
-
-      if (from && isValid(from))
-        where.createdAt = { ...where.createdAt, gte: from };
-      if (to && isValid(to)) where.createdAt = { ...where.createdAt, lte: to };
-
-      const logs = await prisma.log.findMany({
-        where,
-        include: {
-          user: { select: { username: true } },
-        },
-        orderBy: { createdAt: "desc" },
-      });
-
-      return NextResponse.json({ data: logs });
-    }
 
     // ---- Build prisma filter ----
     const where: any = {};

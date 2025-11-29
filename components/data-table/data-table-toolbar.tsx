@@ -1,7 +1,7 @@
 "use client";
 
 import { Input } from "@/components/ui/input";
-import { Download, Loader, Search } from "lucide-react";
+import { Loader, Search } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -12,15 +12,9 @@ import {
 import { periodOptions } from "@/lib/corearrays";
 import { SortType } from "@/lib/types";
 import { Label } from "../ui/label";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button, buttonVariants } from "../ui/button";
-import { cn } from "@/lib/utils";
+import { Button } from "../ui/button";
 import { IconFileExcel } from "@tabler/icons-react";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
 export const DataTableToolbar: React.FC<{
   query: string;
@@ -29,7 +23,7 @@ export const DataTableToolbar: React.FC<{
   onSortChange: (value: SortType) => void;
   from: string;
   onFromChange: (value: string) => void;
-  onDownload?: (from: string, to?: string) => void;
+  onDownload?: () => void;
   isDownloading?: boolean;
   children?: React.ReactNode;
 }> = ({
@@ -103,32 +97,26 @@ export const DataTableToolbar: React.FC<{
 
         {/* download */}
         {onDownload && (
-          <DropdownMenu>
-            <DropdownMenuTrigger
-              className={cn(
-                buttonVariants({ variant: "outline", size: "icon" }),
-              )}
-              aria-label="download data"
-              disabled={isDownloading}
-            >
-              {isDownloading ? (
-                <Loader className="animate-spin" />
-              ) : (
-                <IconFileExcel />
-              )}
-            </DropdownMenuTrigger>
-
-            <DropdownMenuContent align="end">
-              {periodOptions.map((option) => (
-                <DropdownMenuItem
-                  key={option.value}
-                  onClick={() => onDownload(option.value)}
-                >
-                  {option.title}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant={"outline"}
+                size={"icon"}
+                aria-label="download data"
+                disabled={isDownloading}
+                onClick={onDownload}
+              >
+                {isDownloading ? (
+                  <Loader className="animate-spin" />
+                ) : (
+                  <IconFileExcel className="!w-6 !h-6" />
+                )}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Download all data in .xlsx format</p>
+            </TooltipContent>
+          </Tooltip>
         )}
       </div>
     </div>

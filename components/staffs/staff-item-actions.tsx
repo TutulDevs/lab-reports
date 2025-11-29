@@ -3,7 +3,6 @@
 import { PartialUser } from "@/lib/types";
 import React, { useState } from "react";
 import { Button, buttonVariants } from "../ui/button";
-import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { Fullscreen, SquarePen, UserRoundX } from "lucide-react";
 import {
   Dialog,
@@ -17,35 +16,39 @@ import { cn, dateFormatter } from "@/lib/utils";
 import { Badge } from "../ui/badge";
 import { CreateOrUpdateUserForm } from "./create-or-update-form";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-import { roleText, roleVariants } from "@/lib/corearrays";
+  roleText,
+  roleVariants,
+  userStatusText,
+  userStatusVariants,
+} from "@/lib/corearrays";
 
 export const StaffItemActions: React.FC<{
   user: PartialUser;
   canEdit: boolean;
   canDelete: boolean;
-}> = ({ user, canEdit, canDelete }) => {
+  refetch: () => void;
+}> = ({ user, canEdit, canDelete, refetch }) => {
   const detailsInfo = [
     { title: "ID", children: user.id },
     { title: "Username", children: user.username },
-    { title: "Full Name", children: user.fullname ?? "N/A" },
     {
       title: "Role",
       children: (
         <Badge variant={roleVariants[user.role]}>{roleText[user.role]}</Badge>
       ),
     },
+    {
+      title: "Status",
+      children:
+        user?.status == null || user?.status == undefined ? (
+          "N/A"
+        ) : (
+          <Badge variant={userStatusVariants[user.status]}>
+            {userStatusText[user.status]}
+          </Badge>
+        ),
+    },
+    { title: "Full Name", children: user.fullname ?? "N/A" },
     { title: "Designation", children: user.designation ?? "N/A" },
     {
       title: "Phone",
@@ -77,55 +80,16 @@ export const StaffItemActions: React.FC<{
     { title: "Updated At", children: dateFormatter(user.updatedAt) },
   ];
 
-  const router = useRouter();
-
-  const [loading, setLoading] = useState(false);
-
-  const deleteStaff = async () => {
-    try {
-      setLoading(true);
-
-      const res = await fetch(`/api/staff/${user.id}`, {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-      });
-      const status = res.status;
-      const data = await res.json();
-
-      // console.log("res:", status, res);
-      // console.log("data:", data);
-
-      if (data?.success) {
-        toast.success(data?.message || `Staff deleted successfully"}`);
-
-        router.refresh();
-      } else {
-        toast.error(data?.error || `Failed to delete staff`);
-        if (status == 401) window.location.href = "/login";
-      }
-    } catch (error: any) {
-      console.error(error);
-      toast.error(error?.message || "Failed to delete staff");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [openEdit, setOpenEdit] = useState(false);
 
   return (
     <>
       {/* view details */}
       <Dialog>
-        <DialogTrigger>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="outline" size={"icon-sm"}>
-                <Fullscreen />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>View Details</p>
-            </TooltipContent>
-          </Tooltip>
+        <DialogTrigger asChild>
+          <Button variant="outline" size={"icon-sm"}>
+            <Fullscreen />
+          </Button>
         </DialogTrigger>
 
         <DialogContent>
@@ -148,49 +112,11 @@ export const StaffItemActions: React.FC<{
       </Dialog>
 
       {/* edit */}
-      <CreateOrUpdateStaffButton user={user} canEdit={canEdit} />
-
-      {/* delete */}
-      <AlertDialog>
-        <AlertDialogTrigger disabled={!canDelete}>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="destructive"
-                size={"icon-sm"}
-                disabled={!canDelete}
-              >
-                <UserRoundX />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>{!canDelete ? "Not permitted" : "Delete Staff"}</p>
-            </TooltipContent>
-          </Tooltip>
-        </AlertDialogTrigger>
-
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the{" "}
-              {`staff's`}
-              account and remove your data from our servers.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              className={cn(buttonVariants({ variant: "destructive" }))}
-              onClick={deleteStaff}
-              disabled={loading}
-            >
-              {loading ? "Deleting" : "Delete"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <CreateOrUpdateStaffButton
+        user={user}
+        canEdit={canEdit}
+        onSuccess={refetch}
+      />
     </>
   );
 };
@@ -216,7 +142,8 @@ const Item: React.FC<{
 export const CreateOrUpdateStaffButton: React.FC<{
   user?: PartialUser;
   canEdit?: boolean;
-}> = ({ user, canEdit }) => {
+  onSuccess: () => void;
+}> = ({ user, canEdit, onSuccess }) => {
   const [open, setOpen] = useState(false);
 
   return (
@@ -240,7 +167,10 @@ export const CreateOrUpdateStaffButton: React.FC<{
             <DialogDescription asChild>
               <CreateOrUpdateUserForm
                 user={user}
-                closeModal={() => setOpen(false)}
+                onSuccess={() => {
+                  setOpen(false);
+                  onSuccess();
+                }}
               />
             </DialogDescription>
           </DialogHeader>

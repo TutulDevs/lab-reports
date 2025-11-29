@@ -65,7 +65,7 @@ export const ReportsOverTimeChart = () => {
         date: dateFormatter(date, "dd MMM ''yy"),
         count,
       }));
-  }, [selectedPeriod, data]);
+  }, [selectedPeriod, data, reports]);
 
   const { ref, downloadImage } = useDownloadDOM();
 

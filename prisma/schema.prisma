@@ -12,6 +12,7 @@ model User {
   username       String    @unique
   password       String
   role           Int       @default(2)
+  status         Int       @default(1)
   fullname       String?
   designation    String?
   phone          String?

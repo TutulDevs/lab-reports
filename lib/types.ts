@@ -45,11 +45,14 @@ export type LogWithUser = Prisma.LogGetPayload<{
   };
 }>;
 
+export type PaginatedData = { total: number; limit: number; offset: number };
+
 export type LogWithUserForList = {
   data: LogWithUser[];
-  total: number;
-  limit: number;
-  offset: number;
-};
+} & PaginatedData;
 
 export type SortType = "asc" | "desc";
+
+export type StaffsDataPaginated = {
+  data: PartialUser[];
+} & PaginatedData;

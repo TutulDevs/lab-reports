@@ -19,8 +19,7 @@ import {
 import { useState } from "react";
 import { Label } from "../ui/label";
 import { toast } from "sonner";
-import { addDays } from "date-fns";
-import * as XLSX from "xlsx";
+import { useExport } from "@/hooks/use-export";
 
 export const LogsList: React.FC<{ me?: null | PartialUser; users?: any[] }> = ({
   me,
@@ -43,25 +42,10 @@ export const LogsList: React.FC<{ me?: null | PartialUser; users?: any[] }> = ({
   const [event, setEvent] = useState<string>("ALL");
   const [userId, setUserId] = useState<string>("ALL");
 
-  const { isLoading, error, data } = useQuery<LogWithUserForList, Error>({
-    // queryKey: [
-    //   "logs_query",
-    //   { from, debouncedQuery, sort, limit, offset, userId },
-    // ],
-    // queryFn: async () => {
-    //   const q = new URLSearchParams();
-    //   if (from) q.append("from", from);
-    //   if (debouncedQuery) q.append("query", debouncedQuery);
-    //   if (sort) q.append("sort", sort);
-    //   if (limit) q.append("limit", limit.toString());
-    //   if (offset) q.append("offset", offset.toString());
-    //   if (userId && userId !== "ALL") q.append("userId", userId);
-
-    //   const res = await fetch(`/api/logs?${q.toString()}`);
-    //   // if (res?.status == 401) window.location.href = "/login";
-    //   if (!res.ok) throw new Error("Failed to fetch logs");
-    //   return res.json();
-    // },
+  const { isLoading, error, data, refetch } = useQuery<
+    LogWithUserForList,
+    Error
+  >({
     queryKey: [
       `/api/logs?${new URLSearchParams({
         from,
@@ -82,8 +66,15 @@ export const LogsList: React.FC<{ me?: null | PartialUser; users?: any[] }> = ({
     {
       accessorKey: "createdAt",
       header: "Date",
-      cell: ({ row }) =>
-        dateFormatter(row.original.createdAt, "dd MMM yyyy hh:mm:ss a"),
+      cell: ({ row }) => (
+        <div className="relative pl-1">
+          {row.original.userId == me?.id && (
+            <div className="bg-success w-1 h-8 rounded absolute -left-1 top-1/2 -translate-y-1/2" />
+          )}
+
+          {dateFormatter(row.original.createdAt, "dd MMM yyyy hh:mm:ss a")}
+        </div>
+      ),
     },
     {
       accessorKey: "event",
@@ -93,12 +84,6 @@ export const LogsList: React.FC<{ me?: null | PartialUser; users?: any[] }> = ({
     {
       accessorKey: "user.username",
       header: "User",
-      cell: ({ row }) => {
-        const username = row.original.user?.username ?? "N/A";
-        const isMe = row.original.userId == me?.id;
-
-        return `${username}${isMe ? " (me)" : ""}`;
-      },
     },
     {
       accessorKey: "ip_address",
@@ -110,22 +95,13 @@ export const LogsList: React.FC<{ me?: null | PartialUser; users?: any[] }> = ({
     },
   ];
 
-  const [isDownloading, setIsDownloading] = useState(false);
+  const { handleExport, isDownloading, setIsDownloading } = useExport();
 
-  const handleDownlaod = async (from: string, to?: string) => {
+  const handleDownlaod = async () => {
     try {
       setIsDownloading(true);
 
-      const fromDate =
-        from == "ALL" ? null : dateFormatter(new Date(from), "yyyy-MM-dd");
-      const toDate = dateFormatter(
-        addDays(!to || to == "ALL" ? new Date() : new Date(to), 1),
-        "yyyy-MM-dd",
-      );
-
       const q = new URLSearchParams();
-      if (fromDate) q.append("from", fromDate);
-      if (toDate) q.append("to", toDate);
       q.append("isDownload", "1");
 
       const res = await fetch(`/api/logs?${q.toString()}`);
@@ -147,21 +123,19 @@ export const LogsList: React.FC<{ me?: null | PartialUser; users?: any[] }> = ({
         "IP Address": x?.ip_address ?? "",
       }));
 
-      // convert list to worksheet
-      const worksheet = XLSX.utils.json_to_sheet(formattedLogs);
+      await handleExport(formattedLogs, [
+        "ID",
+        "Time",
+        "Event",
+        "User ID",
+        "User Name",
+        "Description",
+        "IP Address",
+      ]);
 
-      // create new workbook & append to worksheet
-      const workbook = XLSX.utils.book_new();
-
-      XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet 1");
-
-      // write the workbook & trigger download
-      XLSX.writeFile(workbook, `logs-download-${fromDate}-${toDate}.xlsx`);
-
-      // console.log(formattedLogs);
+      refetch();
 
       toast.success("Downloaded Successfully");
-      // toast.success(`downlaoded ${logs.length} logs from ${fromDate} to ${toDate}`,);
     } catch (error: any) {
       toast.error(error?.message ?? "Failed to download");
     } finally {
@@ -197,7 +171,7 @@ export const LogsList: React.FC<{ me?: null | PartialUser; users?: any[] }> = ({
                 </SelectItem>
               ))}
             </SelectContent>
-          </Select>{" "}
+          </Select>
         </div>
 
         {/* select user */}

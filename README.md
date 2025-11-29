@@ -18,3 +18,4 @@
 - settings page: backup all data in local & g drive, site texts
 - auth issue
 - slow site issue
+- add status in staffs & validate

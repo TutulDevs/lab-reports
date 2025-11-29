@@ -26,8 +26,8 @@ import {
 } from "../ui/select";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { roleList } from "@/lib/corearrays";
-import { Role } from "@/lib/coreconstants";
+import { roleList, userStatusList } from "@/lib/corearrays";
+import { Role, UserStatus } from "@/lib/coreconstants";
 
 type RegisterSchemaType = z.infer<typeof registerStaffSchema>;
 type UpdateSchemaType = z.infer<typeof updateStaffSchema>;
@@ -36,10 +36,8 @@ type FormType = RegisterSchemaType | UpdateSchemaType;
 
 export const CreateOrUpdateUserForm: React.FC<{
   user?: PartialUser;
-  closeModal: () => void;
-}> = ({ user, closeModal }) => {
-  const router = useRouter();
-
+  onSuccess: () => void;
+}> = ({ user, onSuccess }) => {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -61,6 +59,7 @@ export const CreateOrUpdateUserForm: React.FC<{
       phone: user?.phone ?? "",
       email: user?.email ?? "",
       role: user?.role ?? Role.STAFF,
+      status: user?.status ?? UserStatus.ACTIVE,
     },
   });
 
@@ -87,9 +86,8 @@ export const CreateOrUpdateUserForm: React.FC<{
         toast.success(
           data?.message || `Successfully ${user ? "updated" : "created"}`,
         );
-        closeModal();
-        // form.reset();
-        router.refresh();
+
+        onSuccess();
       } else {
         toast.error(data?.error || `Failed to ${user ? "update" : "create"}`);
         if (status == 401) window.location.href = "/login";
@@ -171,6 +169,38 @@ export const CreateOrUpdateUserForm: React.FC<{
                   </FormControl>
                   <SelectContent>
                     {roleList.map((r) => (
+                      <SelectItem key={r.value} value={String(r.value)}>
+                        {r.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* status */}
+          <FormField
+            control={form.control}
+            name="status"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Status</FormLabel>
+
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={String(field.value)}
+                  disabled
+                >
+                  <FormControl>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select a status" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {userStatusList.map((r) => (
                       <SelectItem key={r.value} value={String(r.value)}>
                         {r.label}
                       </SelectItem>
