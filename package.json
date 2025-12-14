@@ -47,7 +47,7 @@
     "jose": "^6.1.0",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.544.0",
-    "next": "15.5.4",
+    "next": "15.5.9",
     "next-themes": "^0.4.6",
     "prettier": "^3.6.2",
     "pretty-quick": "^4.2.2",
